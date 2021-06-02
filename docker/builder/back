@@ -1,0 +1,45 @@
+FROM ubuntu:20.04
+ARG APT_MIRROR=http://mirrors.aliyun.com
+RUN sed -Ei "s#http://.*.ubuntu.com#${APT_MIRROR}#" /etc/apt/sources.list \
+    && apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential cmake wget git \
+    && apt-get clean
+
+ARG VERSION
+WORKDIR /tmp
+COPY ${VERSION}.tar.gz /tmp/
+RUN tar xf ${VERSION}.tar.gz \
+    && cd TDengine-${VERSION}/ \
+    && export TD_VER_NUMBER=`grep 'TD_VER_NUMBER "' \
+      cmake/version.inc |sed -E 's/[^.0-9]//g'` \
+    && echo $TD_VER_NUMBER \
+    && sed 's#set -e##' -i packaging/release.sh \
+    && ./packaging/release.sh -n $TD_VER_NUMBER -l lite -V stable
+
+FROM ubuntu:20.04
+ARG APT_MIRROR=http://mirrors.aliyun.com
+ARG VERSION
+ENV TDENGINE_VERSION=${VERSION}
+WORKDIR /usr/src/
+RUN sed -Ei "s#http://.*.ubuntu.com#${APT_MIRROR}#" /etc/apt/sources.list \
+    && apt-get update \
+    && DEBIAN_FRONTEND=noninteractive \
+      apt-get install -y locales tzdata curl \
+    && locale-gen en_US.UTF-8 \
+    && apt-get clean
+ENV LC_ALL=en_US.UTF-8
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US.UTF-8
+COPY third-party/* /usr/bin/
+
+COPY --from=0 /tmp/TDengine-${VERSION}/release/TDengine-server* /usr/src/
+RUN tar xf TDengine-server*.tar.gz && cd TDengine-server-*/ && ./install.sh -e no
+RUN rm -rf TDengine*
+
+COPY bin/* /usr/bin/
+
+WORKDIR /etc/taos
+EXPOSE 6030 6031 6032 6033 6034 6035 6036 6037 6038 6039 6040 6041 6042
+CMD ["taosd"]
+VOLUME [ "/var/lib/taos", "/var/log/taos" ]
+ENTRYPOINT [ "/usr/bin/entrypoint.sh" ]

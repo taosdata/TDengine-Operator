@@ -1,0 +1,244 @@
+# Setup TDengine Cluster on Kubenetes
+
+Create a config map for TDengine: `taoscfg.yaml`.
+
+```yaml
+{{#include ../tdengine/taoscfg.yaml }}
+```
+
+Service config `taosd-service.yaml` for each port we will use, here note that the `metadata.name` (setted as `"taosd"`) will be used in next step:
+
+```yaml
+{{#include ../tdengine/taosd-service.yaml }}
+```
+
+We use StatefulSet config `tdengine.yaml` for TDengine.
+
+```yaml
+{{#include ../tdengine/tdengine.yaml }}
+```
+
+Add them to kubenetes.
+
+```sh
+kubectl apply -f taoscfg.yaml
+kubectl apply -f taosd-service.yaml
+kubectl apply -f tdengine.yaml
+```
+
+The script will create a two node TDengine cluster on k8s.
+
+Execute show dnodes in taos shell:
+
+```sh
+kubectl exec -i -t tdengine-0 -- taos -s "show dnodes"
+kubectl exec -i -t tdengine-1 -- taos -s "show dnodes"
+```
+
+Well, the current dnodes list shows:
+
+```sql
+Welcome to the TDengine shell from Linux, Client Version:2.1.1.0
+Copyright (c) 2020 by TAOS Data, Inc. All rights reserved.
+
+taos> show dnodes
+   id   |           end_point            | vnodes | cores  |   status   | role  |       create_time       |      offline reason      |
+======================================================================================================================================
+      1 | tdengine-0.taosd.default.sv... |      1 |     40 | ready      | any   | 2021-06-01 17:13:24.181 |                          |
+      2 | tdengine-1.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 17:14:09.257 |                          |
+Query OK, 2 row(s) in set (0.000997s)
+```
+
+## Scale Up
+
+TDengine on Kubenetes could automatically scale up with:
+
+```sh
+kubectl scale statefulsets tdengine --replicas=4
+```
+
+Check if scale-up works:
+
+```sh
+kubectl get pods -l app=tdengine 
+```
+
+Results:
+
+```text
+NAME         READY   STATUS    RESTARTS   AGE
+tdengine-0   1/1     Running   0          161m
+tdengine-1   1/1     Running   0          161m
+tdengine-2   1/1     Running   0          32m
+tdengine-3   1/1     Running   0          32m
+```
+
+Check TDengine dnodes:
+
+```sh
+kubectl exec -i -t tdengine-0 -- taos -s "show dnodes"
+```
+
+Results:
+
+```sql
+Welcome to the TDengine shell from Linux, Client Version:2.1.1.0
+Copyright (c) 2020 by TAOS Data, Inc. All rights reserved.
+
+taos> show dnodes
+   id   |           end_point            | vnodes | cores  |   status   | role  |       create_time       |      offline reason      |
+======================================================================================================================================
+      1 | tdengine-0.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 11:58:12.915 |                          |
+      2 | tdengine-1.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 11:58:33.127 |                          |
+      3 | tdengine-2.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 14:07:27.078 |                          |
+      4 | tdengine-3.taosd.default.sv... |      1 |     40 | ready      | any   | 2021-06-01 14:07:48.362 |                          |
+Query OK, 4 row(s) in set (0.001293s)
+```
+
+## Scale Down
+
+Let's try scale down from 3 to 2.
+
+First, we scale up the TDengine cluster to 3 nodes:
+
+```sh
+kubectl scale statefulsets tdengine --replicas=3
+```
+
+`show dnodes` in taos shell:
+
+```sql
+taos> show dnodes
+   id   |           end_point            | vnodes | cores  |   status   | role  |       create_time       |      offline reason      |
+======================================================================================================================================
+      1 | tdengine-0.taosd.default.sv... |      1 |     40 | ready      | any   | 2021-06-01 16:27:24.852 |                          |
+      2 | tdengine-1.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 16:27:53.339 |                          |
+      3 | tdengine-2.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 16:28:49.787 |                          |
+Query OK, 3 row(s) in set (0.001101s)
+```
+
+To perform a right scale-down, we should drop the last dnode in taos shell first:
+
+```sh
+kubectl exec -i -t tdengine-0 -- taos -s "drop dnode 'tdengine-2.taosd.default.svc.cluster.local:6030'"
+```
+
+Then scale down to 2.
+
+```sh
+kubectl scale statefulsets tdengine --replicas=2
+```
+
+Extra relicas pods will be teminated, and retain 2 pods.
+
+Type `kubectl get pods -l app=tdengine` to check pods.
+
+```text
+NAME         READY   STATUS    RESTARTS   AGE
+tdengine-0   1/1     Running   0          3h40m
+tdengine-1   1/1     Running   0          3h40m
+```
+
+Also need to remove the pvc(if no, scale-up will be failed next):
+
+```sh
+kubectl delete pvc taosdata-tdengine-2
+```
+
+Now your TDengine cluster is safe.
+
+Scale up again will be ok:
+
+```sh
+kubectl scale statefulsets tdengine --replicas=3
+```
+
+`show dnodes` results:
+
+```sql
+taos> show dnodes
+   id   |           end_point            | vnodes | cores  |   status   | role  |       create_time       |      offline reason      |
+======================================================================================================================================
+      1 | tdengine-0.taosd.default.sv... |      1 |     40 | ready      | any   | 2021-06-01 16:27:24.852 |                          |
+      2 | tdengine-1.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 16:27:53.339 |                          |
+      4 | tdengine-2.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 16:40:49.177 |                          |
+```
+
+### Let's do something BAD Case 1
+
+Scale it up to 4 and then scale down to 2 directly. Deleted pods are `offline` now:
+
+```text
+Welcome to the TDengine shell from Linux, Client Version:2.1.1.0
+Copyright (c) 2020 by TAOS Data, Inc. All rights reserved.
+
+taos> show dnodes
+   id   |           end_point            | vnodes | cores  |   status   | role  |       create_time       |      offline reason      |
+======================================================================================================================================
+      1 | tdengine-0.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 11:58:12.915 |                          |
+      2 | tdengine-1.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 11:58:33.127 |                          |
+      3 | tdengine-2.taosd.default.sv... |      0 |     40 | offline    | any   | 2021-06-01 14:07:27.078 | status msg timeout       |
+      4 | tdengine-3.taosd.default.sv... |      1 |     40 | offline    | any   | 2021-06-01 14:07:48.362 | status msg timeout       |
+Query OK, 4 row(s) in set (0.001236s)
+```
+
+But we can't drop tje offline dnodes, the dnode will stuck in `dropping` mode (if you call `drop dnode 'fqdn:6030'`).
+
+### Let's do something BAD Case 2
+
+Note that if the remaining dnodes is less than the database `replica`, it will cause error untill you scale it up again.
+
+Create database with `replica` 2, and insert data to an table:
+
+```sh
+kubectl exec -i -t tdengine-0 -- \
+  taos -s \
+  "create database if not exists test replica 2;
+   use test; 
+   create table if not exists t1(ts timestamp, n int);
+   insert into t1 values(now, 1)(now+1s, 2);"
+```
+
+Scale down to replica 1 (bad behavior):
+
+```sh
+kubectl scale statefulsets tdengine --replicas=1
+```
+
+Now in taos shell, all operations with database `test` are not valid even if you call `drop dnode` after scale down.
+
+```sql
+taos> show dnodes;
+   id   |           end_point            | vnodes | cores  |   status   | role  |       create_time       |      offline reason      |
+======================================================================================================================================
+      1 | tdengine-0.taosd.default.sv... |      2 |     40 | ready      | any   | 2021-06-01 15:55:52.562 |                          |
+      2 | tdengine-1.taosd.default.sv... |      1 |     40 | offline    | any   | 2021-06-01 15:56:07.212 | status msg timeout       |
+Query OK, 2 row(s) in set (0.000845s)
+
+taos> show dnodes;
+   id   |           end_point            | vnodes | cores  |   status   | role  |       create_time       |      offline reason      |
+======================================================================================================================================
+      1 | tdengine-0.taosd.default.sv... |      2 |     40 | ready      | any   | 2021-06-01 15:55:52.562 |                          |
+      2 | tdengine-1.taosd.default.sv... |      1 |     40 | offline    | any   | 2021-06-01 15:56:07.212 | status msg timeout       |
+Query OK, 2 row(s) in set (0.000837s)
+
+taos> use test;
+Database changed.
+
+taos> insert into t1 values(now, 3);
+
+DB error: Unable to resolve FQDN (0.013874s)
+```
+
+So, before scale-down, please check the max value of `replica` among all databases, and be sure to do `drop dnode` step.
+
+## Clean Up TDengine StatefulSet
+
+To complete remove tdengine statefulset, type:
+
+```sh
+kubectl delete statefulset -l app=tdengine
+kubectl delete svc -l app=tdengine
+kubectl delete pvc -l app=tdengine
+kubectl delete configmap taoscfg
+```

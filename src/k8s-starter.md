@@ -1,0 +1,95 @@
+# K8s Starter
+
+## StatefulSets
+
+In `starter/stateful-nginx.yaml`:
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  ports:
+  - port: 80
+    name: web
+  clusterIP: None
+  selector:
+    app: nginx
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: web
+spec:
+  selector:
+    matchLabels:
+      app: nginx # has to match .spec.template.metadata.labels
+  serviceName: "nginx"
+  replicas: 3 # by default is 1
+  template:
+    metadata:
+      labels:
+        app: nginx # has to match .spec.selector.matchLabels
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+          name: web
+        volumeMounts:
+        - name: www
+          mountPath: /usr/share/nginx/html
+  volumeClaimTemplates:
+  - metadata:
+      name: www
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "csi-rbd-sc"
+      resources:
+        requests:
+          storage: 1Gi
+```
+
+```sh
+kubectl apply -f starter/stateful-nginx.yaml
+```
+
+## ConfigMap Mount as Volume
+
+A config map:
+
+```yaml
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: starter-config-map
+data:
+  debugFlag: 135
+  keep: 3650
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: starter-config-map-as-volume
+spec:
+  containers:
+    - name: test-container
+      image: busybox
+      command: [ "/bin/sh", "-c", "ls /etc/config/" ]
+      volumeMounts:
+      - name: starter-config-map-vol
+        mountPath: /etc/config
+  volumes:
+    - name: starter-config-map-vol
+      configMap:
+        # Provide the name of the ConfigMap containing the files you want
+        # to add to the container
+        name: starter-config-map
+  restartPolicy: Never
+```

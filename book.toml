@@ -1,0 +1,6 @@
+[book]
+authors = ["Huo Linhe"]
+language = ["en", "zh"]
+multilingual = true
+src = "src"
+title = "Setup TDengine on Kubenetes from Scratch"

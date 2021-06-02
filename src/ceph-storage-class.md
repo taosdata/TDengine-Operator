@@ -1,0 +1,322 @@
+# Use Ceph RBD device in k8s
+
+> Refer to <https://docs.ceph.com/en/latest/rbd/rbd-kubernetes/>.
+
+Create pool for k8s and initialize it.
+
+```sh
+ceph osd pool create kubernetes
+rbd pool init kubernetes
+```
+
+Create a new user for Kubernetes and ceph-csi. Execute the following and record the generated key:
+
+```sh
+ceph auth get-or-create client.kubernetes \
+  mon 'profile rbd' \
+  osd 'profile rbd pool=kubernetes' \
+  mgr 'profile rbd pool=kubernetes'
+```
+
+Get the following token:
+
+```ini
+[client.kubernetes]
+        key = AQC1Oq5gnLcWGhAACiFyohnB6n6Fovd/vNbqhw==
+```
+
+Use `ceph mon dump` to get ceph cluster fsid and monitor endpoint:
+
+```text
+fsid 6177c398-f449-4d66-a00b-27cad7cd076f
+last_changed 2020-09-09T22:06:52.339219+0800
+created 2018-11-15T12:12:01.363568+0800
+min_mon_release 15 (octopus)
+0: [v2:192.168.60.90:3300/0,v1:192.168.60.90:6789/0] mon.dn0
+1: [v2:192.168.60.206:3300/0,v1:192.168.60.206:6789/0] mon.mds2
+2: [v2:192.168.60.207:3300/0,v1:192.168.60.207:6789/0] mon.mds1
+3: [v2:192.168.60.208:3300/0,v1:192.168.60.208:6789/0] mon.admin
+4: [v2:192.168.60.209:3300/0,v1:192.168.60.209:6789/0] mon.mon2
+5: [v2:192.168.60.210:3300/0,v1:192.168.60.210:6789/0] mon.mon1
+```
+
+Generate a `csi-config-map.yaml`.
+
+```yaml
+---
+apiVersion: v1
+kind: ConfigMap
+data:
+  config.json: |-
+    [{
+      "clusterID": "6177c398-f449-4d66-a00b-27cad7cd076f",
+      "monitors":[
+        "192.168.60.90:6789",
+        "192.168.60.206:6789",
+        "192.168.60.207:6789",
+        "192.168.60.208:6789",
+        "192.168.60.209:6789",
+        "192.168.60.210:6789"
+    }]
+metadata:
+  name: ceph-csi-config
+```
+
+Add to k8s.
+
+```sh
+kubectl apply -f csi-config-map.yaml
+```
+
+Generate cephx `csi-rbd-secret.yaml`:
+
+```yaml
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: csi-rbd-secret
+  namespace: default
+stringData:
+  userID: kubernetes
+  userKey: AQC1Oq5gnLcWGhAACiFyohnB6n6Fovd/vNbqhw==
+```
+
+Once generated, store the new Secret object in Kubernetes:
+
+```sh
+kubectl apply -f csi-rbd-secret.yaml
+```
+
+Add CSI RBAC roles.
+
+```sh
+kubectl apply -f https://raw.githubusercontent.com/ceph/ceph-csi/master/deploy/rbd/kubernetes/csi-provisioner-rbac.yaml
+```
+
+You'll see like this:
+
+```text
+serviceaccount/rbd-csi-provisioner created
+clusterrole.rbac.authorization.k8s.io/rbd-external-provisioner-runner created
+clusterrolebinding.rbac.authorization.k8s.io/rbd-csi-provisioner-role created
+role.rbac.authorization.k8s.io/rbd-external-provisioner-cfg created
+rolebinding.rbac.authorization.k8s.io/rbd-csi-provisioner-role-cfg created
+```
+
+Create nodeplugin for Ceph CSI.
+
+```sh
+kubectl apply -f https://raw.githubusercontent.com/ceph/ceph-csi/master/deploy/rbd/kubernetes/csi-nodeplugin-rbac.yaml
+```
+
+```text
+serviceaccount/rbd-csi-nodeplugin created
+clusterrole.rbac.authorization.k8s.io/rbd-csi-nodeplugin created
+clusterrolebinding.rbac.authorization.k8s.io/rbd-csi-nodeplugin created
+```
+
+Add Ceph RBD provisioner for k8s.
+
+```sh
+wget https://raw.githubusercontent.com/ceph/ceph-csi/master/deploy/rbd/kubernetes/csi-rbdplugin-provisioner.yaml
+wget https://raw.githubusercontent.com/ceph/ceph-csi/master/deploy/rbd/kubernetes/csi-rbdplugin.yaml
+# I'm changing this for network problem.
+sed -i 's#k8s.gcr.io/sig-storage#lvcisco#' csi-rbdplugin*.yaml
+kubectl apply -f csi-rbdplugin-provisioner.yaml
+kubectl apply -f csi-rbdplugin.yaml
+```
+
+Result:
+
+```text
+service/csi-rbdplugin-provisioner created
+deployment.apps/csi-rbdplugin-provisioner created
+
+daemonset.apps/csi-rbdplugin unchanged
+service/csi-metrics-rbdplugin unchanged
+```
+
+Add `ceph-csi-encryption-kms-config` config map, or it will cause error(See [here](https://blog.csdn.net/DANTE54/article/details/106471848)).
+
+```yaml
+---
+apiVersion: v1
+kind: ConfigMap
+data:
+  config.json: |-
+    {
+      "vault-test": {
+        "encryptionKMSType": "vault",
+        "vaultAddress": "http://vault.default.svc.cluster.local:8200",
+        "vaultAuthPath": "/v1/auth/kubernetes/login",
+        "vaultRole": "csi-kubernetes",
+        "vaultPassphraseRoot": "/v1/secret",
+        "vaultPassphrasePath": "ceph-csi/",
+        "vaultCAVerify": "false"
+      },
+      "vault-tokens-test": {
+          "encryptionKMSType": "vaulttokens",
+          "vaultAddress": "http://vault.default.svc.cluster.local:8200",
+          "vaultBackendPath": "secret/",
+          "vaultTLSServerName": "vault.default.svc.cluster.local",
+          "vaultCAVerify": "false",
+          "tenantConfigName": "ceph-csi-kms-config",
+          "tenantTokenName": "ceph-csi-kms-token",
+          "tenants": {
+              "my-app": {
+                  "vaultAddress": "https://vault.example.com",
+                  "vaultCAVerify": "true"
+              },
+              "an-other-app": {
+                  "tenantTokenName": "storage-encryption-token"
+              }
+          }
+       }
+    }
+metadata:
+  name: ceph-csi-encryption-kms-config
+```
+
+Apply it:
+
+```sh
+kubectl apply -f kms-config.yaml
+```
+
+## Create K8s StorageClass
+
+```sh
+cat <<EOF > csi-rbd-sc.yaml
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+   name: csi-rbd-sc
+provisioner: rbd.csi.ceph.com
+parameters:
+   clusterID: 6177c398-f449-4d66-a00b-27cad7cd076f
+   pool: kubernetes
+   imageFeatures: layering
+   csi.storage.k8s.io/provisioner-secret-name: csi-rbd-secret
+   csi.storage.k8s.io/provisioner-secret-namespace: default
+   csi.storage.k8s.io/controller-expand-secret-name: csi-rbd-secret
+   csi.storage.k8s.io/controller-expand-secret-namespace: default
+   csi.storage.k8s.io/node-stage-secret-name: csi-rbd-secret
+   csi.storage.k8s.io/node-stage-secret-namespace: default
+reclaimPolicy: Delete
+allowVolumeExpansion: true
+mountOptions:
+   - discard
+EOF
+kubectl apply -f csi-rbd-sc.yaml
+```
+
+## Create A PersistentVolumeClaim(PVC)
+
+There's two kind of PVC volume mode: raw block or filesystem.
+
+### Raw RBD block device PVC
+
+```sh
+cat <<EOF > raw-block-pvc.yaml
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: raw-block-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Block
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: csi-rbd-sc
+EOF
+kubectl apply -f raw-block-pvc.yaml
+```
+
+```sh
+cat <<EOF > raw-block-pod.yaml
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-with-raw-block-volume
+spec:
+  containers:
+    - name: fc-container
+      image: fedora:26
+      command: ["/bin/sh", "-c"]
+      args: ["tail -f /dev/null"]
+      volumeDevices:
+        - name: data
+          devicePath: /dev/xvda
+  volumes:
+    - name: data
+      persistentVolumeClaim:
+        claimName: raw-block-pvc
+EOF
+kubectl apply -f raw-block-pod.yaml
+```
+
+If k8s.gcr.io is not reachable, you should use another image provider for csi-* images.
+
+```sh
+pull-and-tag() {
+    docker pull $1
+    docker tag $1 $2
+}
+pull-and-tag lvcisco/csi-provisioner:v2.0.4 k8s.gcr.io/sig-storage/csi-provisioner:v2.0.4
+pull-and-tag lvcisco/csi-attacher:v3.0.2 k8s.gcr.io/sig-storage/csi-attacher:v3.0.2
+pull-and-tag lvcisco/csi-snapshotter:v4.0.0 k8s.gcr.io/sig-storage/csi-snapshotter:v4.0.0
+pull-and-tag lvcisco/csi-node-driver-registrar:v2.0.1 k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.0.1
+pull-and-tag lvcisco/csi-resizer:v1.0.1 k8s.gcr.io/sig-storage/csi-resizer:v1.0.1
+```
+
+### Filesystem PVC
+
+This's the more common use case.
+
+```sh
+cat <<EOF > pvc.yaml
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rbd-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: csi-rbd-sc
+EOF
+kubectl apply -f pvc.yaml
+```
+
+```sh
+cat <<EOF > pod.yaml
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: csi-rbd-demo-pod
+spec:
+  containers:
+    - name: web-server
+      image: nginx
+      volumeMounts:
+        - name: nginx-test
+          mountPath: /usr/share/nginx/html
+  volumes:
+    - name: nginx-test
+      persistentVolumeClaim:
+        claimName: rbd-pvc
+        readOnly: false
+EOF
+kubectl apply -f pod.yaml
+```
