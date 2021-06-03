@@ -1,6 +1,14 @@
 [book]
 authors = ["Huo Linhe"]
-language = ["en", "zh"]
-multilingual = true
+language = "en"
 src = "src"
 title = "Setup TDengine on Kubenetes from Scratch"
+
+[language.en]
+name = "English"
+default = true
+
+[language.zh]
+name = "简体中文"
+title = "在Kubenetes上部署TDengine集群"
+description = "从头安装Kubenetes并部署TDengine集群。"

@@ -1,0 +1,30 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: starter-config-map
+data:
+  taos.cfg: |-
+    debugFlag 135
+    keep 3650
+  inited: "false"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: starter-config-map-as-volume
+spec:
+  containers:
+    - name: test-container
+      image: busybox
+      command: ["/bin/sh", "-c", "cat /etc/config/taos.cfg; echo fqdn test-container >> /etc/config/taos.cfg"]
+      volumeMounts:
+      - name: starter-config-map-vol
+        mountPath: /etc/config
+  volumes:
+    - name: starter-config-map-vol
+      configMap:
+        # Provide the name of the ConfigMap containing the files you want
+        # to add to the container
+        name: starter-config-map
+  restartPolicy: Never

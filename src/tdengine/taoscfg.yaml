@@ -1,0 +1,11 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: taoscfg
+  labels:
+    app: tdengine
+data:
+  CLUSTER: "1"
+  TAOS_KEEP: "3650"
+  TAOS_DEBUG_FLAG: "135"

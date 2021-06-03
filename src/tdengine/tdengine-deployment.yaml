@@ -1,0 +1,189 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: taoscfg
+  labels:
+    app: tdengine
+data:
+  CLUSTER: "1"
+  TAOS_KEEP: "3650"
+  TAOS_DEBUG_FLAG: "135"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: "taosd"
+  labels:
+    app: "tdengine"
+spec:
+  ports:
+  - name: tcp6030
+    protocol: "TCP"
+    port: 6030
+  - name: tcp6035
+    protocol: "TCP"
+    port: 6035
+  - name: tcp6041
+    protocol: "TCP"
+    port: 6041
+  - name: udp6030
+    protocol: "UDP"
+    port: 6030
+  - name: udp6031
+    protocol: "UDP"
+    port: 6031
+  - name: udp6032
+    protocol: "UDP"
+    port: 6032
+  - name: udp6033
+    protocol: "UDP"
+    port: 6033
+  - name: udp6034
+    protocol: "UDP"
+    port: 6034
+  - name: udp6035
+    protocol: "UDP"
+    port: 6035
+  - name: udp6036
+    protocol: "UDP"
+    port: 6036
+  - name: udp6037
+    protocol: "UDP"
+    port: 6037
+  - name: udp6038
+    protocol: "UDP"
+    port: 6038
+  - name: udp6039
+    protocol: "UDP"
+    port: 6039
+  - name: udp6040
+    protocol: "UDP"
+    port: 6040
+  selector:
+    app: "tdengine"
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: "tdengine"
+  labels:
+    app: "tdengine"
+spec:
+  serviceName: "taosd"
+  replicas: 2
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: "tdengine"
+  template:
+    metadata:
+      name: "tdengine"
+      labels:
+        app: "tdengine"
+    spec:
+      containers:
+      - name: "tdengine"
+        image: "zitsen/taosd:develop"
+        imagePullPolicy: "Always"
+        envFrom:
+        - configMapRef:
+            name: taoscfg
+        ports:
+        - name: tcp6030
+          protocol: "TCP"
+          containerPort: 6030
+        - name: tcp6035
+          protocol: "TCP"
+          containerPort: 6035
+        - name: tcp6041
+          protocol: "TCP"
+          containerPort: 6041
+        - name: udp6030
+          protocol: "UDP"
+          containerPort: 6030
+        - name: udp6031
+          protocol: "UDP"
+          containerPort: 6031
+        - name: udp6032
+          protocol: "UDP"
+          containerPort: 6032
+        - name: udp6033
+          protocol: "UDP"
+          containerPort: 6033
+        - name: udp6034
+          protocol: "UDP"
+          containerPort: 6034
+        - name: udp6035
+          protocol: "UDP"
+          containerPort: 6035
+        - name: udp6036
+          protocol: "UDP"
+          containerPort: 6036
+        - name: udp6037
+          protocol: "UDP"
+          containerPort: 6037
+        - name: udp6038
+          protocol: "UDP"
+          containerPort: 6038
+        - name: udp6039
+          protocol: "UDP"
+          containerPort: 6039
+        - name: udp6040
+          protocol: "UDP"
+          containerPort: 6040
+        env:
+        # POD_NAME for FQDN config
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        # SERVICE_NAME and NAMESPACE for fqdn resolve
+        - name: SERVICE_NAME
+          value: "taosd"
+        - name: STS_NAME
+          value: "tdengine"
+        - name: STS_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        # TZ for timezone settings, we recommend to always set it.
+        - name: TZ
+          value: "Asia/Shanghai"
+        # TAOS_ prefix will configured in taos.cfg, strip prefix and camelCase.
+        - name: TAOS_SERVER_PORT
+          value: "6030"
+        # Must set if you want a cluster.
+        - name: TAOS_FIRST_EP
+          value: "$(STS_NAME)-0.$(SERVICE_NAME).$(STS_NAMESPACE).svc.cluster.local:$(TAOS_SERVER_PORT)"
+        # TAOS_FQND should always be setted in k8s env.
+        - name: TAOS_FQDN
+          value: "$(POD_NAME).$(SERVICE_NAME).$(STS_NAMESPACE).svc.cluster.local"
+        volumeMounts:
+        - name: taosdata
+          mountPath: /var/lib/taos
+        readinessProbe:
+          exec:
+            command:
+            - taos
+            - -s
+            - "show mnodes"
+          initialDelaySeconds: 5
+          timeoutSeconds: 5000
+        livenessProbe:
+          tcpSocket:
+            port: 6030
+          initialDelaySeconds: 15
+          periodSeconds: 20
+  volumeClaimTemplates:
+  - metadata:
+      name: taosdata
+    spec:
+      accessModes:
+        - "ReadWriteOnce"
+      storageClassName: "csi-rbd-sc"
+      resources:
+        requests:
+          storage: "10Gi"
