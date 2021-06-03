@@ -16,7 +16,7 @@ jobs:
           default: true
           override: true
       - name: Install mdBook
-        run: cargo install --git https://github.com/Ruin0x11/mdBook.git
+        run: cargo install --bin mdbook --git https://github.com/Ruin0x11/mdBook.git
 
       - name: Build
         run: mdbook build && cp ci/index.html book/ && touch book/.nojekyll
