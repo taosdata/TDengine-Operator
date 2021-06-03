@@ -1,5 +1,7 @@
 # K8s Starter
 
+Let's start using kubenetes from some starter project. If you are familiar enough with k8s, just ignore the chapter and go on.
+
 ## StatefulSets
 
 In `starter/stateful-nginx.yaml`:
