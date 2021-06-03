@@ -19,7 +19,7 @@ jobs:
         run: cargo install --git https://github.com/Ruin0x11/mdBook.git --branch localization mdbook
 
       - name: Build
-        run: mdbook build && cp ci/index.html book/ && touch book/.nojekyll
+        run: mdbook build && cp ci/index.html book/ && touch book/.nojekyll && sed -i 's#\.\./\.\./en#../en#' book/zh/*.html
 
       - name: Publish
         uses: peaceiris/actions-gh-pages@v3
