@@ -972,7 +972,7 @@ taos&gt; show dnodes
       4 | tdengine-3.taosd.default.sv... |      1 |     40 | offline    | any   | 2021-06-01 14:07:48.362 | status msg timeout       |
 Query OK, 4 row(s) in set (0.001236s)
 </code></pre>
-<p>但<code>drop dnode</code> 行为将按照预期执行，且下次集群重启后，所有的dnode节点将无法启动 <code>dropping</code> 状态无法退出。</p>
+<p>但<code>drop dnode</code> 行为将不会按照预期执行，且下次集群重启后，所有的dnode节点将无法启动 <code>dropping</code> 状态无法退出。</p>
 <h3><a class="header" href="#错误行为-2" id="错误行为-2">错误行为 2</a></h3>
 <p>TDengine集群会持有 <code>replica</code> 参数，如果缩容后的节点数小于这个值，集群将无法使用：</p>
 <p>创建一个库使用 <code>replica</code> 参数为 2，插入部分数据：</p>
@@ -1030,7 +1030,7 @@ chmod +x get_helm.sh
 <pre><code class="language-sh">wget https://github.com/taosdata/kubenetes/raw/main/helm/tdengine-0.1.0.tgz
 </code></pre>
 <p>获取当前Kubenetes的存储类：</p>
-<pre><code class="language-sh">helm get storageclass
+<pre><code class="language-sh">kubectl get storageclass
 </code></pre>
 <p>在 minikube 默认为 <code>standard</code>.</p>
 <p>之后，使用<code>helm</code>命令安装：</p>
