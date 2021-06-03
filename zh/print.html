@@ -1,0 +1,1428 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Setup TDengine on Kubenetes from Scratch</title>
+        
+        <meta name="robots" content="noindex" />
+        
+        
+
+
+        <!-- Custom HTML head -->
+        
+
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="从头安装Kubenetes并部署TDengine集群。">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        
+        <link rel="icon" href="favicon.svg">
+        
+        
+        <link rel="shortcut icon" href="favicon.png">
+        
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        
+        <link rel="stylesheet" href="fonts/fonts.css">
+        
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="1.0-kubenetes.html"><strong aria-hidden="true">1.</strong> 从Kubenetes开始</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="1.1-install-kubenetes-with-minikube.html"><strong aria-hidden="true">1.1.</strong> 使用Minikube尝鲜Kubenetes</a></li><li class="chapter-item expanded "><a href="1.2-install-kubenetes-with-rancher.html"><strong aria-hidden="true">1.2.</strong> 使用Rancher安装Kubenetes</a></li><li class="chapter-item expanded "><a href="1.3-storage-class.html"><strong aria-hidden="true">1.3.</strong> Kubenetes中的存储类</a></li><li class="chapter-item expanded "><a href="1.4-k8s-starter.html"><strong aria-hidden="true">1.4.</strong> 开始使用Kubenetes</a></li></ol></li><li class="chapter-item expanded "><a href="2.0-tdengine-on-kubenetes.html"><strong aria-hidden="true">2.</strong> 在Kubenetes上部署TDengine集群</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="2.1-tdengine-step-by-step.html"><strong aria-hidden="true">2.1.</strong> 一步一步创建TDengine集群</a></li><li class="chapter-item expanded "><a href="2.2-tdengine-with-helm.html"><strong aria-hidden="true">2.2.</strong> 使用Helm部署TDengine集群</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        
+                        
+                        <button id="language-toggle" class="icon-button" type="button" title="Select language" aria-label="Select language" aria-haspopup="true" aria-expanded="false" aria-controls="language-list">
+                            <i class="fa fa-globe"></i>
+                        </button>
+                        <ul id="language-list" class="language-popup" aria-label="Languages" role="menu">
+                          
+                            <li role="none"><a href="../en/print.html"><button role="menuitem" class="language" id="light">English</button></a></li>
+                          
+                            <li role="none"><a href="../zh/print.html"><button role="menuitem" class="language" id="light">简体中文</button></a></li>
+                          
+                        </ul>
+                        
+                    </div>
+
+                    <h1 class="menu-title">在Kubenetes上部署TDengine集群</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1><a class="header" href="#从kubenetes开始" id="从kubenetes开始">从Kubenetes开始</a></h1>
+<p>在Wikipedia上的Kubenetes简介如此：</p>
+<blockquote>
+<p>Kubernetes（常简称为K8s）是用于自动部署、扩展和管理「容器化（containerized）应用程序」的开源系统。 該系統由Google设计并捐赠给Cloud Native Computing Foundation（今属Linux基金会）来使用。</p>
+</blockquote>
+<p>鉴于Kubenetes已经是目前集群编排和自动化部署的事实标准，TDengine 将会逐步推进TDengine Server集群及相关生态工具在Kubenetes上部署及应用的支持。</p>
+<p>在进入下一步之前，希望你对Kubenetes有了一定的了解，并对<code>kubectl</code>基本命令用法有一定的基础（如果没有，请按照提示进行操作即可，但建议您<a href="https://kubernetes.io/docs/home/">了解更多</a>），并有一个可用的集群环境进行测试。</p>
+<p>如果当前没有集群环境，可参考下一节的安装指导，使用Minikube或Rancher进行Kubebetes的安装。</p>
+<h1><a class="header" href="#使用minikube尝鲜kubenetes" id="使用minikube尝鲜kubenetes">使用Minikube尝鲜Kubenetes</a></h1>
+<blockquote>
+<p>本文档仅适用于Linux，其他平台请参<a href="https://minikube.sigs.k8s.io/docs/start/">考官方文档</a>。</p>
+</blockquote>
+<h2><a class="header" href="#安装" id="安装">安装</a></h2>
+<p>首先，我们需要下载并安装Minikube：</p>
+<pre><code class="language-sh">curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+sudo install minikube-linux-amd64 /usr/local/bin/minikube
+</code></pre>
+<h2><a class="header" href="#start" id="start">Start</a></h2>
+<p>启动一个Minikube实例：</p>
+<pre><code class="language-sh">minikube start
+</code></pre>
+<p>Minikube将使用Docker（需要提前安装好，安装Docker请参考<a href="https://docs.docker.com/engine/install/">Docker 官方文档</a>）创建一个Kubenetes环境：</p>
+<p><img src="../../en/./assets/minikube-start.png" alt="minikube-start" /></p>
+<h2><a class="header" href="#kubectl-命令" id="kubectl-命令"><code>kubectl</code> 命令</a></h2>
+<p>在 minikube 中，可以使用<code>minikube kubectl</code>命令使用<code>kubectl</code>，以下是获取所有POD资源的示例命令：</p>
+<pre><code class="language-sh">minikube kubectl -- get pods -A
+</code></pre>
+<p>我们仍然可以正常安装和使用独立的<code>kubectl</code>命令：</p>
+<pre><code class="language-sh">curl -LO &quot;https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl&quot;
+sudo install kubectl /usr/local/bin/kubectl
+</code></pre>
+<p>以上<code>minikube kubectl</code>命令的等价版本如下：</p>
+<pre><code class="language-sh">kubectl get pods -A
+</code></pre>
+<p>获取存储类名称：</p>
+<pre><code class="language-sh">kubectl get sc
+</code></pre>
+<p>Minikube 默认情况下会启动名为 <code>standard</code> 的默认存储类，存储类的名称我们将会在部署TDengine时用到。</p>
+<h2><a class="header" href="#仪表盘" id="仪表盘">仪表盘</a></h2>
+<p>Minikube 提供了Kubenetes仪表盘，使用如下命令启动：</p>
+<pre><code class="language-sh">minikube dashboard
+</code></pre>
+<p>将会在浏览器打开仪表盘网址，用于查看资源：</p>
+<p><img src="../../en/assets/minikube-dashboard.png" alt="minikube-dashboard" /></p>
+<h1><a class="header" href="#使用rancher安装kubenetes" id="使用rancher安装kubenetes">使用Rancher安装Kubenetes</a></h1>
+<blockquote>
+<p>如果Rancher安装方式发生变化，请始终参考Rancher官方文档。</p>
+</blockquote>
+<h2><a class="header" href="#安装rancherd" id="安装rancherd">安装RancherD</a></h2>
+<p>RancherD是Rancher最新支持的一种部署方案，运行以下命令来安装RancherD以进行Rancher + Kubenetes的部署。</p>
+<pre><code class="language-sh">curl -sfL https://get.rancher.io | sh -
+</code></pre>
+<p>如果遇到网络问题，可以先行下载rancherd的安装包再进行手动安装。</p>
+<pre><code class="language-sh"># fill the proxy url if you use one
+export https_proxy=
+curl -s https://api.github.com/repos/rancher/rancher/releases/latest \
+  |jq '.assets[] |
+    select(.browser_download_url|contains(&quot;rancherd-amd64.tar.gz&quot;)) |
+    .browser_download_url' -r \
+  |wget -ci -
+tar xzf rancherd-amd64.tar.gz -C /usr/local
+</code></pre>
+<p>之后只需要启动 rancherd-server 服务就可以得到一个Kubenetes环境。</p>
+<pre><code class="language-sh">systemctl enable rancherd-server
+systemctl start rancherd-server
+</code></pre>
+<p>查看Kubenetes安装状态：</p>
+<pre><code class="language-sh">journalctl -fu rancherd-server
+</code></pre>
+<p>最后看到 <strong>successfully</strong>，说明Kubenetes已安装完成。</p>
+<pre><code class="language-log">&quot;Event occurred&quot; object=&quot;cn120&quot; kind=&quot;Node&quot; apiVersion=&quot;v1&quot; \ 
+type=&quot;Normal&quot; reason=&quot;Synced&quot; message=&quot;Node synced successfully&quot;
+</code></pre>
+<h2><a class="header" href="#使用kubectl" id="使用kubectl">使用<code>kubectl</code></a></h2>
+<p>集群启动后，配置KUBECONFIG，并将<code>rke2</code>路径加入环境变量以使用<code>kubectl</code>命令：</p>
+<pre><code class="language-sh">export KUBECONFIG=/etc/rancher/rke2/rke2.yaml
+export PATH=$PATH:/var/lib/rancher/rke2/bin
+</code></pre>
+<p>查看Rancher部署状态：</p>
+<pre><code class="language-sh">kubectl get daemonset rancher -n cattle-system
+kubectl get pod -n cattle-system
+</code></pre>
+<p>Result:</p>
+<pre><code class="language-text">NAME      DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR                         AGE
+rancher   1         1         1       1            1           node-role.kubernetes.io/master=true   36m
+NAME                               READY   STATUS      RESTARTS   AGE
+helm-operation-5c2wd               0/2     Completed   0          34m
+helm-operation-bdxlx               0/2     Completed   0          33m
+helm-operation-cgcvr               0/2     Completed   0          34m
+helm-operation-cj4g4               0/2     Completed   0          33m
+helm-operation-hq282               0/2     Completed   0          34m
+helm-operation-lp5nn               0/2     Completed   0          33m
+rancher-kf592                      1/1     Running     0          36m
+rancher-webhook-65f558c486-vrjz9   1/1     Running     0          33m
+</code></pre>
+<h2><a class="header" href="#设置rancher用户名及密码" id="设置rancher用户名及密码">设置Rancher用户名及密码</a></h2>
+<pre><code class="language-sh">rancherd reset-admin
+</code></pre>
+<p>你会看到如下的结果：</p>
+<pre><code class="language-text">INFO[0000] Server URL: https://*.*.*.*:8443      
+INFO[0000] Default admin and password created. Username: admin, Password: ****
+</code></pre>
+<p>打开<code>:8443</code>的网址，可以看到登录页面：</p>
+<p><img src="../../en/assets/rancher-login-page.png" alt="rancher-login-page" /></p>
+<p>输入上面设置的用户名和密码，进入Rancher仪表盘。</p>
+<p><img src="../../en/assets/rancher-dashboard.png" alt="rancher-dashboard" /></p>
+<h2><a class="header" href="#高可用设置" id="高可用设置">高可用设置</a></h2>
+<p>获取集群当前的token： <code>/var/lib/rancher/rke2/server/node-token</code>.</p>
+<p>在其他节点上安装<code>rancherd-server</code>。</p>
+<pre><code class="language-sh">tar xzf rancherd-amd64.tar.gz -C /usr/local
+systemctl enable rancherd-server
+</code></pre>
+<p>创建RKE2配置所在目录：</p>
+<pre><code class="language-sh">mkdir -p /etc/rancher/rke2
+</code></pre>
+<p>添加配置文件 <code>/etc/rancher/rke2/config.yaml</code>.</p>
+<pre><code class="language-yaml">server: https://192.168.60.120:9345
+token: &lt;the token in /var/lib/rancher/rke2/server/node-token&gt;
+</code></pre>
+<p><code>server</code> 为第一个启动的节点地址加端口号<code>9345</code>，<code>token</code>为上面从文件获取的token值。</p>
+<p>启动<code>rancherd-server</code>服务，就可以将此节点加入Kubenetes集群。</p>
+<pre><code class="language-sh">systemctl start rancherd-server
+journalctl -fu rancherd-server
+</code></pre>
+<p>其他节点可复制配置和操作，直到所有节点都加入集群。</p>
+<p>我们使用3个节点，输入 <code>kubectl get daemonset rancher -n cattle-system</code>查看当前启动的rancher节点数量：</p>
+<pre><code class="language-text">NAME      DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR                         AGE
+rancher   3         3         3       3            3           node-role.kubernetes.io/master=true   129m
+</code></pre>
+<p>至此，一个三节点的高可用Rancher + Kubenetes集群已经安装成功。</p>
+<h1><a class="header" href="#kubenetes中的存储类" id="kubenetes中的存储类">Kubenetes中的存储类</a></h1>
+<p>Kubenetes 使用 StorageClass （存储类）做持久化存储的接口。</p>
+<h2><a class="header" href="#使用ceph-rbd存储" id="使用ceph-rbd存储">使用Ceph RBD存储</a></h2>
+<p>此处我们将使用Ceph存储作为TDengine的持久化存储卷的提供者。</p>
+<blockquote>
+<p>本文内容参考 <a href="https://docs.ceph.com/en/latest/rbd/rbd-kubernetes/">https://docs.ceph.com/en/latest/rbd/rbd-kubernetes/</a>.</p>
+</blockquote>
+<h3><a class="header" href="#ceph集群准备" id="ceph集群准备">Ceph集群准备</a></h3>
+<p>首先，在Ceph中创建一个存储池(pool)并初始化。</p>
+<pre><code class="language-sh">ceph osd pool create kubernetes
+rbd pool init kubernetes
+</code></pre>
+<p>为Kubenetes创建用户：</p>
+<pre><code class="language-sh">ceph auth get-or-create client.kubernetes \
+  mon 'profile rbd' \
+  osd 'profile rbd pool=kubernetes' \
+  mgr 'profile rbd pool=kubernetes'
+</code></pre>
+<p>得到Client Token：</p>
+<pre><code class="language-ini">[client.kubernetes]
+        key = &lt;xxx&gt;
+</code></pre>
+<p>使用 <code>ceph mon dump</code> 获取Ceph集群的<code>fsid</code>和Monitor端点如下所示：</p>
+<pre><code class="language-text">fsid 6177c398-f449-4d66-a00b-27cad7cd076f
+last_changed 2020-09-09T22:06:52.339219+0800
+created 2018-11-15T12:12:01.363568+0800
+min_mon_release 15 (octopus)
+0: [v2:192.168.60.90:3300/0,v1:192.168.60.90:6789/0] mon.dn0
+1: [v2:192.168.60.206:3300/0,v1:192.168.60.206:6789/0] mon.mds2
+2: [v2:192.168.60.207:3300/0,v1:192.168.60.207:6789/0] mon.mds1
+3: [v2:192.168.60.208:3300/0,v1:192.168.60.208:6789/0] mon.admin
+4: [v2:192.168.60.209:3300/0,v1:192.168.60.209:6789/0] mon.mon2
+5: [v2:192.168.60.210:3300/0,v1:192.168.60.210:6789/0] mon.mon1
+</code></pre>
+<h3><a class="header" href="#添加配置文件" id="添加配置文件">添加配置文件</a></h3>
+<p>将<code>fsid</code>值作为 <code>clusterID</code>, <code>v1:</code>端点作为 <code>monitors</code>值创建文件<code>csi-config-map.yaml</code>：</p>
+<pre><code class="language-yaml">---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ceph-csi-config
+data:
+  config.json: |-
+    [{
+      &quot;clusterID&quot;: &quot;6177c398-f449-4d66-a00b-27cad7cd076f&quot;,
+      &quot;monitors&quot;:[
+        &quot;192.168.60.90:6789&quot;,
+        &quot;192.168.60.206:6789&quot;,
+        &quot;192.168.60.207:6789&quot;,
+        &quot;192.168.60.208:6789&quot;,
+        &quot;192.168.60.209:6789&quot;,
+        &quot;192.168.60.210:6789&quot;
+    }]
+</code></pre>
+<p>添加到Kubenetes：</p>
+<pre><code class="language-sh">kubectl apply -f csi-config-map.yaml
+</code></pre>
+<p>创建secret文件 <code>csi-rbd-secret.yaml</code>，将之前获取的Kubenetes用户名和Token值吸入文件。</p>
+<pre><code class="language-yaml">---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: csi-rbd-secret
+  namespace: default
+stringData:
+  userID: kubernetes
+  userKey: AQC1Oq5gnLcWGhAACiFyohnB6n6Fovd/vNbqhw==
+</code></pre>
+<p>将Secret添加到集群：</p>
+<pre><code class="language-sh">kubectl apply -f csi-rbd-secret.yaml
+</code></pre>
+<h3><a class="header" href="#添加ceph-csi接口支持" id="添加ceph-csi接口支持">添加CEPH CSI接口支持</a></h3>
+<p>从Ceph官方仓库获取 CSI RBAC 配置文件。</p>
+<pre><code class="language-sh">kubectl apply -f https://raw.githubusercontent.com/ceph/ceph-csi/master/deploy/rbd/kubernetes/csi-provisioner-rbac.yaml
+</code></pre>
+<p>可以看到如下运行结果：</p>
+<pre><code class="language-text">serviceaccount/rbd-csi-provisioner created
+clusterrole.rbac.authorization.k8s.io/rbd-external-provisioner-runner created
+clusterrolebinding.rbac.authorization.k8s.io/rbd-csi-provisioner-role created
+role.rbac.authorization.k8s.io/rbd-external-provisioner-cfg created
+rolebinding.rbac.authorization.k8s.io/rbd-csi-provisioner-role-cfg created
+</code></pre>
+<p>为Ceph CSI 接口创建 nodeplugin :</p>
+<pre><code class="language-sh">kubectl apply -f https://raw.githubusercontent.com/ceph/ceph-csi/master/deploy/rbd/kubernetes/csi-nodeplugin-rbac.yaml
+</code></pre>
+<p>添加成功提示：</p>
+<pre><code class="language-text">serviceaccount/rbd-csi-nodeplugin created
+clusterrole.rbac.authorization.k8s.io/rbd-csi-nodeplugin created
+clusterrolebinding.rbac.authorization.k8s.io/rbd-csi-nodeplugin created
+</code></pre>
+<p>将 Ceph RBD 作为存储供应者：</p>
+<pre><code class="language-sh">wget https://raw.githubusercontent.com/ceph/ceph-csi/master/deploy/rbd/kubernetes/csi-rbdplugin-provisioner.yaml
+wget https://raw.githubusercontent.com/ceph/ceph-csi/master/deploy/rbd/kubernetes/csi-rbdplugin.yaml
+# 国内访问 k8s.gcr.io 有问题，我找了一个替换镜像：lvciso
+sed -i 's#k8s.gcr.io/sig-storage#lvcisco#' csi-rbdplugin*.yaml
+kubectl apply -f csi-rbdplugin-provisioner.yaml
+kubectl apply -f csi-rbdplugin.yaml
+</code></pre>
+<p>结果如下：</p>
+<pre><code class="language-text">service/csi-rbdplugin-provisioner created
+deployment.apps/csi-rbdplugin-provisioner created
+
+daemonset.apps/csi-rbdplugin unchanged
+service/csi-metrics-rbdplugin unchanged
+</code></pre>
+<p>这里可能需要添加一个 <code>ceph-csi-encryption-kms-config</code> 配置，否则会有<a href="https://blog.csdn.net/DANTE54/article/details/106471848">报错</a>).</p>
+<pre><code class="language-yaml">---
+apiVersion: v1
+kind: ConfigMap
+data:
+  config.json: |-
+    {
+      &quot;vault-test&quot;: {
+        &quot;encryptionKMSType&quot;: &quot;vault&quot;,
+        &quot;vaultAddress&quot;: &quot;http://vault.default.svc.cluster.local:8200&quot;,
+        &quot;vaultAuthPath&quot;: &quot;/v1/auth/kubernetes/login&quot;,
+        &quot;vaultRole&quot;: &quot;csi-kubernetes&quot;,
+        &quot;vaultPassphraseRoot&quot;: &quot;/v1/secret&quot;,
+        &quot;vaultPassphrasePath&quot;: &quot;ceph-csi/&quot;,
+        &quot;vaultCAVerify&quot;: &quot;false&quot;
+      },
+      &quot;vault-tokens-test&quot;: {
+          &quot;encryptionKMSType&quot;: &quot;vaulttokens&quot;,
+          &quot;vaultAddress&quot;: &quot;http://vault.default.svc.cluster.local:8200&quot;,
+          &quot;vaultBackendPath&quot;: &quot;secret/&quot;,
+          &quot;vaultTLSServerName&quot;: &quot;vault.default.svc.cluster.local&quot;,
+          &quot;vaultCAVerify&quot;: &quot;false&quot;,
+          &quot;tenantConfigName&quot;: &quot;ceph-csi-kms-config&quot;,
+          &quot;tenantTokenName&quot;: &quot;ceph-csi-kms-token&quot;,
+          &quot;tenants&quot;: {
+              &quot;my-app&quot;: {
+                  &quot;vaultAddress&quot;: &quot;https://vault.example.com&quot;,
+                  &quot;vaultCAVerify&quot;: &quot;true&quot;
+              },
+              &quot;an-other-app&quot;: {
+                  &quot;tenantTokenName&quot;: &quot;storage-encryption-token&quot;
+              }
+          }
+       }
+    }
+metadata:
+  name: ceph-csi-encryption-kms-config
+</code></pre>
+<p>添加后可正常运行：</p>
+<pre><code class="language-sh">kubectl apply -f kms-config.yaml
+</code></pre>
+<h2><a class="header" href="#添加存储类" id="添加存储类">添加存储类</a></h2>
+<p>添加CSI接口后，需要创建存储类才能在Kubenetes集群中使用：</p>
+<pre><code class="language-sh">cat &lt;&lt;EOF &gt; csi-rbd-sc.yaml
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+   name: csi-rbd-sc
+provisioner: rbd.csi.ceph.com
+parameters:
+   clusterID: 6177c398-f449-4d66-a00b-27cad7cd076f
+   pool: kubernetes
+   imageFeatures: layering
+   csi.storage.k8s.io/provisioner-secret-name: csi-rbd-secret
+   csi.storage.k8s.io/provisioner-secret-namespace: default
+   csi.storage.k8s.io/controller-expand-secret-name: csi-rbd-secret
+   csi.storage.k8s.io/controller-expand-secret-namespace: default
+   csi.storage.k8s.io/node-stage-secret-name: csi-rbd-secret
+   csi.storage.k8s.io/node-stage-secret-namespace: default
+reclaimPolicy: Delete
+allowVolumeExpansion: true
+mountOptions:
+   - discard
+EOF
+kubectl apply -f csi-rbd-sc.yaml
+</code></pre>
+<h3><a class="header" href="#创建pvc持久化卷声明" id="创建pvc持久化卷声明">创建PVC（持久化卷声明）</a></h3>
+<p>支持两种卷声明方式： 块存储或文件存储。</p>
+<h4><a class="header" href="#ceph-rbd块存储" id="ceph-rbd块存储">Ceph RBD块存储</a></h4>
+<pre><code class="language-sh">cat &lt;&lt;EOF &gt; raw-block-pvc.yaml
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: raw-block-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Block
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: csi-rbd-sc
+EOF
+kubectl apply -f raw-block-pvc.yaml
+</code></pre>
+<pre><code class="language-sh">cat &lt;&lt;EOF &gt; raw-block-pod.yaml
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-with-raw-block-volume
+spec:
+  containers:
+    - name: fc-container
+      image: fedora:26
+      command: [&quot;/bin/sh&quot;, &quot;-c&quot;]
+      args: [&quot;tail -f /dev/null&quot;]
+      volumeDevices:
+        - name: data
+          devicePath: /dev/xvda
+  volumes:
+    - name: data
+      persistentVolumeClaim:
+        claimName: raw-block-pvc
+EOF
+kubectl apply -f raw-block-pod.yaml
+</code></pre>
+<h4><a class="header" href="#文件存储" id="文件存储">文件存储</a></h4>
+<p>文件存储是最常见的使用方式，TDengine将使用这种方式创建持久化存储卷。</p>
+<pre><code class="language-sh">cat &lt;&lt;EOF &gt; pvc.yaml
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rbd-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: csi-rbd-sc
+EOF
+kubectl apply -f pvc.yaml
+</code></pre>
+<pre><code class="language-sh">cat &lt;&lt;EOF &gt; pod.yaml
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: csi-rbd-demo-pod
+spec:
+  containers:
+    - name: web-server
+      image: nginx
+      volumeMounts:
+        - name: nginx-test
+          mountPath: /usr/share/nginx/html
+  volumes:
+    - name: nginx-test
+      persistentVolumeClaim:
+        claimName: rbd-pvc
+        readOnly: false
+EOF
+kubectl apply -f pod.yaml
+</code></pre>
+<h1><a class="header" href="#开始使用kubenetes" id="开始使用kubenetes">开始使用Kubenetes</a></h1>
+<p>现在我们可以开始用Kubenetes了。</p>
+<h2><a class="header" href="#statefulsets" id="statefulsets">StatefulSets</a></h2>
+<p><code>starter/stateful-nginx.yaml</code>:</p>
+<pre><code class="language-yaml">apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  ports:
+  - port: 80
+    name: web
+  clusterIP: None
+  selector:
+    app: nginx
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: web
+spec:
+  selector:
+    matchLabels:
+      app: nginx # has to match .spec.template.metadata.labels
+  serviceName: &quot;nginx&quot;
+  replicas: 3 # by default is 1
+  template:
+    metadata:
+      labels:
+        app: nginx # has to match .spec.selector.matchLabels
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+          name: web
+        volumeMounts:
+        - name: www
+          mountPath: /usr/share/nginx/html
+  volumeClaimTemplates:
+  - metadata:
+      name: www
+    spec:
+      accessModes: [ &quot;ReadWriteOnce&quot; ]
+      storageClassName: &quot;csi-rbd-sc&quot;
+      resources:
+        requests:
+          storage: 1Gi
+</code></pre>
+<pre><code class="language-sh">kubectl apply -f starter/stateful-nginx.yaml
+</code></pre>
+<h2><a class="header" href="#将configmap映射为volume" id="将configmap映射为volume">将ConfigMap映射为Volume</a></h2>
+<pre><code class="language-yaml">---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: starter-config-map
+data:
+  debugFlag: 135
+  keep: 3650
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: starter-config-map-as-volume
+spec:
+  containers:
+    - name: test-container
+      image: busybox
+      command: [ &quot;/bin/sh&quot;, &quot;-c&quot;, &quot;ls /etc/config/&quot; ]
+      volumeMounts:
+      - name: starter-config-map-vol
+        mountPath: /etc/config
+  volumes:
+    - name: starter-config-map-vol
+      configMap:
+        # Provide the name of the ConfigMap containing the files you want
+        # to add to the container
+        name: starter-config-map
+  restartPolicy: Never
+</code></pre>
+<h2><a class="header" href="#将configmap映射为环境变量" id="将configmap映射为环境变量">将ConfigMap映射为环境变量</a></h2>
+<p>如果需要将ConfigMap映射为环境变量，<code>data</code>中的值需要始终使用字符串类型：</p>
+<pre><code class="language-yaml">---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: starter-config-map-env
+data:
+  debugFlag: &quot;135&quot;
+  keep: &quot;3650&quot;
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: starter-config-map-as-env
+spec:
+  containers:
+    - name: test-container
+      image: busybox
+      command: [ &quot;/bin/sh&quot;, &quot;-c&quot;, &quot;export&quot; ]
+      envFrom:
+        - configMapRef:
+            name: starter-config-map-env
+  restartPolicy: Never
+</code></pre>
+<p>在TDengine中，将使用环境变量的方式导入配置。</p>
+<h1><a class="header" href="#在kubenetes上部署tdengine集群" id="在kubenetes上部署tdengine集群">在Kubenetes上部署TDengine集群</a></h1>
+<p>在本章节，我们希望在第一小节中介绍如何使用YAML文件一步一步从头创建一个TDengine集群，并重点介绍Kubenetes环境下TDengine的常用操作，您可以了解到TDengine在Kubenetes集群中的部署机制。在第二小节中介绍如何使用Helm进行TDengine的部署，建议在生产环境中使用Helm Chart部署方式。我们会持续更新TDengine Chart，敬请关注。</p>
+<h1><a class="header" href="#一步一步创建tdengine集群" id="一步一步创建tdengine集群">一步一步创建TDengine集群</a></h1>
+<h2><a class="header" href="#configmap-配置" id="configmap-配置">ConfigMap 配置</a></h2>
+<p>为TDengine创建 <code>taoscfg.yaml</code>，此文件中的配置将作为环境变量传入TDengine镜像，更新此配置将导致所有TDengine POD重启。</p>
+<pre><code class="language-yaml">---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: taoscfg
+  labels:
+    app: tdengine
+data:
+  CLUSTER: &quot;1&quot;
+  TAOS_KEEP: &quot;3650&quot;
+  TAOS_DEBUG_FLAG: &quot;135&quot;
+</code></pre>
+<h2><a class="header" href="#service-服务" id="service-服务">Service 服务</a></h2>
+<p>创建一个 service 配置文件：<code>taosd-service.yaml</code>，服务名称 <code>metadata.name</code> (此处为 <code>&quot;taosd&quot;</code>) 将在下一步中使用到。添加TDengine所用到的所有端口：</p>
+<pre><code class="language-yaml">---
+apiVersion: v1
+kind: Service
+metadata:
+  name: &quot;taosd&quot;
+  labels:
+    app: &quot;tdengine&quot;
+spec:
+  ports:
+  - name: tcp6030
+    protocol: &quot;TCP&quot;
+    port: 6030
+  - name: tcp6035
+    protocol: &quot;TCP&quot;
+    port: 6035
+  - name: tcp6041
+    protocol: &quot;TCP&quot;
+    port: 6041
+  - name: udp6030
+    protocol: &quot;UDP&quot;
+    port: 6030
+  - name: udp6031
+    protocol: &quot;UDP&quot;
+    port: 6031
+  - name: udp6032
+    protocol: &quot;UDP&quot;
+    port: 6032
+  - name: udp6033
+    protocol: &quot;UDP&quot;
+    port: 6033
+  - name: udp6034
+    protocol: &quot;UDP&quot;
+    port: 6034
+  - name: udp6035
+    protocol: &quot;UDP&quot;
+    port: 6035
+  - name: udp6036
+    protocol: &quot;UDP&quot;
+    port: 6036
+  - name: udp6037
+    protocol: &quot;UDP&quot;
+    port: 6037
+  - name: udp6038
+    protocol: &quot;UDP&quot;
+    port: 6038
+  - name: udp6039
+    protocol: &quot;UDP&quot;
+    port: 6039
+  - name: udp6040
+    protocol: &quot;UDP&quot;
+    port: 6040
+  selector:
+    app: &quot;tdengine&quot;
+</code></pre>
+<h2><a class="header" href="#statefulset-有状态服务" id="statefulset-有状态服务">StatefulSet 有状态服务</a></h2>
+<p>根据Kubenetes对各类部署的说明，我们将使用 StatefulSet 作为TDengine 的服务类型，创建文件<code>tdengine.yaml</code> ：</p>
+<pre><code class="language-yaml">---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: &quot;tdengine&quot;
+  labels:
+    app: &quot;tdengine&quot;
+spec:
+  serviceName: &quot;taosd&quot;
+  replicas: 2
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: &quot;tdengine&quot;
+  template:
+    metadata:
+      name: &quot;tdengine&quot;
+      labels:
+        app: &quot;tdengine&quot;
+    spec:
+      containers:
+      - name: &quot;tdengine&quot;
+        image: &quot;zitsen/taosd:develop&quot;
+        imagePullPolicy: &quot;Always&quot;
+        envFrom:
+        - configMapRef:
+            name: taoscfg
+        ports:
+        - name: tcp6030
+          protocol: &quot;TCP&quot;
+          containerPort: 6030
+        - name: tcp6035
+          protocol: &quot;TCP&quot;
+          containerPort: 6035
+        - name: tcp6041
+          protocol: &quot;TCP&quot;
+          containerPort: 6041
+        - name: udp6030
+          protocol: &quot;UDP&quot;
+          containerPort: 6030
+        - name: udp6031
+          protocol: &quot;UDP&quot;
+          containerPort: 6031
+        - name: udp6032
+          protocol: &quot;UDP&quot;
+          containerPort: 6032
+        - name: udp6033
+          protocol: &quot;UDP&quot;
+          containerPort: 6033
+        - name: udp6034
+          protocol: &quot;UDP&quot;
+          containerPort: 6034
+        - name: udp6035
+          protocol: &quot;UDP&quot;
+          containerPort: 6035
+        - name: udp6036
+          protocol: &quot;UDP&quot;
+          containerPort: 6036
+        - name: udp6037
+          protocol: &quot;UDP&quot;
+          containerPort: 6037
+        - name: udp6038
+          protocol: &quot;UDP&quot;
+          containerPort: 6038
+        - name: udp6039
+          protocol: &quot;UDP&quot;
+          containerPort: 6039
+        - name: udp6040
+          protocol: &quot;UDP&quot;
+          containerPort: 6040
+        env:
+        # POD_NAME for FQDN config
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        # SERVICE_NAME and NAMESPACE for fqdn resolve
+        - name: SERVICE_NAME
+          value: &quot;taosd&quot;
+        - name: STS_NAME
+          value: &quot;tdengine&quot;
+        - name: STS_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        # TZ for timezone settings, we recommend to always set it.
+        - name: TZ
+          value: &quot;Asia/Shanghai&quot;
+        # TAOS_ prefix will configured in taos.cfg, strip prefix and camelCase.
+        - name: TAOS_SERVER_PORT
+          value: &quot;6030&quot;
+        # Must set if you want a cluster.
+        - name: TAOS_FIRST_EP
+          value: &quot;$(STS_NAME)-0.$(SERVICE_NAME).$(STS_NAMESPACE).svc.cluster.local:$(TAOS_SERVER_PORT)&quot;
+        # TAOS_FQND should always be setted in k8s env.
+        - name: TAOS_FQDN
+          value: &quot;$(POD_NAME).$(SERVICE_NAME).$(STS_NAMESPACE).svc.cluster.local&quot;
+        volumeMounts:
+        - name: taosdata
+          mountPath: /var/lib/taos
+        readinessProbe:
+          exec:
+            command:
+            - taos
+            - -s
+            - &quot;show mnodes&quot;
+          initialDelaySeconds: 5
+          timeoutSeconds: 5000
+        livenessProbe:
+          tcpSocket:
+            port: 6030
+          initialDelaySeconds: 15
+          periodSeconds: 20
+  volumeClaimTemplates:
+  - metadata:
+      name: taosdata
+    spec:
+      accessModes:
+        - &quot;ReadWriteOnce&quot;
+      storageClassName: &quot;csi-rbd-sc&quot;
+      resources:
+        requests:
+          storage: &quot;10Gi&quot;
+</code></pre>
+<h2><a class="header" href="#启动集群" id="启动集群">启动集群</a></h2>
+<p>将三个文件添加到Kubenetes集群中：</p>
+<pre><code class="language-sh">kubectl apply -f taoscfg.yaml
+kubectl apply -f taosd-service.yaml
+kubectl apply -f tdengine.yaml
+</code></pre>
+<p>上面的配置将生成一个两节点的TDengine集群，dnode是自动配置的，可以使用 <code>show dnodes</code>命令查看当前集群的节点：</p>
+<pre><code class="language-sh">kubectl exec -i -t tdengine-0 -- taos -s &quot;show dnodes&quot;
+kubectl exec -i -t tdengine-1 -- taos -s &quot;show dnodes&quot;
+</code></pre>
+<p>一个两节点集群，应输出如下：</p>
+<pre><code class="language-sql">Welcome to the TDengine shell from Linux, Client Version:2.1.1.0
+Copyright (c) 2020 by TAOS Data, Inc. All rights reserved.
+
+taos&gt; show dnodes
+   id   |           end_point            | vnodes | cores  |   status   | role  |       create_time       |      offline reason      |
+======================================================================================================================================
+      1 | tdengine-0.taosd.default.sv... |      1 |     40 | ready      | any   | 2021-06-01 17:13:24.181 |                          |
+      2 | tdengine-1.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 17:14:09.257 |                          |
+Query OK, 2 row(s) in set (0.000997s)
+</code></pre>
+<h2><a class="header" href="#扩容" id="扩容">扩容</a></h2>
+<p>TDengine支持自动扩容：</p>
+<pre><code class="language-sh">kubectl scale statefulsets tdengine --replicas=4
+</code></pre>
+<p>检查一下是否生效，首先看下POD状态：</p>
+<pre><code class="language-sh">kubectl get pods -l app=tdengine 
+</code></pre>
+<p>Results:</p>
+<pre><code class="language-text">NAME         READY   STATUS    RESTARTS   AGE
+tdengine-0   1/1     Running   0          161m
+tdengine-1   1/1     Running   0          161m
+tdengine-2   1/1     Running   0          32m
+tdengine-3   1/1     Running   0          32m
+</code></pre>
+<p>TDengine Dnode 状态需要等POD <code>ready</code> 后才能看到：</p>
+<pre><code class="language-sh">kubectl exec -i -t tdengine-0 -- taos -s &quot;show dnodes&quot;
+</code></pre>
+<p>扩容后的四节点TDengine集群的 dnode 列表:</p>
+<pre><code class="language-sql">Welcome to the TDengine shell from Linux, Client Version:2.1.1.0
+Copyright (c) 2020 by TAOS Data, Inc. All rights reserved.
+
+taos&gt; show dnodes
+   id   |           end_point            | vnodes | cores  |   status   | role  |       create_time       |      offline reason      |
+======================================================================================================================================
+      1 | tdengine-0.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 11:58:12.915 |                          |
+      2 | tdengine-1.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 11:58:33.127 |                          |
+      3 | tdengine-2.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 14:07:27.078 |                          |
+      4 | tdengine-3.taosd.default.sv... |      1 |     40 | ready      | any   | 2021-06-01 14:07:48.362 |                          |
+Query OK, 4 row(s) in set (0.001293s)
+</code></pre>
+<h2><a class="header" href="#缩容" id="缩容">缩容</a></h2>
+<p>TDengine的缩容并没有自动化，我们尝试将一个三节点集群缩容到两节点。</p>
+<p>首先，确认一个三节点TDengine集群正常工作：</p>
+<pre><code class="language-sh">kubectl scale statefulsets tdengine --replicas=3
+</code></pre>
+<p><code>show dnodes</code></p>
+<pre><code class="language-sql">taos&gt; show dnodes
+   id   |           end_point            | vnodes | cores  |   status   | role  |       create_time       |      offline reason      |
+======================================================================================================================================
+      1 | tdengine-0.taosd.default.sv... |      1 |     40 | ready      | any   | 2021-06-01 16:27:24.852 |                          |
+      2 | tdengine-1.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 16:27:53.339 |                          |
+      3 | tdengine-2.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 16:28:49.787 |                          |
+Query OK, 3 row(s) in set (0.001101s)
+</code></pre>
+<p>想要安全的缩容，首先需要将节点从dnode列表中移除：</p>
+<pre><code class="language-sh">kubectl exec -i -t tdengine-0 -- taos -s &quot;drop dnode 'tdengine-2.taosd.default.svc.cluster.local:6030'&quot;
+</code></pre>
+<p>确认移除成功后（使用<code>show dnodes</code>查看和确认dnode列表），使用<code>kubectl</code>命令移除POD：</p>
+<pre><code class="language-sh">kubectl scale statefulsets tdengine --replicas=2
+</code></pre>
+<p>最后一个POD将会被删除。使用命令 <code>kubectl get pods -l app=tdengine</code> 查看POD状态：</p>
+<pre><code class="language-text">NAME         READY   STATUS    RESTARTS   AGE
+tdengine-0   1/1     Running   0          3h40m
+tdengine-1   1/1     Running   0          3h40m
+</code></pre>
+<p>POD删除后，需要手动删除PVC，否则下次扩容时会继续使用以前的数据导致无法正常加入集群。</p>
+<pre><code class="language-sh">kubectl delete pvc taosdata-tdengine-2
+</code></pre>
+<p>此时TDengine集群才是安全的。之后还可以正常扩容：</p>
+<pre><code class="language-sh">kubectl scale statefulsets tdengine --replicas=3
+</code></pre>
+<p><code>show dnodes</code> 结果如下:</p>
+<pre><code class="language-sql">taos&gt; show dnodes
+   id   |           end_point            | vnodes | cores  |   status   | role  |       create_time       |      offline reason      |
+======================================================================================================================================
+      1 | tdengine-0.taosd.default.sv... |      1 |     40 | ready      | any   | 2021-06-01 16:27:24.852 |                          |
+      2 | tdengine-1.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 16:27:53.339 |                          |
+      4 | tdengine-2.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 16:40:49.177 |                          |
+</code></pre>
+<h3><a class="header" href="#错误行为-1" id="错误行为-1">错误行为 1</a></h3>
+<p>扩容到四节点之后缩容到两节点，删除的POD会进入<code>offline</code>状态：</p>
+<pre><code class="language-text">Welcome to the TDengine shell from Linux, Client Version:2.1.1.0
+Copyright (c) 2020 by TAOS Data, Inc. All rights reserved.
+
+taos&gt; show dnodes
+   id   |           end_point            | vnodes | cores  |   status   | role  |       create_time       |      offline reason      |
+======================================================================================================================================
+      1 | tdengine-0.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 11:58:12.915 |                          |
+      2 | tdengine-1.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 11:58:33.127 |                          |
+      3 | tdengine-2.taosd.default.sv... |      0 |     40 | offline    | any   | 2021-06-01 14:07:27.078 | status msg timeout       |
+      4 | tdengine-3.taosd.default.sv... |      1 |     40 | offline    | any   | 2021-06-01 14:07:48.362 | status msg timeout       |
+Query OK, 4 row(s) in set (0.001236s)
+</code></pre>
+<p>但<code>drop dnode</code> 行为将按照预期执行，且下次集群重启后，所有的dnode节点将无法启动 <code>dropping</code> 状态无法退出。</p>
+<h3><a class="header" href="#错误行为-2" id="错误行为-2">错误行为 2</a></h3>
+<p>TDengine集群会持有 <code>replica</code> 参数，如果缩容后的节点数小于这个值，集群将无法使用：</p>
+<p>创建一个库使用 <code>replica</code> 参数为 2，插入部分数据：</p>
+<pre><code class="language-sh">kubectl exec -i -t tdengine-0 -- \
+  taos -s \
+  &quot;create database if not exists test replica 2;
+   use test; 
+   create table if not exists t1(ts timestamp, n int);
+   insert into t1 values(now, 1)(now+1s, 2);&quot;
+</code></pre>
+<p>缩容到单节点：</p>
+<pre><code class="language-sh">kubectl scale statefulsets tdengine --replicas=1
+</code></pre>
+<p>在taos shell中的所有数据库操作将无法成功。</p>
+<pre><code class="language-sql">taos&gt; show dnodes;
+   id   |           end_point            | vnodes | cores  |   status   | role  |       create_time       |      offline reason      |
+======================================================================================================================================
+      1 | tdengine-0.taosd.default.sv... |      2 |     40 | ready      | any   | 2021-06-01 15:55:52.562 |                          |
+      2 | tdengine-1.taosd.default.sv... |      1 |     40 | offline    | any   | 2021-06-01 15:56:07.212 | status msg timeout       |
+Query OK, 2 row(s) in set (0.000845s)
+
+taos&gt; show dnodes;
+   id   |           end_point            | vnodes | cores  |   status   | role  |       create_time       |      offline reason      |
+======================================================================================================================================
+      1 | tdengine-0.taosd.default.sv... |      2 |     40 | ready      | any   | 2021-06-01 15:55:52.562 |                          |
+      2 | tdengine-1.taosd.default.sv... |      1 |     40 | offline    | any   | 2021-06-01 15:56:07.212 | status msg timeout       |
+Query OK, 2 row(s) in set (0.000837s)
+
+taos&gt; use test;
+Database changed.
+
+taos&gt; insert into t1 values(now, 3);
+
+DB error: Unable to resolve FQDN (0.013874s)
+</code></pre>
+<h2><a class="header" href="#清理tdengine集群" id="清理tdengine集群">清理TDengine集群</a></h2>
+<p>完整移除TDengine集群，需要分别清理statefulset、svc、configmap、pvc。</p>
+<pre><code class="language-sh">kubectl delete statefulset -l app=tdengine
+kubectl delete svc -l app=tdengine
+kubectl delete pvc -l app=tdengine
+kubectl delete configmap taoscfg
+</code></pre>
+<p>在下一节，我们将使用Helm来提供更灵活便捷的操作方式。</p>
+<h1><a class="header" href="#使用helm部署tdengine集群" id="使用helm部署tdengine集群">使用Helm部署TDengine集群</a></h1>
+<p>Helm 是 Kubernetes 的包管理器，上一节中的操作已经足够简单，但Helm依然可以提供更强大的能力。</p>
+<h2><a class="header" href="#安装-helm" id="安装-helm">安装 Helm</a></h2>
+<pre><code class="language-sh">curl -fsSL -o get_helm.sh \
+  https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+chmod +x get_helm.sh
+./get_helm.sh
+</code></pre>
+<p>Helm会使用<code>kubectl</code>和kubeconfig的配置来操作Kubenetes，可以参考Rancher安装Kubenetes的配置来进行设置。</p>
+<h2><a class="header" href="#安装-tdengine-chart" id="安装-tdengine-chart">安装 TDengine Chart</a></h2>
+<p>TDengine Chart 尚未发布到 Helm 仓库，当前可以从GitHub直接下载：</p>
+<pre><code class="language-sh">wget https://github.com/taosdata/kubenetes/raw/main/helm/tdengine-0.1.0.tgz
+</code></pre>
+<p>获取当前Kubenetes的存储类：</p>
+<pre><code class="language-sh">helm get storageclass
+</code></pre>
+<p>在 minikube 默认为 <code>standard</code>.</p>
+<p>之后，使用<code>helm</code>命令安装：</p>
+<pre><code class="language-sh">helm install tdengine tdengine-0.1.0.tgz \
+  --set storage.className=&lt;your storage class name&gt;
+</code></pre>
+<p>在 minikube 环境下，可以设置一个较小的容量避免超出磁盘可用空间：</p>
+<pre><code class="language-sh">helm install tdengine tdengine-0.1.0.tgz \
+  --set storage.className=standard \
+  --set storage.dataSize=2Gi \
+  --set storage.logSize=10Mi
+</code></pre>
+<p>部署成功后，TDengine Chart将会输出操作TDengine的说明：</p>
+<pre><code class="language-sh">export POD_NAME=$(kubectl get pods --namespace default \
+  -l &quot;app.kubernetes.io/name=tdengine,app.kubernetes.io/instance=tdengine&quot; \
+  -o jsonpath=&quot;{.items[0].metadata.name}&quot;)
+kubectl --namespace default exec $POD_NAME -- taos -s &quot;show dnodes; show mnodes&quot;
+kubectl --namespace default exec -it $POD_NAME -- taos
+</code></pre>
+<p><img src="../../en/./assets/helm-install-with-sc.png" alt="helm-install-with-sc" /></p>
+<p>您可以自行尝试一下，就像这样：</p>
+<p><img src="../../en/./assets/helm-install-post-script.png" alt="helm-install-post-script" /></p>
+<p>可以创建一个表进行测试：</p>
+<pre><code class="language-sh">kubectl --namespace default exec $POD_NAME -- \
+  taos -s &quot;create database test;
+    use test;
+    create table t1 (ts timestamp, n int);
+    insert into t1 values(now, 1)(now + 1s, 2);
+    select * from t1;&quot;
+</code></pre>
+<p><img src="../../en/assets/kubectl-taos-sql.png" alt="taos-sql" /></p>
+<h2><a class="header" href="#values-配置" id="values-配置">Values 配置</a></h2>
+<p>TDengine 支持 <code>values.yaml</code> 自定义。</p>
+<p>通过 <code>helm show values</code>可以获取TDengine Chart支持的全部values列表：</p>
+<pre><code class="language-sh">helm show values tdengine-0.1.0.tgz
+</code></pre>
+<p>你可以将结果保存为 <code>values.yaml</code>，之后可以修改其中的各项参数，如 replica 数量，存储类名称，容量大小，TDengine 配置等，然后使用如下命令安装TDengine集群：</p>
+<pre><code class="language-sh">helm install tdengine tdengine-0.1.0.tgz -f values.yaml
+</code></pre>
+<p>全部参数如下：</p>
+<pre><code class="language-yaml"># Default values for tdengine.
+# This is a YAML-formatted file.
+# Declare variables to be passed into helm templates.
+
+replicaCount: 1
+
+image:
+  repository: zitsen/tdengine-server
+  pullPolicy:
+    IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    #tag: &quot;&quot;
+
+service:
+  # ClusterIP is the default service type, use NodeIP only if you know what you are doing.
+  type: ClusterIP
+  ports:
+    # TCP range required
+    tcp: [6030, 6035, 6040, 6041]
+    # UDP range 6030-6039
+    udp: [6030, 6031, 6032, 6033, 6034, 6035, 6036, 6037, 6038, 6039]
+
+# Set timezone here, not in taoscfg
+timezone: &quot;Asia/Shanghai&quot;
+
+resources:
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+storage:
+  # Set storageClassName for pvc. K8s use default storage class if not set.
+  #
+  className: &quot;&quot;
+  dataSize: &quot;100Gi&quot;
+  logSize: &quot;10Gi&quot;
+
+# Config settings in taos.cfg file.
+#
+# The helm/k8s support will use environment variables for taos.cfg,
+# converting an upper-snake-cased variable like `TAOS_DEBUG_FLAG`,
+# to a camelCase taos config variable `debugFlag`.
+#
+# See the variable list at https://www.taosdata.com/cn/documentation/administrator .
+#
+# Note:
+# 1. firstEp/secondEp: should not be setted here, it's auto generated at scale-up.
+# 2. serverPort: should not be setted, we'll use the default 6030 in many places.
+# 3. fqdn: will be auto generated in kubenetes, user should not care about it.
+# 4. role: currently role is not supported - every node is able to be mnode and vnode.
+#
+# Btw, keep quotes &quot;&quot; around the value like below, even the value will be number or not.
+taoscfg:
+  # Starts as cluster or not, must be 0 or 1.
+  #   0: all pods will start as a seperate TDengine server
+  #   1: pods will start as TDengine server cluster. [default]
+  CLUSTER: &quot;1&quot;
+
+  # number of days per DB file
+  #TAOS_DAYS: &quot;10&quot;
+
+  # number of days to keep DB file, default is 10 years.
+  TAOS_KEEP: &quot;3650&quot;
+
+  # cache block size (Mbyte)
+  #TAOS_CACHE: &quot;16&quot;
+
+  # number of cache blocks per vnode
+  #TAOS_BLOCKS: &quot;6&quot;
+
+  # minimum rows of records in file block
+  #TAOS_MIN_ROWS: &quot;100&quot;
+
+  # maximum rows of records in file block
+  #TAOS_MAX_ROWS: &quot;4096&quot;
+
+  #
+  # TAOS_NUM_OF_THREADS_PER_CORE: number of threads per CPU core
+  #TAOS_NUM_OF_THREADS_PER_CORE: &quot;1.0&quot;
+
+  #
+  # TAOS_NUM_OF_COMMIT_THREADS: number of threads to commit cache data
+  #TAOS_NUM_OF_COMMIT_THREADS: &quot;4&quot;
+
+  #
+  # TAOS_RATIO_OF_QUERY_CORES:
+  # the proportion of total CPU cores available for query processing
+  # 2.0: the query threads will be set to double of the CPU cores.
+  # 1.0: all CPU cores are available for query processing [default].
+  # 0.5: only half of the CPU cores are available for query.
+  # 0.0: only one core available.
+  #TAOS_RATIO_OF_QUERY_CORES: &quot;1.0&quot;
+
+  #
+  # TAOS_KEEP_COLUMN_NAME:
+  # the last_row/first/last aggregator will not change the original column name in the result fields
+  #TAOS_KEEP_COLUMN_NAME: &quot;0&quot;
+
+  # number of management nodes in the system
+  #TAOS_NUM_OF_MNODES: &quot;3&quot;
+
+  # enable/disable backuping vnode directory when removing vnode
+  #TAOS_VNODE_BAK: &quot;1&quot;
+
+  # enable/disable installation / usage report
+  #TAOS_TELEMETRY_REPORTING: &quot;1&quot;
+
+  # enable/disable load balancing
+  #TAOS_BALANCE: &quot;1&quot;
+
+  # max timer control blocks
+  #TAOS_MAX_TMR_CTRL: &quot;512&quot;
+
+  # time interval of system monitor, seconds
+  #TAOS_MONITOR_INTERVAL: &quot;30&quot;
+
+  # number of seconds allowed for a dnode to be offline, for cluster only
+  #TAOS_OFFLINE_THRESHOLD: &quot;8640000&quot;
+
+  # RPC re-try timer, millisecond
+  #TAOS_RPC_TIMER: &quot;1000&quot;
+
+  # RPC maximum time for ack, seconds.
+  #TAOS_RPC_MAX_TIME: &quot;600&quot;
+
+  # time interval of dnode status reporting to mnode, seconds, for cluster only
+  #TAOS_STATUS_INTERVAL: &quot;1&quot;
+
+  # time interval of heart beat from shell to dnode, seconds
+  #TAOS_SHELL_ACTIVITY_TIMER: &quot;3&quot;
+
+  # minimum sliding window time, milli-second
+  #TAOS_MIN_SLIDING_TIME: &quot;10&quot;
+
+  # minimum time window, milli-second
+  #TAOS_MIN_INTERVAL_TIME: &quot;10&quot;
+
+  # maximum delay before launching a stream computation, milli-second
+  #TAOS_MAX_STREAM_COMP_DELAY: &quot;20000&quot;
+
+  # maximum delay before launching a stream computation for the first time, milli-second
+  #TAOS_MAX_FIRST_STREAM_COMP_DELAY: &quot;10000&quot;
+
+  # retry delay when a stream computation fails, milli-second
+  #TAOS_RETRY_STREAM_COMP_DELAY: &quot;10&quot;
+
+  # the delayed time for launching a stream computation, from 0.1(default, 10% of whole computing time window) to 0.9
+  #TAOS_STREAM_COMP_DELAY_RATIO: &quot;0.1&quot;
+
+  # max number of vgroups per db, 0 means configured automatically
+  #TAOS_MAX_VGROUPS_PER_DB: &quot;0&quot;
+
+  # max number of tables per vnode
+  #TAOS_MAX_TABLES_PER_VNODE: &quot;1000000&quot;
+
+  # the number of acknowledgments required for successful data writing
+  #TAOS_QUORUM: &quot;1&quot;
+
+  # enable/disable compression
+  #TAOS_COMP: &quot;2&quot;
+
+  # write ahead log (WAL) level, 0: no wal; 1: write wal, but no fysnc; 2: write wal, and call fsync
+  #TAOS_WAL_LEVEL: &quot;1&quot;
+
+  # if walLevel is set to 2, the cycle of fsync being executed, if set to 0, fsync is called right away
+  #TAOS_FSYNC: &quot;3000&quot;
+
+  # number of replications, for cluster only
+  #TAOS_REPLICA: &quot;1&quot;
+
+  # the compressed rpc message, option:
+  #  -1 (no compression)
+  #   0 (all message compressed),
+  # &gt; 0 (rpc message body which larger than this value will be compressed)
+  #TAOS_COMPRESS_MSG_SIZE: &quot;-1&quot;
+
+  # max length of an SQL
+  #TAOS_MAX_SQL_LENGTH: &quot;1048576&quot;
+
+  # the maximum number of records allowed for super table time sorting
+  #TAOS_MAX_NUM_OF_ORDERED_RES: &quot;100000&quot;
+
+  # max number of connections allowed in dnode
+  #TAOS_MAX_SHELL_CONNS: &quot;5000&quot;
+
+  # max number of connections allowed in client
+  #TAOS_MAX_CONNECTIONS: &quot;5000&quot;
+
+  # stop writing logs when the disk size of the log folder is less than this value
+  #TAOS_MINIMAL_LOG_DIR_G_B: &quot;0.1&quot;
+
+  # stop writing temporary files when the disk size of the tmp folder is less than this value
+  #TAOS_MINIMAL_TMP_DIR_G_B: &quot;0.1&quot;
+
+  # if disk free space is less than this value, taosd service exit directly within startup process
+  #TAOS_MINIMAL_DATA_DIR_G_B: &quot;0.1&quot;
+
+  # One mnode is equal to the number of vnode consumed
+  #TAOS_MNODE_EQUAL_VNODE_NUM: &quot;4&quot;
+
+  # enbale/disable http service
+  #TAOS_HTTP: &quot;1&quot;
+
+  # enable/disable system monitor
+  #TAOS_MONITOR: &quot;1&quot;
+
+  # enable/disable recording the SQL statements via restful interface
+  #TAOS_HTTP_ENABLE_RECORD_SQL: &quot;0&quot;
+
+  # number of threads used to process http requests
+  #TAOS_HTTP_MAX_THREADS: &quot;2&quot;
+
+  # maximum number of rows returned by the restful interface
+  #TAOS_RESTFUL_ROW_LIMIT: &quot;10240&quot;
+
+  # The following parameter is used to limit the maximum number of lines in log files.
+  # max number of lines per log filters
+  # numOfLogLines         10000000
+
+  # enable/disable async log
+  #TAOS_ASYNC_LOG: &quot;0&quot;
+
+  #
+  # time of keeping log files, days
+  #TAOS_LOG_KEEP_DAYS: &quot;0&quot;
+
+  # The following parameters are used for debug purpose only.
+  # debugFlag 8 bits mask: FILE-SCREEN-UNUSED-HeartBeat-DUMP-TRACE_WARN-ERROR
+  # 131: output warning and error
+  # 135: output debug, warning and error
+  # 143: output trace, debug, warning and error to log
+  # 199: output debug, warning and error to both screen and file
+  # 207: output trace, debug, warning and error to both screen and file
+  #
+  # debug flag for all log type, take effect when non-zero value\
+  #TAOS_DEBUG_FLAG: &quot;143&quot;
+
+  # enable/disable recording the SQL in taos client
+  #TAOS_ENABLE_RECORD_SQL: &quot;0&quot;
+
+  # generate core file when service crash
+  #TAOS_ENABLE_CORE_FILE: &quot;1&quot;
+
+  # maximum display width of binary and nchar fields in the shell. The parts exceeding this limit will be hidden
+  #TAOS_MAX_BINARY_DISPLAY_WIDTH: &quot;30&quot;
+
+  # enable/disable stream (continuous query)
+  #TAOS_STREAM: &quot;1&quot;
+
+  # in retrieve blocking model, only in 50% query threads will be used in query processing in dnode
+  #TAOS_RETRIEVE_BLOCKING_MODEL: &quot;0&quot;
+
+  # the maximum allowed query buffer size in MB during query processing for each data node
+  # -1 no limit (default)
+  # 0  no query allowed, queries are disabled
+  #TAOS_QUERY_BUFFER_SIZE: &quot;-1&quot;
+</code></pre>
+<h2><a class="header" href="#扩容-1" id="扩容-1">扩容</a></h2>
+<p>关于扩容可参考上一小节的说明，有一些额外的操作需要从helm的部署中获取。</p>
+<p>首先，从部署中获取StatefulSet的名称。</p>
+<pre><code class="language-sh">export STS_NAME=$(kubectl get statefulset \
+  -l &quot;app.kubernetes.io/name=tdengine&quot; \
+  -o jsonpath=&quot;{.items[0].metadata.name}&quot;)
+</code></pre>
+<p>扩容操作极其简单，增加replica即可。以下命令将TDengine扩充到三节点：</p>
+<pre><code class="language-sh">kubectl scale --replicas 3 statefulset/$STS_NAME
+</code></pre>
+<p>使用命令 <code>show dnodes</code> <code>show mnodes</code> 检查是否扩容成功：</p>
+<p><img src="../../en/assets/helm-scale-up.png" alt="helm-scale-up" /></p>
+<h2><a class="header" href="#缩容-1" id="缩容-1">缩容</a></h2>
+<blockquote>
+<p>缩容操作并没有完整测试，可能造成数据风险，请谨慎使用。</p>
+</blockquote>
+<p>相较与上一小节，缩容也需要额外的步骤。</p>
+<p>获取需要缩容的dnode列表，并手动Drop。</p>
+<pre><code class="language-sh">kubectl --namespace default exec $POD_NAME -- \
+  cat /var/lib/taos/dnode/dnodeEps.json \
+  | jq '.dnodeInfos[1:] |map(.dnodeFqdn + &quot;:&quot; + (.dnodePort|tostring)) | .[]' -r
+kubectl --namespace default exec $POD_NAME -- taos -s &quot;show dnodes&quot;
+kubectl --namespace default exec $POD_NAME -- taos -s 'drop dnode &quot;&lt;you dnode in list&gt;&quot;'
+</code></pre>
+<p><img src="../../en/assets/helm-drop-dnode.png" alt="helm-drop-dnode" /></p>
+<h2><a class="header" href="#清理" id="清理">清理</a></h2>
+<p>Helm管理下，清理操作也变得简单：</p>
+<pre><code class="language-sh">helm uninstall tdengine
+</code></pre>
+<p>但Helm也不会自动移除PVC，需要手动获取PVC然后删除掉。</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+
+        
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        
+
+        
+
+        
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+        
+        <script type="text/javascript">
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+        
+        
+
+    </body>
+</html>

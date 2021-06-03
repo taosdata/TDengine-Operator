@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <script type="text/javascript">
+    // The order:
+    //  1. get locale in cache
+    //  2. get locale from browser
+    //  3. default use "en"
+    var language =
+      localStorage.getItem("locale") ||
+      window.navigator.language.toLowerCase() ||
+      "en";
+    localStorage.setItem("locale", language);
+    // redirect
+    if (language.indexOf("zh-") !== -1) {
+      window.location = "./zh/";
+    } else if (language.indexOf("en") !== -1) {
+      window.location = "/en/";
+    } else {
+      window.location = "./en/";
+    }
+  </script>
+  <noscript>Enable javascript to show page.</noscript>
+</html>
