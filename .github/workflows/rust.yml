@@ -1,7 +1,12 @@
 name: Rust
 
-on: [push]
-
+on:
+  push:
+    branches:
+      - main
+  release:
+    types:
+      - created
 jobs:
   build:
     runs-on: ubuntu-20.04

@@ -1,5 +1,6 @@
 # Summary
 
+- [Introduction](README.md)
 - [Start with Kubenetes](1.0-kubenetes.md)
   - [Try Kubenetes with Minikube](./1.1-install-kubenetes-with-minikube.md)
   - [Install Kubenetes with Rancher](./1.2-install-kubenetes-with-rancher.md)
