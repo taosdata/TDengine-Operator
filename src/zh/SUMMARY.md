@@ -1,5 +1,6 @@
 # Summary
 
+- [Introduction](README.md)
 - [从Kubenetes开始](1.0-kubenetes.md)
   - [使用Minikube尝鲜Kubenetes](./1.1-install-kubenetes-with-minikube.md)
   - [使用Rancher安装Kubenetes](./1.2-install-kubenetes-with-rancher.md)
