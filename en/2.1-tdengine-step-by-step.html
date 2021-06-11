@@ -93,7 +93,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="index.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="1.0-kubenetes.html"><strong aria-hidden="true">2.</strong> Start with Kubenetes</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="1.1-install-kubenetes-with-minikube.html"><strong aria-hidden="true">2.1.</strong> Try Kubenetes with Minikube</a></li><li class="chapter-item expanded "><a href="1.2-install-kubenetes-with-rancher.html"><strong aria-hidden="true">2.2.</strong> Install Kubenetes with Rancher</a></li><li class="chapter-item expanded "><a href="1.3-storage-class.html"><strong aria-hidden="true">2.3.</strong> Storage Class with Ceph RBD</a></li><li class="chapter-item expanded "><a href="1.4-k8s-starter.html"><strong aria-hidden="true">2.4.</strong> Start Using Kubenetes</a></li></ol></li><li class="chapter-item expanded "><a href="2.0-tdengine-on-kubenetes.html"><strong aria-hidden="true">3.</strong> Setup TDengine Cluster on Kubenetes</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="2.1-tdengine-step-by-step.html" class="active"><strong aria-hidden="true">3.1.</strong> Setup TDengine Cluster Step by Step</a></li><li class="chapter-item expanded "><a href="2.2-tdengine-with-helm.html"><strong aria-hidden="true">3.2.</strong> Setup TDengine Cluster with Helm</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="index.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="1.0-kubernetes.html"><strong aria-hidden="true">2.</strong> Start with Kubernetes</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="1.1-install-kubernetes-with-minikube.html"><strong aria-hidden="true">2.1.</strong> Try Kubernetes with Minikube</a></li><li class="chapter-item expanded "><a href="1.2-install-kubernetes-with-rancher.html"><strong aria-hidden="true">2.2.</strong> Install Kubernetes with Rancher</a></li><li class="chapter-item expanded "><a href="1.3-storage-class.html"><strong aria-hidden="true">2.3.</strong> Storage Class with Ceph RBD</a></li><li class="chapter-item expanded "><a href="1.4-k8s-starter.html"><strong aria-hidden="true">2.4.</strong> Start Using Kubernetes</a></li></ol></li><li class="chapter-item expanded "><a href="2.0-tdengine-on-kubernetes.html"><strong aria-hidden="true">3.</strong> Setup TDengine Cluster on Kubernetes</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="2.1-tdengine-step-by-step.html" class="active"><strong aria-hidden="true">3.1.</strong> Setup TDengine Cluster Step by Step</a></li><li class="chapter-item expanded "><a href="2.2-tdengine-with-helm.html"><strong aria-hidden="true">3.2.</strong> Setup TDengine Cluster with Helm</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -171,7 +171,7 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1><a class="header" href="#setup-tdengine-cluster-on-kubenetes" id="setup-tdengine-cluster-on-kubenetes">Setup TDengine Cluster on Kubenetes</a></h1>
+                        <h1><a class="header" href="#setup-tdengine-cluster-on-kubernetes" id="setup-tdengine-cluster-on-kubernetes">Setup TDengine Cluster on Kubernetes</a></h1>
 <p>Create a config map for TDengine: <code>taoscfg.yaml</code>.</p>
 <pre><code class="language-yaml">---
 apiVersion: v1
@@ -366,7 +366,7 @@ spec:
         requests:
           storage: &quot;10Gi&quot;
 </code></pre>
-<p>Add them to kubenetes.</p>
+<p>Add them to kubernetes.</p>
 <pre><code class="language-sh">kubectl apply -f taoscfg.yaml
 kubectl apply -f taosd-service.yaml
 kubectl apply -f tdengine.yaml
@@ -388,7 +388,7 @@ taos&gt; show dnodes
 Query OK, 2 row(s) in set (0.000997s)
 </code></pre>
 <h2><a class="header" href="#scale-up" id="scale-up">Scale Up</a></h2>
-<p>TDengine on Kubenetes could automatically scale up with:</p>
+<p>TDengine on Kubernetes could automatically scale up with:</p>
 <pre><code class="language-sh">kubectl scale statefulsets tdengine --replicas=4
 </code></pre>
 <p>Check if scale-up works:</p>
@@ -522,7 +522,7 @@ kubectl delete configmap taoscfg
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
                         
-                            <a rel="prev" href="2.0-tdengine-on-kubenetes.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="2.0-tdengine-on-kubernetes.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
                         
@@ -540,7 +540,7 @@ kubectl delete configmap taoscfg
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
                 
-                    <a rel="prev" href="2.0-tdengine-on-kubenetes.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="2.0-tdengine-on-kubernetes.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
                 

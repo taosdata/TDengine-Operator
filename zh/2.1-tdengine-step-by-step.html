@@ -93,7 +93,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="index.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="1.0-kubenetes.html"><strong aria-hidden="true">2.</strong> 从Kubenetes开始</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="1.1-install-kubenetes-with-minikube.html"><strong aria-hidden="true">2.1.</strong> 使用Minikube尝鲜Kubenetes</a></li><li class="chapter-item expanded "><a href="1.2-install-kubenetes-with-rancher.html"><strong aria-hidden="true">2.2.</strong> 使用Rancher安装Kubenetes</a></li><li class="chapter-item expanded "><a href="1.3-storage-class.html"><strong aria-hidden="true">2.3.</strong> Kubenetes中的存储类</a></li><li class="chapter-item expanded "><a href="1.4-k8s-starter.html"><strong aria-hidden="true">2.4.</strong> 开始使用Kubenetes</a></li></ol></li><li class="chapter-item expanded "><a href="2.0-tdengine-on-kubenetes.html"><strong aria-hidden="true">3.</strong> 在Kubenetes上部署TDengine集群</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="2.1-tdengine-step-by-step.html" class="active"><strong aria-hidden="true">3.1.</strong> 一步一步创建TDengine集群</a></li><li class="chapter-item expanded "><a href="2.2-tdengine-with-helm.html"><strong aria-hidden="true">3.2.</strong> 使用Helm部署TDengine集群</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="index.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="1.0-kubernetes.html"><strong aria-hidden="true">2.</strong> 从Kubernetes开始</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="1.1-install-kubernetes-with-minikube.html"><strong aria-hidden="true">2.1.</strong> 使用Minikube尝鲜Kubernetes</a></li><li class="chapter-item expanded "><a href="1.2-install-kubernetes-with-rancher.html"><strong aria-hidden="true">2.2.</strong> 使用Rancher安装Kubernetes</a></li><li class="chapter-item expanded "><a href="1.3-storage-class.html"><strong aria-hidden="true">2.3.</strong> Kubernetes中的存储类</a></li><li class="chapter-item expanded "><a href="1.4-k8s-starter.html"><strong aria-hidden="true">2.4.</strong> 开始使用Kubernetes</a></li></ol></li><li class="chapter-item expanded "><a href="2.0-tdengine-on-kubernetes.html"><strong aria-hidden="true">3.</strong> 在Kubernetes上部署TDengine集群</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="2.1-tdengine-step-by-step.html" class="active"><strong aria-hidden="true">3.1.</strong> 一步一步创建TDengine集群</a></li><li class="chapter-item expanded "><a href="2.2-tdengine-with-helm.html"><strong aria-hidden="true">3.2.</strong> 使用Helm部署TDengine集群</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -243,7 +243,7 @@ spec:
     app: &quot;tdengine&quot;
 </code></pre>
 <h2><a class="header" href="#statefulset-有状态服务" id="statefulset-有状态服务">StatefulSet 有状态服务</a></h2>
-<p>根据Kubenetes对各类部署的说明，我们将使用 StatefulSet 作为TDengine 的服务类型，创建文件<code>tdengine.yaml</code> ：</p>
+<p>根据Kubernetes对各类部署的说明，我们将使用 StatefulSet 作为TDengine 的服务类型，创建文件<code>tdengine.yaml</code> ：</p>
 <pre><code class="language-yaml">---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -370,7 +370,7 @@ spec:
           storage: &quot;10Gi&quot;
 </code></pre>
 <h2><a class="header" href="#启动集群" id="启动集群">启动集群</a></h2>
-<p>将三个文件添加到Kubenetes集群中：</p>
+<p>将三个文件添加到Kubernetes集群中：</p>
 <pre><code class="language-sh">kubectl apply -f taoscfg.yaml
 kubectl apply -f taosd-service.yaml
 kubectl apply -f tdengine.yaml
@@ -523,7 +523,7 @@ kubectl delete configmap taoscfg
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
                         
-                            <a rel="prev" href="2.0-tdengine-on-kubenetes.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="2.0-tdengine-on-kubernetes.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
                         
@@ -541,7 +541,7 @@ kubectl delete configmap taoscfg
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
                 
-                    <a rel="prev" href="2.0-tdengine-on-kubenetes.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="2.0-tdengine-on-kubernetes.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
                 
