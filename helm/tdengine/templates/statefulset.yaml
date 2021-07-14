@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "tdengine.labels" . | nindent 4 }}
 spec:
-  serviceName: {{ include "tdengine.fullname" . }}
+  serviceName: {{ include "tdengine.fullname" . }}-headless
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
@@ -48,7 +48,7 @@ spec:
           - name: SERVICE_NAME
             value: {{ include "tdengine.fullname" . }}
           - name: STS_NAME
-            value: {{ .Chart.Name }}
+            value: {{ .Release.Name }}
           - name: STS_NAMESPACE
             valueFrom:
               fieldRef:
