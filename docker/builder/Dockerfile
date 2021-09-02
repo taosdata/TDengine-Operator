@@ -10,8 +10,10 @@ RUN sed -Ei "s#http://.*.ubuntu.com#${APT_MIRROR}#" /etc/apt/sources.list \
     && apt-get clean
 
 ARG VERSION
-WORKDIR /tmp
+ENV VERSION=${VERSION:-develop}
 COPY script/build.sh /tmp/
+COPY ver-${VERSION}.tar.gz /tmp/
+WORKDIR /tmp
 RUN /tmp/build.sh
 
 FROM alpine:3

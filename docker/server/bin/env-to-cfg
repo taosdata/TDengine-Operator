@@ -5,7 +5,7 @@ toCamelCase() {
 
   if [[ "$v" == *"_"* ]]; then
     v=$(echo $v | sed -r 's/([A-Za-z]+)_([A-Za-z])([A-Za-z]+)/\L\1\U\2\L\3/')
-    while [ "$v" == *"_"* ]; do
+    while [[ "$v" == *"_"* ]]; do
       v=$(echo $v | sed -r 's/([A-Za-z]+)_([A-Za-z])([A-Za-z]+)/\1\U\2\L\3/g')
     done
     echo $v

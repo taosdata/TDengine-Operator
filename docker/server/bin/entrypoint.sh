@@ -43,7 +43,7 @@ else
     while true
     do
         es=0
-        taos -h $FIRST_EP_HOST -s "show mnodes" > /dev/null || es=$?
+        taos -h $FIRST_EP_HOST -n startup > /dev/null || es=$?
         if [ "$es" -eq 0 ]; then
             taos -h $FIRST_EP_HOST -s "create dnode \"$TAOS_FQDN:$SERVER_PORT\";"
             break

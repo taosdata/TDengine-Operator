@@ -1,0 +1,13 @@
+version: "2"
+
+services:
+  tdengine:
+    image: zitsen/tdengine-server:2.1.7.2
+    environment: 
+      TAOS_FQDN: "tdengine"
+  bailongma:
+    image: zitsen/tdengine-bailongma:2.1.7.2
+    command:
+      - "/usr/bin/bailongma"
+      - "-h"
+      - "tdengine"
