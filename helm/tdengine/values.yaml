@@ -6,10 +6,9 @@ replicaCount: 1
 
 image:
   repository: zitsen/tdengine-server
-  pullPolicy:
-    IfNotPresent
-    # Overrides the image tag whose default is the chart appVersion.
-    #tag: ""
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  #tag: ""
 
 service:
   # ClusterIP is the default service type, use NodeIP only if you know what you are doing.

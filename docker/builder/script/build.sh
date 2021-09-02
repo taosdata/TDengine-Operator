@@ -13,8 +13,8 @@ else
   VERSION=ver-$VERSION
 fi
 
-wget -O src.tar.gz -c $URL
-tar xf src.tar.gz
+#wget -c -O $VERSION.tar.gz -c $URL
+tar xf $VERSION.tar.gz
 cd TDengine-${VERSION}/
 if [ "$TD_VERSION" = "" ]; then
   TD_VERSION=`grep 'TD_VER_NUMBER "' \

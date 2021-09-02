@@ -44,6 +44,8 @@ fi
 
 cd $DOCKER_PATH
 cd builder
+
+[ -e "ver-$VERSION.tar.gz" ] || wget -c https://github.com/taosdata/TDengine/archive/refs/tags/ver-$VERSION.tar.gz
 docker build \
   --build-arg BASE_IMAGE=$BASE_IMAGE \
   --build-arg VERSION=$VERSION \
@@ -69,6 +71,8 @@ docker build \
 cd ..
 
 cd bailongma
+[ -e "bailongma-$BAILONGMA_VERSION" ] || wget -c -O bailongma-$BAILONGMA_VERSION https://github.com/taosdata/bailongma-rs/releases/download/v${BAILONGMA_VERSION}/bailongma-amd64
+chmod +x bailongma-$BAILONGMA_VERSION
 docker build \
   --build-arg IMAGE_PREFIX=$IMAGE_PREFIX \
   --build-arg VERSION=$VERSION \
