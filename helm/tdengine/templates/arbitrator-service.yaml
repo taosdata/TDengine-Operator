@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "tdengine.fullname" . }}-arbitrator
+  labels:
+    {{- include "tdengine.labels" . | nindent 4 }}
+    app: "arbitrator"
+spec:
+  type: ClusterIP
+  ports:
+    - name: tcp6042
+      port: 6042
+      protocol: TCP
+  selector:
+    app: "arbitrator"

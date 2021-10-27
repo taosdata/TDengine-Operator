@@ -12,10 +12,8 @@ COPY --from=0 /usr/src/TDengine-server* /usr/src/
 RUN tar xf TDengine-server*.tar.gz && cd TDengine-server-*/ && ./install.sh -e no
 RUN rm -rf TDengine*
 
-COPY bin/* /usr/bin/
-
 WORKDIR /etc/taos
 EXPOSE 6030 6031 6032 6033 6034 6035 6036 6037 6038 6039 6040 6041 6042
 CMD ["taosd"]
-VOLUME [ "/var/lib/taos", "/var/log/taos" ]
+VOLUME [ "/var/lib/taos", "/var/log/taos", "/corefile" ]
 ENTRYPOINT [ "/usr/bin/entrypoint.sh" ]

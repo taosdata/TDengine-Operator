@@ -4,12 +4,15 @@ metadata:
   name: {{ include "tdengine.fullname" . }}
   labels:
     {{- include "tdengine.labels" . | nindent 4 }}
+    app: taosd
 spec:
   serviceName: {{ include "tdengine.fullname" . }}
   replicas: {{ .Values.replicaCount }}
+  # podManagementPolicy: Parallel
   selector:
     matchLabels:
       {{- include "tdengine.selectorLabels" . | nindent 6 }}
+      app: taosd
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -18,23 +21,30 @@ spec:
       {{- end }}
       labels:
         {{- include "tdengine.selectorLabels" . | nindent 8 }}
+        app: taosd
     spec:
+      {{- with .Values.nodeSelectors.taosd }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.image.prefix }}-server:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports: {{ range $idx, $val := .Values.service.ports.tcp }}
           - name: tcp{{- $idx}}
             containerPort: {{ $val }}
+            hostPort: {{ $val }}
             protocol: TCP
           {{- end }}
           {{ range $idx, $val := .Values.service.ports.udp }}
           - name: udp {{- $idx}}
             containerPort: {{ $val }}
+            hostPort: {{ $val }}
             protocol: UDP
           {{- end }}
 
@@ -61,10 +71,15 @@ spec:
             value: "6030"
           # Must set if you want a cluster.
           - name: TAOS_FIRST_EP
-            value: "$(STS_NAME)-0.$(SERVICE_NAME).$(STS_NAMESPACE).svc.cluster.local:$(TAOS_SERVER_PORT)"
+            value: "$(STS_NAME)-0"
           # TAOS_FQND should always be setted in k8s env.
           - name: TAOS_FQDN
-            value: "$(POD_NAME).$(SERVICE_NAME).$(STS_NAMESPACE).svc.cluster.local"
+            value: "$(POD_NAME)"
+
+          {{ if .Values.arbitrator }}
+          - name: TAOS_ARBITRATOR
+            value: {{ include "tdengine.fullname" . }}-arbitrator
+          {{ end }}
 
           envFrom:
           - configMapRef:
@@ -89,6 +104,24 @@ spec:
               port: 6030
             initialDelaySeconds: 15
             periodSeconds: 20
+          securityContext:  
+            privileged: true
+            allowPrivilegeEscalation: true
+            runAsUser: 0
+            runAsGroup: 0
+            readOnlyRootFilesystem: false
+            # allowedCapabilities:
+            # - CAP_SYS_ADMIN
+            # - CHOWN
+            # - DAC_OVERRIDE
+            # - SETGID
+            # - SETUID
+            # - NET_BIND_SERVICE
+            # AllowedHostPaths:
+            # - pathPrefix: "/proc"
+            #   readOnly: true # 仅允许只读模式挂载
+            # - pathPrefix: "/sys"
+            #   readOnly: true # 仅允许只读模式挂载
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

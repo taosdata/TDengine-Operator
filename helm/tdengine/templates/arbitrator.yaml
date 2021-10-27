@@ -1,0 +1,32 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "tdengine.fullname" . }}-arbitrator
+  labels:
+    {{- include "tdengine.labels" . | nindent 4 }}
+    app: "arbitrator"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "tdengine.selectorLabels" . | nindent 6 }}
+      app: "arbitrator"
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "tdengine.selectorLabels" . | nindent 8 }}
+        app: "arbitrator"
+    spec:
+      containers:
+      - name: arbitrator
+        image: "{{ .Values.image.prefix }}-arbitrator:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        ports:
+        - name: tcp6042
+          containerPort: 6042
+          protocol: TCP
+

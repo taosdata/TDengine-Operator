@@ -5,19 +5,21 @@
 replicaCount: 1
 
 image:
-  repository: zitsen/tdengine-server
-  pullPolicy: Always
+  prefix: zitsen/tdengine
+  #pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  #tag: ""
+  #tag: "2.2.1.1"
 
 service:
   # ClusterIP is the default service type, use NodeIP only if you know what you are doing.
   type: ClusterIP
   ports:
     # TCP range required
-    tcp: [6030, 6035, 6040, 6041]
+    tcp: [6030,6031,6032,6033,6034, 6035,6036,6037,6038, 6039, 6040, 6041, 6042, 6043, 6044, 6045, 6060]
     # UDP range 6030-6039
     udp: [6030, 6031, 6032, 6033, 6034, 6035, 6036, 6037, 6038, 6039]
+
+arbitrator: true
 
 # Set timezone here, not in taoscfg
 timezone: "Asia/Shanghai"
@@ -41,6 +43,10 @@ storage:
   dataSize: "100Gi"
   logSize: "10Gi"
 
+nodeSelectors:
+  taosd:
+    # node selectors
+
 # Config settings in taos.cfg file.
 #
 # The helm/k8s support will use environment variables for taos.cfg,
@@ -62,11 +68,17 @@ taoscfg:
   #   1: pods will start as TDengine server cluster. [default]
   CLUSTER: "1"
 
+  # number of replications, for cluster only
+  TAOS_REPLICA: "1"
+
+  # number of management nodes in the system
+  TAOS_NUM_OF_MNODES: "1"
+
   # number of days per DB file
-  #TAOS_DAYS: "10"
+  # TAOS_DAYS: "10"
 
   # number of days to keep DB file, default is 10 years.
-  TAOS_KEEP: "3650"
+  #TAOS_KEEP: "3650"
 
   # cache block size (Mbyte)
   #TAOS_CACHE: "16"
@@ -101,9 +113,6 @@ taoscfg:
   # TAOS_KEEP_COLUMN_NAME:
   # the last_row/first/last aggregator will not change the original column name in the result fields
   #TAOS_KEEP_COLUMN_NAME: "0"
-
-  # number of management nodes in the system
-  #TAOS_NUM_OF_MNODES: "3"
 
   # enable/disable backuping vnode directory when removing vnode
   #TAOS_VNODE_BAK: "1"
@@ -170,9 +179,6 @@ taoscfg:
 
   # if walLevel is set to 2, the cycle of fsync being executed, if set to 0, fsync is called right away
   #TAOS_FSYNC: "3000"
-
-  # number of replications, for cluster only
-  #TAOS_REPLICA: "1"
 
   # the compressed rpc message, option:
   #  -1 (no compression)

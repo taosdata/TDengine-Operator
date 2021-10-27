@@ -10,15 +10,15 @@ RUN sed -Ei "s#http://.*.ubuntu.com#${APT_MIRROR}#" /etc/apt/sources.list \
     && apt-get clean
 
 ARG VERSION
-ENV VERSION=${VERSION:-develop}
-COPY script/build.sh /tmp/
-COPY ver-${VERSION}.tar.gz /tmp/
-WORKDIR /tmp
-RUN /tmp/build.sh
+WORKDIR /tmp/
+RUN wget -c https://www.taosdata.com/assets-download/TDengine-server-$VERSION-Linux-x64.tar.gz
+RUN wget -c https://www.taosdata.com/assets-download/TDengine-client-$VERSION-Linux-x64.tar.gz
+RUN wget -c https://www.taosdata.com/assets-download/TDengine-arbitrator-$VERSION-Linux-x64.tar.gz
 
 FROM alpine:3
 LABEL MAINTAINER="Huo Linhe <linhe.huo@gmail.com>"
 
 ARG VERSION
-ENV VERSION=${VERSION:-develop}
-COPY --from=0 /tmp/TDengine-*/release/TDengine-* /usr/src/
+ENV VERSION=${VERSION}
+WORKDIR /usr/src/
+COPY --from=0 /tmp/TDengine-* /usr/src/

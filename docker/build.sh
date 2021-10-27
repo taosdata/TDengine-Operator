@@ -45,7 +45,7 @@ fi
 cd $DOCKER_PATH
 cd builder
 
-[ -e "ver-$VERSION.tar.gz" ] || wget -c https://github.com/taosdata/TDengine/archive/refs/tags/ver-$VERSION.tar.gz
+#[ -e "ver-$VERSION.tar.gz" ] || wget -c https://github.com/taosdata/TDengine/archive/refs/tags/ver-$VERSION.tar.gz
 docker build \
   --build-arg BASE_IMAGE=$BASE_IMAGE \
   --build-arg VERSION=$VERSION \
@@ -61,6 +61,13 @@ docker build \
   --build-arg IMAGE_PREFIX=$IMAGE_PREFIX \
   --build-arg VERSION=$VERSION \
   -t $IMAGE_PREFIX-server:$VERSION .
+cd ..
+
+cd arbitrator
+docker build \
+  --build-arg IMAGE_PREFIX=$IMAGE_PREFIX \
+  --build-arg VERSION=$VERSION \
+  -t $IMAGE_PREFIX-arbitrator:$VERSION .
 cd ..
 
 cd client
@@ -84,6 +91,7 @@ cd ..
 if [ $PUSH -eq 1 ]; then
   docker push $IMAGE_PREFIX-artifacts:$VERSION
   docker push $IMAGE_PREFIX-server:$VERSION
+  docker push $IMAGE_PREFIX-arbitrator:$VERSION
   docker push $IMAGE_PREFIX-client:$VERSION
   docker push $IMAGE_PREFIX-bailongma:$VERSION
   docker push $IMAGE_PREFIX-bailongma:$VERSION-v$BAILONGMA_VERSION
