@@ -1007,18 +1007,18 @@ chmod +x get_helm.sh
 <p>Helm will use kubectl and the kubeconfig setted in chapter 1.</p>
 <h2><a class="header" href="#install-tdengine-chart" id="install-tdengine-chart">Install TDengine Chart</a></h2>
 <p>Download TDengine chart.</p>
-<pre><code class="language-sh">wget https://github.com/taosdata/TDengine-Operator/raw/main/helm/tdengine-0.2.0.tgz
+<pre><code class="language-sh">wget https://github.com/taosdata/TDengine-Operator/raw/main/helm/tdengine-0.2.1.tgz
 </code></pre>
 <p>First, check your sotrage class name:</p>
 <pre><code class="language-sh">helm get storageclass
 </code></pre>
 <p>In minikube, the default storageclass name is <code>standard</code>.</p>
 <p>And then deploy TDengine in one line:</p>
-<pre><code class="language-sh">helm install tdengine tdengine-0.2.0.tgz \
+<pre><code class="language-sh">helm install tdengine tdengine-0.2.1.tgz \
   --set storage.className=&lt;your storage class name&gt;
 </code></pre>
 <p>If you are using minikube, you may want a smaller storage size for TDengine:</p>
-<pre><code class="language-sh">helm install tdengine tdengine-0.2.0.tgz \
+<pre><code class="language-sh">helm install tdengine tdengine-0.2.1.tgz \
   --set storage.className=standard \
   --set storage.dataSize=2Gi \
   --set storage.logSize=10Mi
@@ -1045,10 +1045,10 @@ kubectl --namespace default exec -it $POD_NAME -- taos
 <h2><a class="header" href="#values" id="values">Values</a></h2>
 <p>TDengine support <code>values.yaml</code> append.</p>
 <p>To see a full list of values, use <code>helm show values</code>:</p>
-<pre><code class="language-sh">helm show values tdengine-0.2.0.tgz
+<pre><code class="language-sh">helm show values tdengine-0.2.1.tgz
 </code></pre>
 <p>You cound save it to <code>values.yaml</code>, and do some changs on it, like replica count, storage class name, and so on. Then type:</p>
-<pre><code class="language-sh">helm install tdengine tdengine-0.2.0.tgz -f values.yaml
+<pre><code class="language-sh">helm install tdengine tdengine-0.2.1.tgz -f values.yaml
 </code></pre>
 <p>The full list of values:</p>
 <pre><code class="language-yaml"># Default values for tdengine.

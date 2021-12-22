@@ -182,18 +182,18 @@ chmod +x get_helm.sh
 <p>Helm会使用<code>kubectl</code>和kubeconfig的配置来操作Kubernetes，可以参考Rancher安装Kubernetes的配置来进行设置。</p>
 <h2><a class="header" href="#安装-tdengine-chart" id="安装-tdengine-chart">安装 TDengine Chart</a></h2>
 <p>TDengine Chart 尚未发布到 Helm 仓库，当前可以从GitHub直接下载：</p>
-<pre><code class="language-sh">wget https://github.com/taosdata/TDengine-Operator/raw/main/helm/tdengine-0.2.0.tgz
+<pre><code class="language-sh">wget https://github.com/taosdata/TDengine-Operator/raw/main/helm/tdengine-0.2.1.tgz
 </code></pre>
 <p>获取当前Kubernetes的存储类：</p>
 <pre><code class="language-sh">kubectl get storageclass
 </code></pre>
 <p>在 minikube 默认为 <code>standard</code>.</p>
 <p>之后，使用<code>helm</code>命令安装：</p>
-<pre><code class="language-sh">helm install tdengine tdengine-0.2.0.tgz \
+<pre><code class="language-sh">helm install tdengine tdengine-0.2.1.tgz \
   --set storage.className=&lt;your storage class name&gt;
 </code></pre>
 <p>在 minikube 环境下，可以设置一个较小的容量避免超出磁盘可用空间：</p>
-<pre><code class="language-sh">helm install tdengine tdengine-0.2.0.tgz \
+<pre><code class="language-sh">helm install tdengine tdengine-0.2.1.tgz \
   --set storage.className=standard \
   --set storage.dataSize=2Gi \
   --set storage.logSize=10Mi
@@ -220,10 +220,10 @@ kubectl --namespace default exec -it $POD_NAME -- taos
 <h2><a class="header" href="#values-配置" id="values-配置">Values 配置</a></h2>
 <p>TDengine 支持 <code>values.yaml</code> 自定义。</p>
 <p>通过 <code>helm show values</code>可以获取TDengine Chart支持的全部values列表：</p>
-<pre><code class="language-sh">helm show values tdengine-0.2.0.tgz
+<pre><code class="language-sh">helm show values tdengine-0.2.1.tgz
 </code></pre>
 <p>你可以将结果保存为 <code>values.yaml</code>，之后可以修改其中的各项参数，如 replica 数量，存储类名称，容量大小，TDengine 配置等，然后使用如下命令安装TDengine集群：</p>
-<pre><code class="language-sh">helm install tdengine tdengine-0.2.0.tgz -f values.yaml
+<pre><code class="language-sh">helm install tdengine tdengine-0.2.1.tgz -f values.yaml
 </code></pre>
 <p>全部参数如下：</p>
 <pre><code class="language-yaml"># Default values for tdengine.
