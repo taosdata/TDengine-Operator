@@ -104,12 +104,12 @@ spec:
               port: 6030
             initialDelaySeconds: 15
             periodSeconds: 20
-          securityContext:  
-            privileged: true
-            allowPrivilegeEscalation: true
-            runAsUser: 0
-            runAsGroup: 0
-            readOnlyRootFilesystem: false
+          securityContext:
+            # privileged: true
+            # allowPrivilegeEscalation: true
+            # runAsUser: 0
+            # runAsGroup: 0
+            # readOnlyRootFilesystem: false
             # allowedCapabilities:
             # - CAP_SYS_ADMIN
             # - CHOWN
