@@ -12,5 +12,4 @@ RUN sed -Ei "s#http://.*.ubuntu.com#${APT_MIRROR}#" /etc/apt/sources.list \
 ENV LC_ALL=en_US.UTF-8
 ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US.UTF-8
-COPY third-party/* /usr/bin/
 COPY bin/* /usr/bin/
