@@ -7,12 +7,16 @@ NAMESPACE=${NAMESPACE:-tdengine}
 PREFIX=${PREFIX:-tdengine}
 BAILONGMA_VERSION=${BAILONGMA_VERSION:-0.2.2}
 PUSH=0
+USE_GIT=0
 
 # Parse options
-while getopts "pv:n:P:h" opt; do
+while getopts "pgv:n:P:h" opt; do
   case $opt in
   p)
     PUSH=1
+    ;;
+  g)
+    USE_GIT=1
     ;;
   v)
     VERSION=$OPTARG
@@ -46,9 +50,12 @@ cd $DOCKER_PATH
 cd builder
 
 #[ -e "ver-$VERSION.tar.gz" ] || wget -c https://github.com/taosdata/TDengine/archive/refs/tags/ver-$VERSION.tar.gz
+
+ORIG_VERSION=$VERSION
+VERSION=${VERSION%-beta}
 docker build \
   --build-arg BASE_IMAGE=$BASE_IMAGE \
-  --build-arg VERSION=$VERSION \
+  --build-arg VERSION=$ORIG_VERSION \
   -t $IMAGE_PREFIX-artifacts:$VERSION .
 cd ..
 cd runtime

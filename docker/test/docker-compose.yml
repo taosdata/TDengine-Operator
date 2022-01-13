@@ -2,26 +2,22 @@ version: "3"
 
 services:
   arbitrator:
-    image: zitsen/tdengine-arbitrator:2.2.2.0
+    image: zitsen/tdengine-arbitrator:2.3.5.0
   td-1:
-    image: zitsen/tdengine-server:2.2.2.0
+    image: zitsen/tdengine-server:2.3.5.0
     environment:
-      CLUSTER: "1"
       TAOS_FQDN: "td-1"
       TAOS_FIRST_EP: "td-1"
-      TAOS_SECOND_EP: "td-2"
       TAOS_NUM_OF_MNODES: "2"
       TAOS_REPLICA: "2"
       TAOS_ARBITRATOR: arbitrator:6042
     volumes:
       - taosdata-td1:/var/lib/taos/
   td-2:
-    image: zitsen/tdengine-server:2.2.2.0
+    image: zitsen/tdengine-server:2.3.5.0
     environment:
-      CLUSTER: "1"
       TAOS_FQDN: "td-2"
       TAOS_FIRST_EP: "td-1"
-      TAOS_SECOND_EP: "td-2"
       TAOS_NUM_OF_MNODES: "2"
       TAOS_REPLICA: "2"
       TAOS_ARBITRATOR: arbitrator:6042
