@@ -1086,10 +1086,10 @@ kubectl --namespace default exec -it $POD_NAME -- taos
 replicaCount: 1
 
 image:
-  prefix: zitsen/tdengine
+  prefix: tdengine/tdengine
   #pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  #tag: &quot;2.2.1.1&quot;
+  #tag: &quot;2.4.0.5&quot;
 
 service:
   # ClusterIP is the default service type, use NodeIP only if you know what you are doing.
@@ -1145,10 +1145,6 @@ clusterDomainSuffix: &quot;&quot;
 #
 # Btw, keep quotes &quot;&quot; around the value like below, even the value will be number or not.
 taoscfg:
-  # Starts as cluster or not, must be 0 or 1.
-  #   0: all pods will start as a seperate TDengine server
-  #   1: pods will start as TDengine server cluster. [default]
-  CLUSTER: &quot;1&quot;
 
   # number of replications, for cluster only
   TAOS_REPLICA: &quot;1&quot;
