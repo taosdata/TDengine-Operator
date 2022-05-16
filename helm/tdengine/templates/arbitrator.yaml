@@ -24,7 +24,8 @@ spec:
     spec:
       containers:
       - name: arbitrator
-        image: "{{ .Values.image.prefix }}-arbitrator:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        image: "{{ .Values.image.prefix }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        command: ["tarbitrator"]
         ports:
         - name: tcp6042
           containerPort: 6042
