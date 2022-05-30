@@ -1,17 +1,5 @@
 ---
 apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: taoscfg
-  labels:
-    app: tdengine
-data:
-  CLUSTER: "1"
-  TAOS_KEEP: "3650"
-  TAOS_DEBUG_FLAG: "135"
-
----
-apiVersion: v1
 kind: Service
 metadata:
   name: "taosd"
@@ -22,45 +10,6 @@ spec:
   - name: tcp6030
     protocol: "TCP"
     port: 6030
-  - name: tcp6035
-    protocol: "TCP"
-    port: 6035
-  - name: tcp6041
-    protocol: "TCP"
-    port: 6041
-  - name: udp6030
-    protocol: "UDP"
-    port: 6030
-  - name: udp6031
-    protocol: "UDP"
-    port: 6031
-  - name: udp6032
-    protocol: "UDP"
-    port: 6032
-  - name: udp6033
-    protocol: "UDP"
-    port: 6033
-  - name: udp6034
-    protocol: "UDP"
-    port: 6034
-  - name: udp6035
-    protocol: "UDP"
-    port: 6035
-  - name: udp6036
-    protocol: "UDP"
-    port: 6036
-  - name: udp6037
-    protocol: "UDP"
-    port: 6037
-  - name: udp6038
-    protocol: "UDP"
-    port: 6038
-  - name: udp6039
-    protocol: "UDP"
-    port: 6039
-  - name: udp6040
-    protocol: "UDP"
-    port: 6040
   selector:
     app: "tdengine"
 ---
@@ -86,54 +35,15 @@ spec:
     spec:
       containers:
       - name: "tdengine"
-        image: "zitsen/taosd:develop"
-        imagePullPolicy: "Always"
-        envFrom:
-        - configMapRef:
-            name: taoscfg
+        image: "taosd:3.0"
+        imagePullPolicy: "IfNotPresent"
         ports:
         - name: tcp6030
           protocol: "TCP"
           containerPort: 6030
-        - name: tcp6035
-          protocol: "TCP"
-          containerPort: 6035
         - name: tcp6041
           protocol: "TCP"
           containerPort: 6041
-        - name: udp6030
-          protocol: "UDP"
-          containerPort: 6030
-        - name: udp6031
-          protocol: "UDP"
-          containerPort: 6031
-        - name: udp6032
-          protocol: "UDP"
-          containerPort: 6032
-        - name: udp6033
-          protocol: "UDP"
-          containerPort: 6033
-        - name: udp6034
-          protocol: "UDP"
-          containerPort: 6034
-        - name: udp6035
-          protocol: "UDP"
-          containerPort: 6035
-        - name: udp6036
-          protocol: "UDP"
-          containerPort: 6036
-        - name: udp6037
-          protocol: "UDP"
-          containerPort: 6037
-        - name: udp6038
-          protocol: "UDP"
-          containerPort: 6038
-        - name: udp6039
-          protocol: "UDP"
-          containerPort: 6039
-        - name: udp6040
-          protocol: "UDP"
-          containerPort: 6040
         env:
         # POD_NAME for FQDN config
         - name: POD_NAME
@@ -167,14 +77,13 @@ spec:
         readinessProbe:
           exec:
             command:
-            - taos
-            - -s
-            - "show mnodes"
+            - taos-check
           initialDelaySeconds: 5
           timeoutSeconds: 5000
         livenessProbe:
-          tcpSocket:
-            port: 6030
+          exec:
+            command:
+            - taos-check
           initialDelaySeconds: 15
           periodSeconds: 20
   volumeClaimTemplates:
@@ -183,7 +92,6 @@ spec:
     spec:
       accessModes:
         - "ReadWriteOnce"
-      storageClassName: "csi-rbd-sc"
       resources:
         requests:
           storage: "10Gi"

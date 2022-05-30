@@ -8,18 +8,17 @@ image:
   prefix: tdengine/tdengine
   #pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  #tag: "2.4.0.5"
+#  tag: "3.0.0.0"
 
 service:
   # ClusterIP is the default service type, use NodeIP only if you know what you are doing.
   type: ClusterIP
   ports:
     # TCP range required
-    tcp: [6030,6031,6032,6033,6034, 6035,6036,6037,6038, 6039, 6040, 6041, 6042, 6043, 6044, 6045, 6060]
-    # UDP range 6030-6039
-    udp: [6030, 6031, 6032, 6033, 6034, 6035, 6036, 6037, 6038, 6039]
+    tcp: [6030, 6041, 6042, 6043, 6044, 6046, 6047, 6048, 6049, 6060]
+    # UDP range
+    udp: [6044, 6045]
 
-arbitrator: true
 
 # Set timezone here, not in taoscfg
 timezone: "Asia/Shanghai"
@@ -64,6 +63,10 @@ clusterDomainSuffix: ""
 #
 # Btw, keep quotes "" around the value like below, even the value will be number or not.
 taoscfg:
+  # Starts as cluster or not, must be 0 or 1.
+  #   0: all pods will start as a seperate TDengine server
+  #   1: pods will start as TDengine server cluster. [default]
+  CLUSTER: "1"
 
   # number of replications, for cluster only
   TAOS_REPLICA: "1"

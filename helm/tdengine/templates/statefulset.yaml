@@ -90,16 +90,13 @@ spec:
           readinessProbe:
             exec:
               command:
-              - taos
-              - -n
-              - startup
-              - -h
-              - "${POD_NAME}"
+              - taos-check
             initialDelaySeconds: 5
             timeoutSeconds: 5000
           livenessProbe:
-            tcpSocket:
-              port: 6030
+            exec:
+              command:
+              - taos-check
             initialDelaySeconds: 15
             periodSeconds: 20
           securityContext:
@@ -140,7 +137,9 @@ spec:
     spec:
       accessModes:
         - "ReadWriteOnce"
+      {{- if .Values.storage.className }}
       storageClassName: "{{ .Values.storage.className }}"
+      {{- end }}
       resources:
         requests:
           storage: "{{ .Values.storage.dataSize }}"
@@ -149,7 +148,9 @@ spec:
     spec:
       accessModes:
         - "ReadWriteOnce"
+      {{- if .Values.storage.className }}
       storageClassName: "{{ .Values.storage.className }}"
+      {{- end }}
       resources:
         requests:
           storage: "{{ .Values.storage.logSize }}"
