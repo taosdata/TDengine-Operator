@@ -8,7 +8,6 @@ services:
     environment:
       TAOS_FQDN: "td-1"
       TAOS_FIRST_EP: "td-1"
-      TAOS_NUM_OF_MNODES: "2"
       TAOS_REPLICA: "2"
       TAOS_ARBITRATOR: arbitrator:6042
     volumes:
@@ -18,7 +17,6 @@ services:
     environment:
       TAOS_FQDN: "td-2"
       TAOS_FIRST_EP: "td-1"
-      TAOS_NUM_OF_MNODES: "2"
       TAOS_REPLICA: "2"
       TAOS_ARBITRATOR: arbitrator:6042
     volumes:

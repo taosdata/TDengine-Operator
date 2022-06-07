@@ -71,8 +71,6 @@ taoscfg:
   # number of replications, for cluster only
   TAOS_REPLICA: "1"
 
-  # number of management nodes in the system
-  TAOS_NUM_OF_MNODES: "1"
 
   # number of days per DB file
   # TAOS_DAYS: "10"
