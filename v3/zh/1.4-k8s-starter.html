@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Setup TDengine Cluster on Kubernetes - Setup TDengine on Kubenetes from Scratch</title>
+        <title>开始使用Kubernetes - 在Kubenetes上部署TDengine集群</title>
         
         
 
@@ -13,7 +13,7 @@
 
 
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <meta name="description" content="">
+        <meta name="description" content="从头安装Kubenetes并部署TDengine集群。">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
@@ -93,7 +93,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="index.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="1.0-kubernetes.html"><strong aria-hidden="true">2.</strong> Start with Kubernetes</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="1.1-install-kubernetes-with-minikube.html"><strong aria-hidden="true">2.1.</strong> Try Kubernetes with Minikube</a></li><li class="chapter-item expanded "><a href="1.2-install-kubernetes-with-rancher.html"><strong aria-hidden="true">2.2.</strong> Install Kubernetes with Rancher</a></li><li class="chapter-item expanded "><a href="1.3-storage-class.html"><strong aria-hidden="true">2.3.</strong> Storage Class with Ceph RBD</a></li><li class="chapter-item expanded "><a href="1.4-k8s-starter.html"><strong aria-hidden="true">2.4.</strong> Start Using Kubernetes</a></li></ol></li><li class="chapter-item expanded "><a href="2.0-tdengine-on-kubernetes.html" class="active"><strong aria-hidden="true">3.</strong> Setup TDengine Cluster on Kubernetes</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="2.1-tdengine-step-by-step.html"><strong aria-hidden="true">3.1.</strong> Setup TDengine Cluster Step by Step</a></li><li class="chapter-item expanded "><a href="2.2-tdengine-with-helm.html"><strong aria-hidden="true">3.2.</strong> Setup TDengine Cluster with Helm</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="index.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="1.0-kubernetes.html"><strong aria-hidden="true">2.</strong> 从Kubernetes开始</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="1.1-install-kubernetes-with-minikube.html"><strong aria-hidden="true">2.1.</strong> 使用Minikube尝鲜Kubernetes</a></li><li class="chapter-item expanded "><a href="1.2-install-kubernetes-with-rancher.html"><strong aria-hidden="true">2.2.</strong> 使用Rancher安装Kubernetes</a></li><li class="chapter-item expanded "><a href="1.4-k8s-starter.html" class="active"><strong aria-hidden="true">2.3.</strong> 开始使用Kubernetes</a></li></ol></li><li class="chapter-item expanded "><a href="2.0-tdengine-on-kubernetes.html"><strong aria-hidden="true">3.</strong> 在Kubernetes上部署TDengine集群</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="2.1-tdengine-step-by-step.html"><strong aria-hidden="true">3.1.</strong> 一步一步创建TDengine集群</a></li><li class="chapter-item expanded "><a href="2.2-tdengine-with-helm.html"><strong aria-hidden="true">3.2.</strong> 使用Helm部署TDengine集群</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -129,15 +129,15 @@
                         </button>
                         <ul id="language-list" class="language-popup" aria-label="Languages" role="menu">
                           
-                            <li role="none"><a href="../en/2.0-tdengine-on-kubernetes.html"><button role="menuitem" class="language" id="light">English</button></a></li>
+                            <li role="none"><a href="../en/1.4-k8s-starter.html"><button role="menuitem" class="language" id="light">English</button></a></li>
                           
-                            <li role="none"><a href="../zh/2.0-tdengine-on-kubernetes.html"><button role="menuitem" class="language" id="light">简体中文</button></a></li>
+                            <li role="none"><a href="../zh/1.4-k8s-starter.html"><button role="menuitem" class="language" id="light">简体中文</button></a></li>
                           
                         </ul>
                         
                     </div>
 
-                    <h1 class="menu-title">Setup TDengine on Kubenetes from Scratch</h1>
+                    <h1 class="menu-title">在Kubenetes上部署TDengine集群</h1>
 
                     <div class="right-buttons">
                         <a href="print.html" title="Print this book" aria-label="Print this book">
@@ -171,20 +171,104 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1><a class="header" href="#setup-tdengine-cluster-on-kubernetes" id="setup-tdengine-cluster-on-kubernetes">Setup TDengine Cluster on Kubernetes</a></h1>
+                        <h1><a class="header" href="#开始使用-kubernetes" id="开始使用-kubernetes">开始使用 Kubernetes</a></h1>
+<p>现在我们可以开始用 Kubernetes 了。</p>
+<h2><a class="header" href="#statefulsets" id="statefulsets">StatefulSets</a></h2>
+<p><code>starter/stateful-nginx.yaml</code>:</p>
+<pre><code class="language-yaml">apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  ports:
+  - port: 80
+    name: web
+  clusterIP: None
+  selector:
+    app: nginx
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: web
+spec:
+  selector:
+    matchLabels:
+      app: nginx # has to match .spec.template.metadata.labels
+  serviceName: &quot;nginx&quot;
+  replicas: 3 # by default is 1
+  template:
+    metadata:
+      labels:
+        app: nginx # has to match .spec.selector.matchLabels
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+          name: web
+        volumeMounts:
+        - name: www
+          mountPath: /usr/share/nginx/html
+  volumeClaimTemplates:
+  - metadata:
+      name: www
+    spec:
+      accessModes: [ &quot;ReadWriteOnce&quot; ]
+      storageClassName: &quot;csi-rbd-sc&quot;
+      resources:
+        requests:
+          storage: 1Gi
+</code></pre>
+<pre><code class="language-sh">kubectl apply -f starter/stateful-nginx.yaml
+</code></pre>
+<h2><a class="header" href="#将-configmap-映射为-volume" id="将-configmap-映射为-volume">将 ConfigMap 映射为 Volume</a></h2>
+<pre><code class="language-yaml">---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: starter-config-map
+data:
+  debugFlag: 135
+  keep: 3650
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: starter-config-map-as-volume
+spec:
+  containers:
+    - name: test-container
+      image: busybox
+      command: [ &quot;/bin/sh&quot;, &quot;-c&quot;, &quot;ls /etc/config/&quot; ]
+      volumeMounts:
+      - name: starter-config-map-vol
+        mountPath: /etc/config
+  volumes:
+    - name: starter-config-map-vol
+      configMap:
+        # Provide the name of the ConfigMap containing the files you want
+        # to add to the container
+        name: starter-config-map
+  restartPolicy: Never
+</code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
                         
-                            <a rel="prev" href="1.4-k8s-starter.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="1.2-install-kubernetes-with-rancher.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
                         
 
                         
-                            <a rel="next" href="2.1-tdengine-step-by-step.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="2.0-tdengine-on-kubernetes.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
                         
@@ -196,13 +280,13 @@
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
                 
-                    <a rel="prev" href="1.4-k8s-starter.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="1.2-install-kubernetes-with-rancher.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
                 
 
                 
-                    <a rel="next" href="2.1-tdengine-step-by-step.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="2.0-tdengine-on-kubernetes.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
                 

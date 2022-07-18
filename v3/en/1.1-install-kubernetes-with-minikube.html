@@ -3,10 +3,8 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title></title>
+        <title>Try Kubernetes with Minikube - Setup TDengine on Kubenetes from Scratch</title>
         
-        
-        <base href="/en/">
         
 
 
@@ -95,7 +93,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="index.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="1.0-kubernetes.html"><strong aria-hidden="true">2.</strong> Start with Kubernetes</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="1.1-install-kubernetes-with-minikube.html"><strong aria-hidden="true">2.1.</strong> Try Kubernetes with Minikube</a></li><li class="chapter-item expanded "><a href="1.2-install-kubernetes-with-rancher.html"><strong aria-hidden="true">2.2.</strong> Install Kubernetes with Rancher</a></li><li class="chapter-item expanded "><a href="1.3-storage-class.html"><strong aria-hidden="true">2.3.</strong> Storage Class with Ceph RBD</a></li><li class="chapter-item expanded "><a href="1.4-k8s-starter.html"><strong aria-hidden="true">2.4.</strong> Start Using Kubernetes</a></li></ol></li><li class="chapter-item expanded "><a href="2.0-tdengine-on-kubernetes.html"><strong aria-hidden="true">3.</strong> Setup TDengine Cluster on Kubernetes</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="2.1-tdengine-step-by-step.html"><strong aria-hidden="true">3.1.</strong> Setup TDengine Cluster Step by Step</a></li><li class="chapter-item expanded "><a href="2.2-tdengine-with-helm.html"><strong aria-hidden="true">3.2.</strong> Setup TDengine Cluster with Helm</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="index.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="1.0-kubernetes.html"><strong aria-hidden="true">2.</strong> Start with Kubernetes</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="1.1-install-kubernetes-with-minikube.html" class="active"><strong aria-hidden="true">2.1.</strong> Try Kubernetes with Minikube</a></li><li class="chapter-item expanded "><a href="1.2-install-kubernetes-with-rancher.html"><strong aria-hidden="true">2.2.</strong> Install Kubernetes with Rancher</a></li><li class="chapter-item expanded "><a href="1.4-k8s-starter.html"><strong aria-hidden="true">2.3.</strong> Start Using Kubernetes</a></li></ol></li><li class="chapter-item expanded "><a href="2.0-tdengine-on-kubernetes.html"><strong aria-hidden="true">3.</strong> Setup TDengine Cluster on Kubernetes</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="2.1-tdengine-step-by-step.html"><strong aria-hidden="true">3.1.</strong> Setup TDengine Cluster Step by Step</a></li><li class="chapter-item expanded "><a href="2.2-tdengine-with-helm.html"><strong aria-hidden="true">3.2.</strong> Setup TDengine Cluster with Helm</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -131,9 +129,9 @@
                         </button>
                         <ul id="language-list" class="language-popup" aria-label="Languages" role="menu">
                           
-                            <li role="none"><a href="../en/404.html"><button role="menuitem" class="language" id="light">English</button></a></li>
+                            <li role="none"><a href="../en/1.1-install-kubernetes-with-minikube.html"><button role="menuitem" class="language" id="light">English</button></a></li>
                           
-                            <li role="none"><a href="../zh/404.html"><button role="menuitem" class="language" id="light">简体中文</button></a></li>
+                            <li role="none"><a href="../zh/1.1-install-kubernetes-with-minikube.html"><button role="menuitem" class="language" id="light">简体中文</button></a></li>
                           
                         </ul>
                         
@@ -173,15 +171,56 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1><a class="header" href="#document-not-found-404" id="document-not-found-404">Document not found (404)</a></h1>
-<p>This URL is invalid, sorry. Please use the navigation bar or search to continue.</p>
+                        <h1><a class="header" href="#try-kubernetes-with-minikube" id="try-kubernetes-with-minikube">Try kubernetes with Minikube</a></h1>
+<blockquote>
+<p>This document will apply to linux host, others would go <a href="https://minikube.sigs.k8s.io/docs/start/">https://minikube.sigs.k8s.io/docs/start/</a> for more documentations.</p>
+</blockquote>
+<h2><a class="header" href="#install" id="install">Install</a></h2>
+<p>First, download and install minikube</p>
+<pre><code class="language-sh">curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+sudo install minikube-linux-amd64 /usr/local/bin/minikube
+</code></pre>
+<h2><a class="header" href="#start" id="start">Start</a></h2>
+<p>Start a minikube cluster</p>
+<pre><code class="language-sh">minikube start
+</code></pre>
+<p><img src="../en/assets/minikube-start.png" alt="minikube-start" /></p>
+<h2><a class="header" href="#kubectl" id="kubectl">Kubectl</a></h2>
+<p>In minikube, you can use kubectl like:</p>
+<pre><code class="language-sh">minikube kubectl -- get pods -A
+</code></pre>
+<p>But you can install and use kubectl as usual:</p>
+<pre><code class="language-sh">curl -LO &quot;https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl&quot;
+sudo install kubectl /usr/local/bin/kubectl
+</code></pre>
+<p>Get pods in all namespaces:</p>
+<pre><code class="language-sh">kubectl get pods -A
+</code></pre>
+<p>Get storage class:</p>
+<pre><code class="language-sh">kubectl get sc
+</code></pre>
+<p>Note that minikube will enable default storage class <code>standard</code>, which you should keep in mind.</p>
+<h2><a class="header" href="#dashboard" id="dashboard">Dashboard</a></h2>
+<p>Minikube provide dashboard as an extension, start it with:</p>
+<pre><code class="language-sh">minikube dashboard
+</code></pre>
+<p>It will open in web browser:</p>
+<p><img src="../en/assets/minikube-dashboard.png" alt="minikube-dashboard" /></p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
                         
+                            <a rel="prev" href="1.0-kubernetes.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
 
+                        
+                            <a rel="next" href="1.2-install-kubernetes-with-rancher.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
                         
 
                         <div style="clear: both"></div>
@@ -191,7 +230,15 @@
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
                 
+                    <a rel="prev" href="1.0-kubernetes.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
 
+                
+                    <a rel="next" href="1.2-install-kubernetes-with-rancher.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
                 
             </nav>
 
