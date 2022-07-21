@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Setup TDengine Cluster Step by Step - Setup TDengine on Kubenetes from Scratch</title>
+        <title>一步一步创建TDengine集群 - 在Kubenetes上部署TDengine集群</title>
         
         
 
@@ -13,7 +13,7 @@
 
 
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <meta name="description" content="">
+        <meta name="description" content="从头安装Kubenetes并部署TDengine集群。">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
@@ -93,7 +93,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="index.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="1.0-kubernetes.html"><strong aria-hidden="true">2.</strong> Start with Kubernetes</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="1.1-install-kubernetes-with-minikube.html"><strong aria-hidden="true">2.1.</strong> Try Kubernetes with Minikube</a></li><li class="chapter-item expanded "><a href="1.2-install-kubernetes-with-rancher.html"><strong aria-hidden="true">2.2.</strong> Install Kubernetes with Rancher</a></li><li class="chapter-item expanded "><a href="1.4-k8s-starter.html"><strong aria-hidden="true">2.3.</strong> Start Using Kubernetes</a></li></ol></li><li class="chapter-item expanded "><a href="2.0-tdengine-on-kubernetes.html"><strong aria-hidden="true">3.</strong> Setup TDengine Cluster on Kubernetes</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="2.1-tdengine-step-by-step.html" class="active"><strong aria-hidden="true">3.1.</strong> Setup TDengine Cluster Step by Step</a></li><li class="chapter-item expanded "><a href="2.2-tdengine-with-helm.html"><strong aria-hidden="true">3.2.</strong> Setup TDengine Cluster with Helm</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="index.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="1.0-kubernetes.html"><strong aria-hidden="true">2.</strong> 从Kubernetes开始</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="1.1-install-kubernetes-with-minikube.html"><strong aria-hidden="true">2.1.</strong> 使用Minikube尝鲜Kubernetes</a></li><li class="chapter-item expanded "><a href="1.2-install-kubernetes-with-rancher.html"><strong aria-hidden="true">2.2.</strong> 使用Rancher安装Kubernetes</a></li><li class="chapter-item expanded "><a href="1.3-storage-class.html"><strong aria-hidden="true">2.3.</strong> Kubernetes中的存储类</a></li><li class="chapter-item expanded "><a href="1.4-k8s-starter.html"><strong aria-hidden="true">2.4.</strong> 开始使用Kubernetes</a></li></ol></li><li class="chapter-item expanded "><a href="2.0-tdengine-on-kubernetes.html"><strong aria-hidden="true">3.</strong> 在Kubernetes上部署TDengine集群</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="2.1-tdengine-step-by-step.html" class="active"><strong aria-hidden="true">3.1.</strong> 一步一步创建TDengine集群</a></li><li class="chapter-item expanded "><a href="2.2-tdengine-with-helm.html"><strong aria-hidden="true">3.2.</strong> 使用Helm部署TDengine集群</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -137,7 +137,7 @@
                         
                     </div>
 
-                    <h1 class="menu-title">Setup TDengine on Kubenetes from Scratch</h1>
+                    <h1 class="menu-title">在Kubenetes上部署TDengine集群</h1>
 
                     <div class="right-buttons">
                         <a href="print.html" title="Print this book" aria-label="Print this book">
@@ -171,9 +171,23 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1><a class="header" href="#setup-tdengine-cluster-on-kubernetes" id="setup-tdengine-cluster-on-kubernetes">Setup TDengine Cluster on Kubernetes</a></h1>
-<h2><a class="header" href="#service" id="service">Service</a></h2>
-<p>Service config <code>taosd-service.yaml</code> for each port we will use, here note that the <code>metadata.name</code> (setted as <code>&quot;taosd&quot;</code>) will be used in next step:</p>
+                        <h1><a class="header" href="#一步一步创建tdengine集群" id="一步一步创建tdengine集群">一步一步创建TDengine集群</a></h1>
+<h2><a class="header" href="#configmap-配置" id="configmap-配置">ConfigMap 配置</a></h2>
+<p>为TDengine创建 <code>taoscfg.yaml</code>，此文件中的配置将作为环境变量传入TDengine镜像，更新此配置将导致所有TDengine POD重启。</p>
+<pre><code class="language-yaml">---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: taoscfg
+  labels:
+    app: tdengine
+data:
+  CLUSTER: &quot;1&quot;
+  TAOS_KEEP: &quot;3650&quot;
+  TAOS_DEBUG_FLAG: &quot;135&quot;
+</code></pre>
+<h2><a class="header" href="#service-服务" id="service-服务">Service 服务</a></h2>
+<p>创建一个 service 配置文件：<code>taosd-service.yaml</code>，服务名称 <code>metadata.name</code> (此处为 <code>&quot;taosd&quot;</code>) 将在下一步中使用到。添加TDengine所用到的所有端口：</p>
 <pre><code class="language-yaml">---
 apiVersion: v1
 kind: Service
@@ -186,14 +200,50 @@ spec:
   - name: tcp6030
     protocol: &quot;TCP&quot;
     port: 6030
+  - name: tcp6035
+    protocol: &quot;TCP&quot;
+    port: 6035
   - name: tcp6041
     protocol: &quot;TCP&quot;
     port: 6041
+  - name: udp6030
+    protocol: &quot;UDP&quot;
+    port: 6030
+  - name: udp6031
+    protocol: &quot;UDP&quot;
+    port: 6031
+  - name: udp6032
+    protocol: &quot;UDP&quot;
+    port: 6032
+  - name: udp6033
+    protocol: &quot;UDP&quot;
+    port: 6033
+  - name: udp6034
+    protocol: &quot;UDP&quot;
+    port: 6034
+  - name: udp6035
+    protocol: &quot;UDP&quot;
+    port: 6035
+  - name: udp6036
+    protocol: &quot;UDP&quot;
+    port: 6036
+  - name: udp6037
+    protocol: &quot;UDP&quot;
+    port: 6037
+  - name: udp6038
+    protocol: &quot;UDP&quot;
+    port: 6038
+  - name: udp6039
+    protocol: &quot;UDP&quot;
+    port: 6039
+  - name: udp6040
+    protocol: &quot;UDP&quot;
+    port: 6040
   selector:
     app: &quot;tdengine&quot;
 </code></pre>
-<h2><a class="header" href="#statefulset" id="statefulset">StatefulSet</a></h2>
-<p>We use StatefulSet config <code>tdengine.yaml</code> for TDengine.</p>
+<h2><a class="header" href="#statefulset-有状态服务" id="statefulset-有状态服务">StatefulSet 有状态服务</a></h2>
+<p>根据Kubernetes对各类部署的说明，我们将使用 StatefulSet 作为TDengine 的服务类型，创建文件<code>tdengine.yaml</code> ：</p>
 <pre><code class="language-yaml">---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -203,7 +253,7 @@ metadata:
     app: &quot;tdengine&quot;
 spec:
   serviceName: &quot;taosd&quot;
-  replicas: 3
+  replicas: 2
   updateStrategy:
     type: RollingUpdate
   selector:
@@ -217,15 +267,54 @@ spec:
     spec:
       containers:
       - name: &quot;tdengine&quot;
-        image: &quot;tdengine/tdengine:3.0.0.0&quot;
-        imagePullPolicy: &quot;IfNotPresent&quot;
+        image: &quot;zitsen/taosd:develop&quot;
+        imagePullPolicy: &quot;Always&quot;
+        envFrom:
+        - configMapRef:
+            name: taoscfg
         ports:
         - name: tcp6030
           protocol: &quot;TCP&quot;
           containerPort: 6030
+        - name: tcp6035
+          protocol: &quot;TCP&quot;
+          containerPort: 6035
         - name: tcp6041
           protocol: &quot;TCP&quot;
           containerPort: 6041
+        - name: udp6030
+          protocol: &quot;UDP&quot;
+          containerPort: 6030
+        - name: udp6031
+          protocol: &quot;UDP&quot;
+          containerPort: 6031
+        - name: udp6032
+          protocol: &quot;UDP&quot;
+          containerPort: 6032
+        - name: udp6033
+          protocol: &quot;UDP&quot;
+          containerPort: 6033
+        - name: udp6034
+          protocol: &quot;UDP&quot;
+          containerPort: 6034
+        - name: udp6035
+          protocol: &quot;UDP&quot;
+          containerPort: 6035
+        - name: udp6036
+          protocol: &quot;UDP&quot;
+          containerPort: 6036
+        - name: udp6037
+          protocol: &quot;UDP&quot;
+          containerPort: 6037
+        - name: udp6038
+          protocol: &quot;UDP&quot;
+          containerPort: 6038
+        - name: udp6039
+          protocol: &quot;UDP&quot;
+          containerPort: 6039
+        - name: udp6040
+          protocol: &quot;UDP&quot;
+          containerPort: 6040
         env:
         # POD_NAME for FQDN config
         - name: POD_NAME
@@ -259,13 +348,14 @@ spec:
         readinessProbe:
           exec:
             command:
-            - taos-check
+            - taos
+            - -s
+            - &quot;show mnodes&quot;
           initialDelaySeconds: 5
           timeoutSeconds: 5000
         livenessProbe:
-          exec:
-            command:
-            - taos-check
+          tcpSocket:
+            port: 6030
           initialDelaySeconds: 15
           periodSeconds: 20
   volumeClaimTemplates:
@@ -274,110 +364,119 @@ spec:
     spec:
       accessModes:
         - &quot;ReadWriteOnce&quot;
+      storageClassName: &quot;csi-rbd-sc&quot;
       resources:
         requests:
           storage: &quot;10Gi&quot;
 </code></pre>
-<h2><a class="header" href="#start-the-cluster" id="start-the-cluster">Start the cluster</a></h2>
-<pre><code class="language-sh">kubectl apply -f taosd-service.yaml
+<h2><a class="header" href="#启动集群" id="启动集群">启动集群</a></h2>
+<p>将三个文件添加到Kubernetes集群中：</p>
+<pre><code class="language-sh">kubectl apply -f taoscfg.yaml
+kubectl apply -f taosd-service.yaml
 kubectl apply -f tdengine.yaml
 </code></pre>
-<p>The script will create a three node TDengine cluster on k8s.</p>
-<p>Execute <code>show dnodes</code> in taos shell:</p>
+<p>上面的配置将生成一个两节点的TDengine集群，dnode是自动配置的，可以使用 <code>show dnodes</code>命令查看当前集群的节点：</p>
 <pre><code class="language-sh">kubectl exec -i -t tdengine-0 -- taos -s &quot;show dnodes&quot;
 kubectl exec -i -t tdengine-1 -- taos -s &quot;show dnodes&quot;
-kubectl exec -i -t tdengine-2 -- taos -s &quot;show dnodes&quot;
 </code></pre>
-<p>Well, the current dnodes list shows:</p>
-<pre><code class="language-sql">Welcome to the TDengine shell from Linux, Client Version:3.0.0.0
-Copyright (c) 2022 by TAOS Data, Inc. All rights reserved.
+<p>一个两节点集群，应输出如下：</p>
+<pre><code class="language-sql">Welcome to the TDengine shell from Linux, Client Version:2.1.1.0
+Copyright (c) 2020 by TAOS Data, Inc. All rights reserved.
 
 taos&gt; show dnodes
-   id   |            endpoint            | vnodes | support_vnodes |   status   |       create_time       |              note              |
-============================================================================================================================================
-      1 | tdengine-0.taosd.default.sv... |      0 |            256 | ready      | 2022-06-22 15:29:49.049 |                                |
-      2 | tdengine-1.taosd.default.sv... |      0 |            256 | ready      | 2022-06-22 15:30:11.895 |                                |
-      3 | tdengine-2.taosd.default.sv... |      0 |            256 | ready      | 2022-06-22 15:30:33.007 |                                |
-Query OK, 3 rows affected (0.004610s)
+   id   |           end_point            | vnodes | cores  |   status   | role  |       create_time       |      offline reason      |
+======================================================================================================================================
+      1 | tdengine-0.taosd.default.sv... |      1 |     40 | ready      | any   | 2021-06-01 17:13:24.181 |                          |
+      2 | tdengine-1.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 17:14:09.257 |                          |
+Query OK, 2 row(s) in set (0.000997s)
 </code></pre>
-<h2><a class="header" href="#scale-up" id="scale-up">Scale Up</a></h2>
-<p>TDengine on Kubernetes could automatically scale up with:</p>
+<h2><a class="header" href="#扩容" id="扩容">扩容</a></h2>
+<p>TDengine支持自动扩容：</p>
 <pre><code class="language-sh">kubectl scale statefulsets tdengine --replicas=4
 </code></pre>
-<p>Check if scale-up works:</p>
+<p>检查一下是否生效，首先看下POD状态：</p>
 <pre><code class="language-sh">kubectl get pods -l app=tdengine 
 </code></pre>
 <p>Results:</p>
 <pre><code class="language-text">NAME         READY   STATUS    RESTARTS   AGE
-tdengine-0   1/1     Running   0          2m9s
-tdengine-1   1/1     Running   0          108s
-tdengine-2   1/1     Running   0          86s
-tdengine-3   1/1     Running   0          22s
+tdengine-0   1/1     Running   0          161m
+tdengine-1   1/1     Running   0          161m
+tdengine-2   1/1     Running   0          32m
+tdengine-3   1/1     Running   0          32m
 </code></pre>
-<p>Check TDengine dnodes:</p>
+<p>TDengine Dnode 状态需要等POD <code>ready</code> 后才能看到：</p>
 <pre><code class="language-sh">kubectl exec -i -t tdengine-0 -- taos -s &quot;show dnodes&quot;
 </code></pre>
-<p>Results:</p>
-<pre><code class="language-sql">Welcome to the TDengine shell from Linux, Client Version:3.0.0.0
-Copyright (c) 2022 by TAOS Data, Inc. All rights reserved.
+<p>扩容后的四节点TDengine集群的 dnode 列表:</p>
+<pre><code class="language-sql">Welcome to the TDengine shell from Linux, Client Version:2.1.1.0
+Copyright (c) 2020 by TAOS Data, Inc. All rights reserved.
 
 taos&gt; show dnodes
-   id   |            endpoint            | vnodes | support_vnodes |   status   |       create_time       |              note              |
-============================================================================================================================================
-      1 | tdengine-0.taosd.default.sv... |      0 |            256 | ready      | 2022-06-22 15:29:49.049 |                                |
-      2 | tdengine-1.taosd.default.sv... |      0 |            256 | ready      | 2022-06-22 15:30:11.895 |                                |
-      3 | tdengine-2.taosd.default.sv... |      0 |            256 | ready      | 2022-06-22 15:30:33.007 |                                |
-      4 | tdengine-3.taosd.default.sv... |      0 |            256 | ready      | 2022-06-22 15:31:36.204 |                                |
-Query OK, 4 rows affected (0.009594s)
+   id   |           end_point            | vnodes | cores  |   status   | role  |       create_time       |      offline reason      |
+======================================================================================================================================
+      1 | tdengine-0.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 11:58:12.915 |                          |
+      2 | tdengine-1.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 11:58:33.127 |                          |
+      3 | tdengine-2.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 14:07:27.078 |                          |
+      4 | tdengine-3.taosd.default.sv... |      1 |     40 | ready      | any   | 2021-06-01 14:07:48.362 |                          |
+Query OK, 4 row(s) in set (0.001293s)
 </code></pre>
-<h2><a class="header" href="#scale-down" id="scale-down">Scale Down</a></h2>
-<p>Let's try scale down from 4 to 3.</p>
-<p>To perform a right scale-down, we should drop the last dnode in taos shell first:</p>
-<pre><code class="language-sh">kubectl exec -i -t tdengine-0 -- taos -s &quot;drop dnode 4&quot;
-</code></pre>
-<p>Then scale down to 3.</p>
+<h2><a class="header" href="#缩容" id="缩容">缩容</a></h2>
+<p>TDengine的缩容并没有自动化，我们尝试将一个三节点集群缩容到两节点。</p>
+<p>首先，确认一个三节点TDengine集群正常工作：</p>
 <pre><code class="language-sh">kubectl scale statefulsets tdengine --replicas=3
 </code></pre>
-<p>Extra replicas pods will be terminated, and retain 3 pods.</p>
-<p>Type <code>kubectl get pods -l app=tdengine</code> to check pods.</p>
+<p><code>show dnodes</code></p>
+<pre><code class="language-sql">taos&gt; show dnodes
+   id   |           end_point            | vnodes | cores  |   status   | role  |       create_time       |      offline reason      |
+======================================================================================================================================
+      1 | tdengine-0.taosd.default.sv... |      1 |     40 | ready      | any   | 2021-06-01 16:27:24.852 |                          |
+      2 | tdengine-1.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 16:27:53.339 |                          |
+      3 | tdengine-2.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 16:28:49.787 |                          |
+Query OK, 3 row(s) in set (0.001101s)
+</code></pre>
+<p>想要安全的缩容，首先需要将节点从dnode列表中移除：</p>
+<pre><code class="language-sh">kubectl exec -i -t tdengine-0 -- taos -s &quot;drop dnode 'tdengine-2.taosd.default.svc.cluster.local:6030'&quot;
+</code></pre>
+<p>确认移除成功后（使用<code>show dnodes</code>查看和确认dnode列表），使用<code>kubectl</code>命令移除POD：</p>
+<pre><code class="language-sh">kubectl scale statefulsets tdengine --replicas=2
+</code></pre>
+<p>最后一个POD将会被删除。使用命令 <code>kubectl get pods -l app=tdengine</code> 查看POD状态：</p>
 <pre><code class="language-text">NAME         READY   STATUS    RESTARTS   AGE
-tdengine-0   1/1     Running   0          4m17s
-tdengine-1   1/1     Running   0          3m56s
-tdengine-2   1/1     Running   0          3m34s
+tdengine-0   1/1     Running   0          3h40m
+tdengine-1   1/1     Running   0          3h40m
 </code></pre>
-<p>Also need to remove the pvc(if no, scale-up will be failed next):</p>
-<pre><code class="language-sh">kubectl delete pvc taosdata-tdengine-3
+<p>POD删除后，需要手动删除PVC，否则下次扩容时会继续使用以前的数据导致无法正常加入集群。</p>
+<pre><code class="language-sh">kubectl delete pvc taosdata-tdengine-2
 </code></pre>
-<p>Now your TDengine cluster is safe.</p>
-<p>Scale up again will be ok:</p>
+<p>此时TDengine集群才是安全的。之后还可以正常扩容：</p>
 <pre><code class="language-sh">kubectl scale statefulsets tdengine --replicas=3
 </code></pre>
-<p><code>show dnodes</code> results:</p>
-<pre><code class="language-sql">   id   |            endpoint            | vnodes | support_vnodes |   status   |       create_time       |              note              |
-============================================================================================================================================
-      1 | tdengine-0.taosd.default.sv... |      0 |            256 | ready      | 2022-06-22 15:29:49.049 |                                |
-      2 | tdengine-1.taosd.default.sv... |      0 |            256 | ready      | 2022-06-22 15:30:11.895 |                                |
-      3 | tdengine-2.taosd.default.sv... |      0 |            256 | ready      | 2022-06-22 15:30:33.007 |                                |
-      5 | tdengine-3.taosd.default.sv... |      0 |            256 | ready      | 2022-06-22 15:34:35.520 |                                |
+<p><code>show dnodes</code> 结果如下:</p>
+<pre><code class="language-sql">taos&gt; show dnodes
+   id   |           end_point            | vnodes | cores  |   status   | role  |       create_time       |      offline reason      |
+======================================================================================================================================
+      1 | tdengine-0.taosd.default.sv... |      1 |     40 | ready      | any   | 2021-06-01 16:27:24.852 |                          |
+      2 | tdengine-1.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 16:27:53.339 |                          |
+      4 | tdengine-2.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 16:40:49.177 |                          |
 </code></pre>
-<h3><a class="header" href="#lets-do-something-bad-case-1" id="lets-do-something-bad-case-1">Let's do something BAD Case 1</a></h3>
-<p>Scale it up to 4 and then scale down to 2 directly. Deleted pods are <code>offline</code> now:</p>
+<h3><a class="header" href="#错误行为-1" id="错误行为-1">错误行为 1</a></h3>
+<p>扩容到四节点之后缩容到两节点，删除的POD会进入<code>offline</code>状态：</p>
 <pre><code class="language-text">Welcome to the TDengine shell from Linux, Client Version:2.1.1.0
 Copyright (c) 2020 by TAOS Data, Inc. All rights reserved.
 
 taos&gt; show dnodes
-   id   |            endpoint            | vnodes | support_vnodes |   status   |       create_time       |              note              |
-============================================================================================================================================
-      1 | tdengine-0.taosd.default.sv... |      0 |            256 | ready      | 2022-06-22 15:29:49.049 |                                |
-      2 | tdengine-1.taosd.default.sv... |      0 |            256 | ready      | 2022-06-22 15:30:11.895 |                                |
-      3 | tdengine-2.taosd.default.sv... |      0 |            256 | offline    | 2022-06-22 15:30:33.007 | status msg timeout             |
-      5 | tdengine-3.taosd.default.sv... |      0 |            256 | offline    | 2022-06-22 15:34:35.520 | status msg timeout             ||
-Query OK, 4 row(s) in set (0.004293s)
+   id   |           end_point            | vnodes | cores  |   status   | role  |       create_time       |      offline reason      |
+======================================================================================================================================
+      1 | tdengine-0.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 11:58:12.915 |                          |
+      2 | tdengine-1.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 11:58:33.127 |                          |
+      3 | tdengine-2.taosd.default.sv... |      0 |     40 | offline    | any   | 2021-06-01 14:07:27.078 | status msg timeout       |
+      4 | tdengine-3.taosd.default.sv... |      1 |     40 | offline    | any   | 2021-06-01 14:07:48.362 | status msg timeout       |
+Query OK, 4 row(s) in set (0.001236s)
 </code></pre>
-<p>But we can't drop tje offline dnodes, the dnode will stuck in <code>dropping</code> mode (if you call <code>drop dnode 'fqdn:6030'</code>).</p>
-<h3><a class="header" href="#lets-do-something-bad-case-2" id="lets-do-something-bad-case-2">Let's do something BAD Case 2</a></h3>
-<p>Note that if the remaining dnodes is less than the database <code>replica</code>, it will cause error until you scale it up again.</p>
-<p>Create database with <code>replica</code> 3, and insert data to a table:</p>
+<p>但<code>drop dnode</code> 行为将不会按照预期执行，且下次集群重启后，所有的dnode节点将无法启动 <code>dropping</code> 状态无法退出。</p>
+<h3><a class="header" href="#错误行为-2" id="错误行为-2">错误行为 2</a></h3>
+<p>TDengine集群会持有 <code>replica</code> 参数，如果缩容后的节点数小于这个值，集群将无法使用：</p>
+<p>创建一个库使用 <code>replica</code> 参数为 2，插入部分数据：</p>
 <pre><code class="language-sh">kubectl exec -i -t tdengine-0 -- \
   taos -s \
   &quot;create database if not exists test replica 2;
@@ -385,17 +484,39 @@ Query OK, 4 row(s) in set (0.004293s)
    create table if not exists t1(ts timestamp, n int);
    insert into t1 values(now, 1)(now+1s, 2);&quot;
 </code></pre>
-<p>Scale down to replica 1 (bad behavior):</p>
+<p>缩容到单节点：</p>
 <pre><code class="language-sh">kubectl scale statefulsets tdengine --replicas=1
 </code></pre>
-<p>Now in taos shell, all operations with database <code>test</code> are not valid.</p>
-<p>So, before scale-down, please check the max value of <code>replica</code> among all databases, and be sure to do <code>drop dnode</code> step.</p>
-<h2><a class="header" href="#clean-up-tdengine-statefulset" id="clean-up-tdengine-statefulset">Clean Up TDengine StatefulSet</a></h2>
-<p>To complete remove tdengine statefulset, type:</p>
+<p>在taos shell中的所有数据库操作将无法成功。</p>
+<pre><code class="language-sql">taos&gt; show dnodes;
+   id   |           end_point            | vnodes | cores  |   status   | role  |       create_time       |      offline reason      |
+======================================================================================================================================
+      1 | tdengine-0.taosd.default.sv... |      2 |     40 | ready      | any   | 2021-06-01 15:55:52.562 |                          |
+      2 | tdengine-1.taosd.default.sv... |      1 |     40 | offline    | any   | 2021-06-01 15:56:07.212 | status msg timeout       |
+Query OK, 2 row(s) in set (0.000845s)
+
+taos&gt; show dnodes;
+   id   |           end_point            | vnodes | cores  |   status   | role  |       create_time       |      offline reason      |
+======================================================================================================================================
+      1 | tdengine-0.taosd.default.sv... |      2 |     40 | ready      | any   | 2021-06-01 15:55:52.562 |                          |
+      2 | tdengine-1.taosd.default.sv... |      1 |     40 | offline    | any   | 2021-06-01 15:56:07.212 | status msg timeout       |
+Query OK, 2 row(s) in set (0.000837s)
+
+taos&gt; use test;
+Database changed.
+
+taos&gt; insert into t1 values(now, 3);
+
+DB error: Unable to resolve FQDN (0.013874s)
+</code></pre>
+<h2><a class="header" href="#清理tdengine集群" id="清理tdengine集群">清理TDengine集群</a></h2>
+<p>完整移除TDengine集群，需要分别清理statefulset、svc、configmap、pvc。</p>
 <pre><code class="language-sh">kubectl delete statefulset -l app=tdengine
 kubectl delete svc -l app=tdengine
 kubectl delete pvc -l app=tdengine
+kubectl delete configmap taoscfg
 </code></pre>
+<p>在下一节，我们将使用Helm来提供更灵活便捷的操作方式。</p>
 
                     </main>
 

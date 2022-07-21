@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>使用Minikube尝鲜Kubernetes - 在Kubenetes上部署TDengine集群</title>
+        <title>Introduction - 在Kubenetes上部署TDengine集群</title>
         
         
 
@@ -93,7 +93,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="index.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="1.0-kubernetes.html"><strong aria-hidden="true">2.</strong> 从Kubernetes开始</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="1.1-install-kubernetes-with-minikube.html" class="active"><strong aria-hidden="true">2.1.</strong> 使用Minikube尝鲜Kubernetes</a></li><li class="chapter-item expanded "><a href="1.2-install-kubernetes-with-rancher.html"><strong aria-hidden="true">2.2.</strong> 使用Rancher安装Kubernetes</a></li><li class="chapter-item expanded "><a href="1.4-k8s-starter.html"><strong aria-hidden="true">2.3.</strong> 开始使用Kubernetes</a></li></ol></li><li class="chapter-item expanded "><a href="2.0-tdengine-on-kubernetes.html"><strong aria-hidden="true">3.</strong> 在Kubernetes上部署TDengine集群</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="2.1-tdengine-step-by-step.html"><strong aria-hidden="true">3.1.</strong> 一步一步创建TDengine集群</a></li><li class="chapter-item expanded "><a href="2.2-tdengine-with-helm.html"><strong aria-hidden="true">3.2.</strong> 使用Helm部署TDengine集群</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="index.html" class="active"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="1.0-kubernetes.html"><strong aria-hidden="true">2.</strong> 从Kubernetes开始</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="1.1-install-kubernetes-with-minikube.html"><strong aria-hidden="true">2.1.</strong> 使用Minikube尝鲜Kubernetes</a></li><li class="chapter-item expanded "><a href="1.2-install-kubernetes-with-rancher.html"><strong aria-hidden="true">2.2.</strong> 使用Rancher安装Kubernetes</a></li><li class="chapter-item expanded "><a href="1.3-storage-class.html"><strong aria-hidden="true">2.3.</strong> Kubernetes中的存储类</a></li><li class="chapter-item expanded "><a href="1.4-k8s-starter.html"><strong aria-hidden="true">2.4.</strong> 开始使用Kubernetes</a></li></ol></li><li class="chapter-item expanded "><a href="2.0-tdengine-on-kubernetes.html"><strong aria-hidden="true">3.</strong> 在Kubernetes上部署TDengine集群</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="2.1-tdengine-step-by-step.html"><strong aria-hidden="true">3.1.</strong> 一步一步创建TDengine集群</a></li><li class="chapter-item expanded "><a href="2.2-tdengine-with-helm.html"><strong aria-hidden="true">3.2.</strong> 使用Helm部署TDengine集群</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -129,9 +129,9 @@
                         </button>
                         <ul id="language-list" class="language-popup" aria-label="Languages" role="menu">
                           
-                            <li role="none"><a href="../en/1.1-install-kubernetes-with-minikube.html"><button role="menuitem" class="language" id="light">English</button></a></li>
+                            <li role="none"><a href="../en/index.html"><button role="menuitem" class="language" id="light">English</button></a></li>
                           
-                            <li role="none"><a href="../zh/1.1-install-kubernetes-with-minikube.html"><button role="menuitem" class="language" id="light">简体中文</button></a></li>
+                            <li role="none"><a href="../zh/index.html"><button role="menuitem" class="language" id="light">简体中文</button></a></li>
                           
                         </ul>
                         
@@ -171,55 +171,23 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1><a class="header" href="#使用-minikube-尝鲜-kubernetes" id="使用-minikube-尝鲜-kubernetes">使用 Minikube 尝鲜 Kubernetes</a></h1>
-<blockquote>
-<p>本文档仅适用于 Linux，其他平台请参<a href="https://minikube.sigs.k8s.io/docs/start/">考官方文档</a>。</p>
-</blockquote>
-<h2><a class="header" href="#安装" id="安装">安装</a></h2>
-<p>首先，我们需要下载并安装 Minikube：</p>
-<pre><code class="language-sh">curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-sudo install minikube-linux-amd64 /usr/local/bin/minikube
-</code></pre>
-<h2><a class="header" href="#start" id="start">Start</a></h2>
-<p>启动一个 Minikube 实例：</p>
-<pre><code class="language-sh">minikube start
-</code></pre>
-<p>Minikube 将使用 Docker（需要提前安装好，安装Docker请参考<a href="https://docs.docker.com/engine/install/">Docker 官方文档</a>）创建一个 Kubernetes 环境：</p>
-<p><img src="../en/./assets/minikube-start.png" alt="minikube-start" /></p>
-<h2><a class="header" href="#kubectl-命令" id="kubectl-命令"><code>kubectl</code> 命令</a></h2>
-<p>在 minikube 中，可以使用 <code>minikube kubectl</code> 命令使用 <code>kubectl</code>，以下是获取所有 POD 资源的示例命令：</p>
-<pre><code class="language-sh">minikube kubectl -- get pods -A
-</code></pre>
-<p>我们仍然可以正常安装和使用独立的 <code>kubectl</code> 命令：</p>
-<pre><code class="language-sh">curl -LO &quot;https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl&quot;
-sudo install kubectl /usr/local/bin/kubectl
-</code></pre>
-<p>以上 <code>minikube kubectl</code> 命令的等价版本如下：</p>
-<pre><code class="language-sh">kubectl get pods -A
-</code></pre>
-<p>获取存储类名称：</p>
-<pre><code class="language-sh">kubectl get sc
-</code></pre>
-<p>Minikube 默认情况下会启动名为 <code>standard</code> 的默认存储类，存储类的名称我们将会在部署 TDengine 时用到。</p>
-<h2><a class="header" href="#仪表盘" id="仪表盘">仪表盘</a></h2>
-<p>Minikube 提供了 Kubernetes 仪表盘，使用如下命令启动：</p>
-<pre><code class="language-sh">minikube dashboard
-</code></pre>
-<p>将会在浏览器打开仪表盘网址，用于查看资源：</p>
-<p><img src="../en/assets/minikube-dashboard.png" alt="minikube-dashboard" /></p>
+                        <h1><a class="header" href="#tdengine-在-kubernetes-上的部署" id="tdengine-在-kubernetes-上的部署">TDengine 在 Kubernetes 上的部署</a></h1>
+<ul>
+<li>作者：Huo Linhe <a href="mailto:lhhuo@taosdata.com">lhhuo@taosdata.com</a></li>
+<li>更新日期：2021-06-09 16:24:00</li>
+</ul>
+<p>为了支持<a href="https://github.com/taosdata/TDengine">TDengine</a>在<a href="https://kubernetes.io/">Kubernetes</a>上的部署，特编写此文档。此文档完全开源，源码托管在 <a href="https://github.com/taosdata/TDengine-Operator">taosdata/TDengine-Operator</a>，并欢迎所有人对此文档进行修改，您可以直接提交Pull Request，也可以添加 Issue，任何一种方式都将是我们的荣幸。TDengine完善离不开社区的共同努力，谢谢！</p>
+<p>在本文档中，我们将从部署一套Kubernetes环境开始，介绍如何启动Kubernetes，并在Kubernetes上从头部署TDengine集群，简单介绍如何在K8s环境中进行TDengine集群的扩容和缩容，其中我们未能完整支持的地方也会有说明，可能出现问题的操作也作了简要的提示。</p>
+<p>如果在实际操作过程中遇到问题，您总是可以通过官方微信 tdengine 联系到我们。</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
                         
-                            <a rel="prev" href="1.0-kubernetes.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
-                                <i class="fa fa-angle-left"></i>
-                            </a>
-                        
 
                         
-                            <a rel="next" href="1.2-install-kubernetes-with-rancher.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="1.0-kubernetes.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
                         
@@ -231,13 +199,9 @@ sudo install kubectl /usr/local/bin/kubectl
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
                 
-                    <a rel="prev" href="1.0-kubernetes.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
-                        <i class="fa fa-angle-left"></i>
-                    </a>
-                
 
                 
-                    <a rel="next" href="1.2-install-kubernetes-with-rancher.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="1.0-kubernetes.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
                 
