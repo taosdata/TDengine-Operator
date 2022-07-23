@@ -183,7 +183,7 @@ spec:
     spec:
       accessModes:
         - "ReadWriteOnce"
-      storageClassName: "csi-rbd-sc"
+      storageClassName: "standard"
       resources:
         requests:
           storage: "10Gi"
