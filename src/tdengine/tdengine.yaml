@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
       - name: "tdengine"
-        image: "zitsen/taosd:develop"
+        image: "tdengine/tdengine:latest"
         imagePullPolicy: "Always"
         envFrom:
         - configMapRef:
