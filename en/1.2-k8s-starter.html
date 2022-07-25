@@ -171,7 +171,7 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1><a class="header" href="#k8s-starter" id="k8s-starter">K8s Starter</a></h1>
+                        <h1><a class="header" href="#start-to-use-kubernetes" id="start-to-use-kubernetes">Start to use Kubernetes</a></h1>
 <p>Let's start using kubernetes from some starter project. If you are familiar enough with k8s, just ignore the chapter and go on.</p>
 <h2><a class="header" href="#statefulsets" id="statefulsets">StatefulSets</a></h2>
 <p>In <code>starter/stateful-nginx.yaml</code>:</p>
@@ -219,7 +219,7 @@ spec:
       name: www
     spec:
       accessModes: [ &quot;ReadWriteOnce&quot; ]
-      storageClassName: &quot;csi-rbd-sc&quot;
+      storageClassName: &quot;standard&quot;
       resources:
         requests:
           storage: 1Gi

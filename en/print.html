@@ -218,7 +218,7 @@ sudo install kubectl /usr/local/bin/kubectl
 </code></pre>
 <p>It will open in webbrowser:</p>
 <p><img src="../en/assets/minikube-dashboard.png" alt="minikube-dashboard" /></p>
-<h1><a class="header" href="#k8s-starter" id="k8s-starter">K8s Starter</a></h1>
+<h1><a class="header" href="#start-to-use-kubernetes" id="start-to-use-kubernetes">Start to use Kubernetes</a></h1>
 <p>Let's start using kubernetes from some starter project. If you are familiar enough with k8s, just ignore the chapter and go on.</p>
 <h2><a class="header" href="#statefulsets" id="statefulsets">StatefulSets</a></h2>
 <p>In <code>starter/stateful-nginx.yaml</code>:</p>
@@ -266,7 +266,7 @@ spec:
       name: www
     spec:
       accessModes: [ &quot;ReadWriteOnce&quot; ]
-      storageClassName: &quot;csi-rbd-sc&quot;
+      storageClassName: &quot;standard&quot;
       resources:
         requests:
           storage: 1Gi
@@ -606,7 +606,7 @@ taos&gt; show dnodes
       4 | tdengine-3.taosd.default.sv... |      1 |     40 | offline    | any   | 2021-06-01 14:07:48.362 | status msg timeout       |
 Query OK, 4 row(s) in set (0.001236s)
 </code></pre>
-<p>But we can't drop tje offline dnodes, the dnode will stuck in <code>dropping</code> mode (if you call <code>drop dnode 'fqdn:6030'</code>).</p>
+<p>But we can't drop the offline dnodes, the dnode will stuck in <code>dropping</code> mode (if you call <code>drop dnode 'fqdn:6030'</code>).</p>
 <h3><a class="header" href="#lets-do-something-bad-case-2" id="lets-do-something-bad-case-2">Let's do something BAD Case 2</a></h3>
 <p>Note that if the remaining dnodes is less than the database <code>replica</code>, it will cause error untill you scale it up again.</p>
 <p>Create database with <code>replica</code> 2, and insert data to an table:</p>
