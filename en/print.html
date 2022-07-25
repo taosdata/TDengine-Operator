@@ -95,7 +95,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="index.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="1.0-kubernetes.html"><strong aria-hidden="true">2.</strong> Start with Kubernetes</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="1.1-install-kubernetes-with-minikube.html"><strong aria-hidden="true">2.1.</strong> Try Kubernetes with Minikube</a></li><li class="chapter-item expanded "><a href="1.2-install-kubernetes-with-rancher.html"><strong aria-hidden="true">2.2.</strong> Install Kubernetes with Rancher</a></li><li class="chapter-item expanded "><a href="1.3-storage-class.html"><strong aria-hidden="true">2.3.</strong> Storage Class with Ceph RBD</a></li><li class="chapter-item expanded "><a href="1.4-k8s-starter.html"><strong aria-hidden="true">2.4.</strong> Start Using Kubernetes</a></li></ol></li><li class="chapter-item expanded "><a href="2.0-tdengine-on-kubernetes.html"><strong aria-hidden="true">3.</strong> Setup TDengine Cluster on Kubernetes</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="2.1-tdengine-step-by-step.html"><strong aria-hidden="true">3.1.</strong> Setup TDengine Cluster Step by Step</a></li><li class="chapter-item expanded "><a href="2.2-tdengine-with-helm.html"><strong aria-hidden="true">3.2.</strong> Setup TDengine Cluster with Helm</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="index.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="1.0-kubernetes.html"><strong aria-hidden="true">2.</strong> Start with Kubernetes</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="1.1-install-kubernetes-with-minikube.html"><strong aria-hidden="true">2.1.</strong> Try Kubernetes with Minikube</a></li><li class="chapter-item expanded "><a href="1.2-k8s-starter.html"><strong aria-hidden="true">2.2.</strong> Start Using Kubernetes</a></li></ol></li><li class="chapter-item expanded "><a href="2.0-tdengine-on-kubernetes.html"><strong aria-hidden="true">3.</strong> Setup TDengine Cluster on Kubernetes</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="2.1-tdengine-step-by-step.html"><strong aria-hidden="true">3.1.</strong> Setup TDengine Cluster Step by Step</a></li><li class="chapter-item expanded "><a href="2.2-tdengine-with-helm.html"><strong aria-hidden="true">3.2.</strong> Setup TDengine Cluster with Helm</a></li></ol></li><li class="chapter-item expanded "><a href="3.0-appendix.html"><strong aria-hidden="true">4.</strong> Appendix</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="3.1-install-kubernetes-with-rancher.html"><strong aria-hidden="true">4.1.</strong> Install Kubernetes with Rancher</a></li><li class="chapter-item expanded "><a href="3.2-storage-class.html"><strong aria-hidden="true">4.2.</strong> Storage Class with Ceph RBD</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -218,352 +218,6 @@ sudo install kubectl /usr/local/bin/kubectl
 </code></pre>
 <p>It will open in webbrowser:</p>
 <p><img src="../en/assets/minikube-dashboard.png" alt="minikube-dashboard" /></p>
-<h1><a class="header" href="#introduction-to-kubernetes" id="introduction-to-kubernetes">Introduction to Kubernetes</a></h1>
-<p>We suppose you have know how kubernetes work and a kubernetes environment in use.</p>
-<p>Setup K8s Cluster with Rancher</p>
-<blockquote>
-<p>Claim: I've built this at May 26 2021 in Beijing, China(UTC+8), China. Please refer to fitted documentations if any step changed.</p>
-</blockquote>
-<h2><a class="header" href="#install-rancherd-to-deploy-rancher" id="install-rancherd-to-deploy-rancher">Install RancherD to deploy Rancher</a></h2>
-<p>For most of the cases, just run the rancherd installer.</p>
-<pre><code class="language-sh">curl -sfL https://get.rancher.io | sh -
-</code></pre>
-<p>Alternatively, you can download the latest rancherd package from github releases assets.</p>
-<pre><code class="language-sh"># fill the proxy url if you use one
-export https_proxy=
-curl -s https://api.github.com/repos/rancher/rancher/releases/latest \
-  |jq '.assets[] |
-    select(.browser_download_url|contains(&quot;rancherd-amd64.tar.gz&quot;)) |
-    .browser_download_url' -r \
-  |wget -ci -
-</code></pre>
-<p>And install it.</p>
-<pre><code class="language-sh">tar xzf rancherd-amd64.tar.gz -C /usr/local
-</code></pre>
-<p>Then start the rancherd service.</p>
-<pre><code class="language-sh">systemctl enable rancherd-server
-systemctl start rancherd-server
-</code></pre>
-<p>Keep tracking with the service.</p>
-<pre><code class="language-sh">journalctl -fu rancherd-server
-</code></pre>
-<p>End with log <strong>successfully</strong>:</p>
-<pre><code class="language-log">&quot;Event occurred&quot; object=&quot;cn120&quot; kind=&quot;Node&quot; apiVersion=&quot;v1&quot; \ 
-type=&quot;Normal&quot; reason=&quot;Synced&quot; message=&quot;Node synced successfully&quot;
-</code></pre>
-<h2><a class="header" href="#setup-kubeconfig-and-kubectl" id="setup-kubeconfig-and-kubectl">Setup kubeconfig and kubectl</a></h2>
-<p>Once the Kubernetes cluster is up, set up RancherD’s kubeconfig file and kubectl:</p>
-<pre><code class="language-sh">export KUBECONFIG=/etc/rancher/rke2/rke2.yaml
-export PATH=$PATH:/var/lib/rancher/rke2/bin
-</code></pre>
-<p>Check rancher status with kubectl:</p>
-<pre><code class="language-sh">kubectl get daemonset rancher -n cattle-system
-kubectl get pod -n cattle-system
-</code></pre>
-<p>Result:</p>
-<pre><code>NAME      DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR                         AGE
-rancher   1         1         1       1            1           node-role.kubernetes.io/master=true   36m
-NAME                               READY   STATUS      RESTARTS   AGE
-helm-operation-5c2wd               0/2     Completed   0          34m
-helm-operation-bdxlx               0/2     Completed   0          33m
-helm-operation-cgcvr               0/2     Completed   0          34m
-helm-operation-cj4g4               0/2     Completed   0          33m
-helm-operation-hq282               0/2     Completed   0          34m
-helm-operation-lp5nn               0/2     Completed   0          33m
-rancher-kf592                      1/1     Running     0          36m
-rancher-webhook-65f558c486-vrjz9   1/1     Running     0          33m
-</code></pre>
-<h2><a class="header" href="#set-rancher-password" id="set-rancher-password">Set Rancher Password</a></h2>
-<pre><code class="language-sh">rancherd reset-admin
-</code></pre>
-<p>You would see like this:</p>
-<pre><code class="language-text">INFO[0000] Server URL: https://*.*.*.*:8443      
-INFO[0000] Default admin and password created. Username: admin, Password: ****
-</code></pre>
-<p>Point to server url, you can see the login page.</p>
-<p><img src="assets/rancher-login-page.png" alt="rancher-login-page" /></p>
-<p>Type right username and password, then enjoy rancher powered cluster dashboard.</p>
-<p><img src="assets/rancher-dashboard.png" alt="rancher-dashboard" /></p>
-<h2><a class="header" href="#ha-settings" id="ha-settings">HA Settings</a></h2>
-<p>Check the token in <code>/var/lib/rancher/rke2/server/node-token</code>.</p>
-<p>Install rancherd-server in other nodes like first node:</p>
-<pre><code class="language-sh">tar xzf rancherd-amd64.tar.gz -C /usr/local
-systemctl enable rancherd-server
-</code></pre>
-<p>Prepare config dir:</p>
-<pre><code class="language-sh">mkdir -p /etc/rancher/rke2
-</code></pre>
-<p>Change the config file in <code>/etc/rancher/rke2/config.yaml</code>.</p>
-<pre><code class="language-yaml">server: https://192.168.60.120:9345
-token: &lt;the token in /var/lib/rancher/rke2/server/node-token&gt;
-</code></pre>
-<p>Start rancherd</p>
-<pre><code class="language-sh">systemctl start rancherd-server
-journalctl -fu rancherd-server
-</code></pre>
-<p>Other nodes just copy the config.yaml and start rancherd, and those will be joined to cluster automatically.</p>
-<p>Type <code>kubectl get daemonset rancher -n cattle-system</code>：</p>
-<pre><code class="language-text">NAME      DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR                         AGE
-rancher   3         3         3       3            3           node-role.kubernetes.io/master=true   129m
-</code></pre>
-<p>Three nodes rancher+k8s cluster are avalibale now.</p>
-<h1><a class="header" href="#use-ceph-rbd-device-in-k8s" id="use-ceph-rbd-device-in-k8s">Use Ceph RBD device in k8s</a></h1>
-<blockquote>
-<p>Refer to <a href="https://docs.ceph.com/en/latest/rbd/rbd-kubernetes/">https://docs.ceph.com/en/latest/rbd/rbd-kubernetes/</a>.</p>
-</blockquote>
-<p>Create pool for k8s and initialize it.</p>
-<pre><code class="language-sh">ceph osd pool create kubernetes
-rbd pool init kubernetes
-</code></pre>
-<p>Create a new user for Kubernetes and ceph-csi. Execute the following and record the generated key:</p>
-<pre><code class="language-sh">ceph auth get-or-create client.kubernetes \
-  mon 'profile rbd' \
-  osd 'profile rbd pool=kubernetes' \
-  mgr 'profile rbd pool=kubernetes'
-</code></pre>
-<p>Get the following token:</p>
-<pre><code class="language-ini">[client.kubernetes]
-        key = AQC1Oq5gnLcWGhAACiFyohnB6n6Fovd/vNbqhw==
-</code></pre>
-<p>Use <code>ceph mon dump</code> to get ceph cluster fsid and monitor endpoint:</p>
-<pre><code class="language-text">fsid 6177c398-f449-4d66-a00b-27cad7cd076f
-last_changed 2020-09-09T22:06:52.339219+0800
-created 2018-11-15T12:12:01.363568+0800
-min_mon_release 15 (octopus)
-0: [v2:192.168.60.90:3300/0,v1:192.168.60.90:6789/0] mon.dn0
-1: [v2:192.168.60.206:3300/0,v1:192.168.60.206:6789/0] mon.mds2
-2: [v2:192.168.60.207:3300/0,v1:192.168.60.207:6789/0] mon.mds1
-3: [v2:192.168.60.208:3300/0,v1:192.168.60.208:6789/0] mon.admin
-4: [v2:192.168.60.209:3300/0,v1:192.168.60.209:6789/0] mon.mon2
-5: [v2:192.168.60.210:3300/0,v1:192.168.60.210:6789/0] mon.mon1
-</code></pre>
-<p>Generate a <code>csi-config-map.yaml</code>.</p>
-<pre><code class="language-yaml">---
-apiVersion: v1
-kind: ConfigMap
-data:
-  config.json: |-
-    [{
-      &quot;clusterID&quot;: &quot;6177c398-f449-4d66-a00b-27cad7cd076f&quot;,
-      &quot;monitors&quot;:[
-        &quot;192.168.60.90:6789&quot;,
-        &quot;192.168.60.206:6789&quot;,
-        &quot;192.168.60.207:6789&quot;,
-        &quot;192.168.60.208:6789&quot;,
-        &quot;192.168.60.209:6789&quot;,
-        &quot;192.168.60.210:6789&quot;
-    }]
-metadata:
-  name: ceph-csi-config
-</code></pre>
-<p>Add to k8s.</p>
-<pre><code class="language-sh">kubectl apply -f csi-config-map.yaml
-</code></pre>
-<p>Generate cephx <code>csi-rbd-secret.yaml</code>:</p>
-<pre><code class="language-yaml">---
-apiVersion: v1
-kind: Secret
-metadata:
-  name: csi-rbd-secret
-  namespace: default
-stringData:
-  userID: kubernetes
-  userKey: AQC1Oq5gnLcWGhAACiFyohnB6n6Fovd/vNbqhw==
-</code></pre>
-<p>Once generated, store the new Secret object in Kubernetes:</p>
-<pre><code class="language-sh">kubectl apply -f csi-rbd-secret.yaml
-</code></pre>
-<p>Add CSI RBAC roles.</p>
-<pre><code class="language-sh">kubectl apply -f https://raw.githubusercontent.com/ceph/ceph-csi/master/deploy/rbd/kubernetes/csi-provisioner-rbac.yaml
-</code></pre>
-<p>You'll see like this:</p>
-<pre><code class="language-text">serviceaccount/rbd-csi-provisioner created
-clusterrole.rbac.authorization.k8s.io/rbd-external-provisioner-runner created
-clusterrolebinding.rbac.authorization.k8s.io/rbd-csi-provisioner-role created
-role.rbac.authorization.k8s.io/rbd-external-provisioner-cfg created
-rolebinding.rbac.authorization.k8s.io/rbd-csi-provisioner-role-cfg created
-</code></pre>
-<p>Create nodeplugin for Ceph CSI.</p>
-<pre><code class="language-sh">kubectl apply -f https://raw.githubusercontent.com/ceph/ceph-csi/master/deploy/rbd/kubernetes/csi-nodeplugin-rbac.yaml
-</code></pre>
-<pre><code class="language-text">serviceaccount/rbd-csi-nodeplugin created
-clusterrole.rbac.authorization.k8s.io/rbd-csi-nodeplugin created
-clusterrolebinding.rbac.authorization.k8s.io/rbd-csi-nodeplugin created
-</code></pre>
-<p>Add Ceph RBD provisioner for k8s.</p>
-<pre><code class="language-sh">wget https://raw.githubusercontent.com/ceph/ceph-csi/master/deploy/rbd/kubernetes/csi-rbdplugin-provisioner.yaml
-wget https://raw.githubusercontent.com/ceph/ceph-csi/master/deploy/rbd/kubernetes/csi-rbdplugin.yaml
-# I'm changing this for network problem.
-sed -i 's#k8s.gcr.io/sig-storage#lvcisco#' csi-rbdplugin*.yaml
-kubectl apply -f csi-rbdplugin-provisioner.yaml
-kubectl apply -f csi-rbdplugin.yaml
-</code></pre>
-<p>Result:</p>
-<pre><code class="language-text">service/csi-rbdplugin-provisioner created
-deployment.apps/csi-rbdplugin-provisioner created
-
-daemonset.apps/csi-rbdplugin unchanged
-service/csi-metrics-rbdplugin unchanged
-</code></pre>
-<p>Add <code>ceph-csi-encryption-kms-config</code> config map, or it will cause error(See <a href="https://blog.csdn.net/DANTE54/article/details/106471848">here</a>).</p>
-<pre><code class="language-yaml">---
-apiVersion: v1
-kind: ConfigMap
-data:
-  config.json: |-
-    {
-      &quot;vault-test&quot;: {
-        &quot;encryptionKMSType&quot;: &quot;vault&quot;,
-        &quot;vaultAddress&quot;: &quot;http://vault.default.svc.cluster.local:8200&quot;,
-        &quot;vaultAuthPath&quot;: &quot;/v1/auth/kubernetes/login&quot;,
-        &quot;vaultRole&quot;: &quot;csi-kubernetes&quot;,
-        &quot;vaultPassphraseRoot&quot;: &quot;/v1/secret&quot;,
-        &quot;vaultPassphrasePath&quot;: &quot;ceph-csi/&quot;,
-        &quot;vaultCAVerify&quot;: &quot;false&quot;
-      },
-      &quot;vault-tokens-test&quot;: {
-          &quot;encryptionKMSType&quot;: &quot;vaulttokens&quot;,
-          &quot;vaultAddress&quot;: &quot;http://vault.default.svc.cluster.local:8200&quot;,
-          &quot;vaultBackendPath&quot;: &quot;secret/&quot;,
-          &quot;vaultTLSServerName&quot;: &quot;vault.default.svc.cluster.local&quot;,
-          &quot;vaultCAVerify&quot;: &quot;false&quot;,
-          &quot;tenantConfigName&quot;: &quot;ceph-csi-kms-config&quot;,
-          &quot;tenantTokenName&quot;: &quot;ceph-csi-kms-token&quot;,
-          &quot;tenants&quot;: {
-              &quot;my-app&quot;: {
-                  &quot;vaultAddress&quot;: &quot;https://vault.example.com&quot;,
-                  &quot;vaultCAVerify&quot;: &quot;true&quot;
-              },
-              &quot;an-other-app&quot;: {
-                  &quot;tenantTokenName&quot;: &quot;storage-encryption-token&quot;
-              }
-          }
-       }
-    }
-metadata:
-  name: ceph-csi-encryption-kms-config
-</code></pre>
-<p>Apply it:</p>
-<pre><code class="language-sh">kubectl apply -f kms-config.yaml
-</code></pre>
-<h2><a class="header" href="#create-k8s-storageclass" id="create-k8s-storageclass">Create K8s StorageClass</a></h2>
-<pre><code class="language-sh">cat &lt;&lt;EOF &gt; csi-rbd-sc.yaml
----
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-   name: csi-rbd-sc
-provisioner: rbd.csi.ceph.com
-parameters:
-   clusterID: 6177c398-f449-4d66-a00b-27cad7cd076f
-   pool: kubernetes
-   imageFeatures: layering
-   csi.storage.k8s.io/provisioner-secret-name: csi-rbd-secret
-   csi.storage.k8s.io/provisioner-secret-namespace: default
-   csi.storage.k8s.io/controller-expand-secret-name: csi-rbd-secret
-   csi.storage.k8s.io/controller-expand-secret-namespace: default
-   csi.storage.k8s.io/node-stage-secret-name: csi-rbd-secret
-   csi.storage.k8s.io/node-stage-secret-namespace: default
-reclaimPolicy: Delete
-allowVolumeExpansion: true
-mountOptions:
-   - discard
-EOF
-kubectl apply -f csi-rbd-sc.yaml
-</code></pre>
-<h2><a class="header" href="#create-a-persistentvolumeclaimpvc" id="create-a-persistentvolumeclaimpvc">Create A PersistentVolumeClaim(PVC)</a></h2>
-<p>There's two kind of PVC volume mode: raw block or filesystem.</p>
-<h3><a class="header" href="#raw-rbd-block-device-pvc" id="raw-rbd-block-device-pvc">Raw RBD block device PVC</a></h3>
-<pre><code class="language-sh">cat &lt;&lt;EOF &gt; raw-block-pvc.yaml
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: raw-block-pvc
-spec:
-  accessModes:
-    - ReadWriteOnce
-  volumeMode: Block
-  resources:
-    requests:
-      storage: 1Gi
-  storageClassName: csi-rbd-sc
-EOF
-kubectl apply -f raw-block-pvc.yaml
-</code></pre>
-<pre><code class="language-sh">cat &lt;&lt;EOF &gt; raw-block-pod.yaml
----
-apiVersion: v1
-kind: Pod
-metadata:
-  name: pod-with-raw-block-volume
-spec:
-  containers:
-    - name: fc-container
-      image: fedora:26
-      command: [&quot;/bin/sh&quot;, &quot;-c&quot;]
-      args: [&quot;tail -f /dev/null&quot;]
-      volumeDevices:
-        - name: data
-          devicePath: /dev/xvda
-  volumes:
-    - name: data
-      persistentVolumeClaim:
-        claimName: raw-block-pvc
-EOF
-kubectl apply -f raw-block-pod.yaml
-</code></pre>
-<p>If k8s.gcr.io is not reachable, you should use another image provider for csi-* images.</p>
-<pre><code class="language-sh">pull-and-tag() {
-    docker pull $1
-    docker tag $1 $2
-}
-pull-and-tag lvcisco/csi-provisioner:v2.0.4 k8s.gcr.io/sig-storage/csi-provisioner:v2.0.4
-pull-and-tag lvcisco/csi-attacher:v3.0.2 k8s.gcr.io/sig-storage/csi-attacher:v3.0.2
-pull-and-tag lvcisco/csi-snapshotter:v4.0.0 k8s.gcr.io/sig-storage/csi-snapshotter:v4.0.0
-pull-and-tag lvcisco/csi-node-driver-registrar:v2.0.1 k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.0.1
-pull-and-tag lvcisco/csi-resizer:v1.0.1 k8s.gcr.io/sig-storage/csi-resizer:v1.0.1
-</code></pre>
-<h3><a class="header" href="#filesystem-pvc" id="filesystem-pvc">Filesystem PVC</a></h3>
-<p>This's the more common use case.</p>
-<pre><code class="language-sh">cat &lt;&lt;EOF &gt; pvc.yaml
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: rbd-pvc
-spec:
-  accessModes:
-    - ReadWriteOnce
-  volumeMode: Filesystem
-  resources:
-    requests:
-      storage: 1Gi
-  storageClassName: csi-rbd-sc
-EOF
-kubectl apply -f pvc.yaml
-</code></pre>
-<pre><code class="language-sh">cat &lt;&lt;EOF &gt; pod.yaml
----
-apiVersion: v1
-kind: Pod
-metadata:
-  name: csi-rbd-demo-pod
-spec:
-  containers:
-    - name: web-server
-      image: nginx
-      volumeMounts:
-        - name: nginx-test
-          mountPath: /usr/share/nginx/html
-  volumes:
-    - name: nginx-test
-      persistentVolumeClaim:
-        claimName: rbd-pvc
-        readOnly: false
-EOF
-kubectl apply -f pod.yaml
-</code></pre>
 <h1><a class="header" href="#k8s-starter" id="k8s-starter">K8s Starter</a></h1>
 <p>Let's start using kubernetes from some starter project. If you are familiar enough with k8s, just ignore the chapter and go on.</p>
 <h2><a class="header" href="#statefulsets" id="statefulsets">StatefulSets</a></h2>
@@ -744,7 +398,7 @@ spec:
     spec:
       containers:
       - name: &quot;tdengine&quot;
-        image: &quot;zitsen/taosd:develop&quot;
+        image: &quot;tdengine/tdengine:latest&quot;
         imagePullPolicy: &quot;Always&quot;
         envFrom:
         - configMapRef:
@@ -841,7 +495,7 @@ spec:
     spec:
       accessModes:
         - &quot;ReadWriteOnce&quot;
-      storageClassName: &quot;csi-rbd-sc&quot;
+      storageClassName: &quot;standard&quot;
       resources:
         requests:
           storage: &quot;10Gi&quot;
@@ -1347,6 +1001,354 @@ kubectl --namespace default exec $POD_NAME -- taos -s 'drop dnode &quot;&lt;you 
 <pre><code class="language-sh">helm uninstall tdengine
 </code></pre>
 <p>Helm doest not automatically drop pvc by now, you can drop it manually.</p>
+<h1><a class="header" href="#appendix" id="appendix">Appendix</a></h1>
+<h1><a class="header" href="#appendix-1" id="appendix-1">Appendix</a></h1>
+<p>We suppose you have know how kubernetes work and a kubernetes environment in use.</p>
+<p>Setup K8s Cluster with Rancher</p>
+<blockquote>
+<p>Claim: I've built this at May 26 2021 in Beijing, China(UTC+8), China. Please refer to fitted documentations if any step changed.</p>
+</blockquote>
+<h2><a class="header" href="#install-rancherd-to-deploy-rancher" id="install-rancherd-to-deploy-rancher">Install RancherD to deploy Rancher</a></h2>
+<p>For most of the cases, just run the rancherd installer.</p>
+<pre><code class="language-sh">curl -sfL https://get.rancher.io | sh -
+</code></pre>
+<p>Alternatively, you can download the latest rancherd package from github releases assets.</p>
+<pre><code class="language-sh"># fill the proxy url if you use one
+export https_proxy=
+curl -s https://api.github.com/repos/rancher/rancher/releases/latest \
+  |jq '.assets[] |
+    select(.browser_download_url|contains(&quot;rancherd-amd64.tar.gz&quot;)) |
+    .browser_download_url' -r \
+  |wget -ci -
+</code></pre>
+<p>And install it.</p>
+<pre><code class="language-sh">tar xzf rancherd-amd64.tar.gz -C /usr/local
+</code></pre>
+<p>Then start the rancherd service.</p>
+<pre><code class="language-sh">systemctl enable rancherd-server
+systemctl start rancherd-server
+</code></pre>
+<p>Keep tracking with the service.</p>
+<pre><code class="language-sh">journalctl -fu rancherd-server
+</code></pre>
+<p>End with log <strong>successfully</strong>:</p>
+<pre><code class="language-log">&quot;Event occurred&quot; object=&quot;cn120&quot; kind=&quot;Node&quot; apiVersion=&quot;v1&quot; \ 
+type=&quot;Normal&quot; reason=&quot;Synced&quot; message=&quot;Node synced successfully&quot;
+</code></pre>
+<h2><a class="header" href="#setup-kubeconfig-and-kubectl" id="setup-kubeconfig-and-kubectl">Setup kubeconfig and kubectl</a></h2>
+<p>Once the Kubernetes cluster is up, set up RancherD’s kubeconfig file and kubectl:</p>
+<pre><code class="language-sh">export KUBECONFIG=/etc/rancher/rke2/rke2.yaml
+export PATH=$PATH:/var/lib/rancher/rke2/bin
+</code></pre>
+<p>Check rancher status with kubectl:</p>
+<pre><code class="language-sh">kubectl get daemonset rancher -n cattle-system
+kubectl get pod -n cattle-system
+</code></pre>
+<p>Result:</p>
+<pre><code>NAME      DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR                         AGE
+rancher   1         1         1       1            1           node-role.kubernetes.io/master=true   36m
+NAME                               READY   STATUS      RESTARTS   AGE
+helm-operation-5c2wd               0/2     Completed   0          34m
+helm-operation-bdxlx               0/2     Completed   0          33m
+helm-operation-cgcvr               0/2     Completed   0          34m
+helm-operation-cj4g4               0/2     Completed   0          33m
+helm-operation-hq282               0/2     Completed   0          34m
+helm-operation-lp5nn               0/2     Completed   0          33m
+rancher-kf592                      1/1     Running     0          36m
+rancher-webhook-65f558c486-vrjz9   1/1     Running     0          33m
+</code></pre>
+<h2><a class="header" href="#set-rancher-password" id="set-rancher-password">Set Rancher Password</a></h2>
+<pre><code class="language-sh">rancherd reset-admin
+</code></pre>
+<p>You would see like this:</p>
+<pre><code class="language-text">INFO[0000] Server URL: https://*.*.*.*:8443      
+INFO[0000] Default admin and password created. Username: admin, Password: ****
+</code></pre>
+<p>Point to server url, you can see the login page.</p>
+<p><img src="assets/rancher-login-page.png" alt="rancher-login-page" /></p>
+<p>Type right username and password, then enjoy rancher powered cluster dashboard.</p>
+<p><img src="assets/rancher-dashboard.png" alt="rancher-dashboard" /></p>
+<h2><a class="header" href="#ha-settings" id="ha-settings">HA Settings</a></h2>
+<p>Check the token in <code>/var/lib/rancher/rke2/server/node-token</code>.</p>
+<p>Install rancherd-server in other nodes like first node:</p>
+<pre><code class="language-sh">tar xzf rancherd-amd64.tar.gz -C /usr/local
+systemctl enable rancherd-server
+</code></pre>
+<p>Prepare config dir:</p>
+<pre><code class="language-sh">mkdir -p /etc/rancher/rke2
+</code></pre>
+<p>Change the config file in <code>/etc/rancher/rke2/config.yaml</code>.</p>
+<pre><code class="language-yaml">server: https://192.168.60.120:9345
+token: &lt;the token in /var/lib/rancher/rke2/server/node-token&gt;
+</code></pre>
+<p>Start rancherd</p>
+<pre><code class="language-sh">systemctl start rancherd-server
+journalctl -fu rancherd-server
+</code></pre>
+<p>Other nodes just copy the config.yaml and start rancherd, and those will be joined to cluster automatically.</p>
+<p>Type <code>kubectl get daemonset rancher -n cattle-system</code>：</p>
+<pre><code class="language-text">NAME      DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR                         AGE
+rancher   3         3         3       3            3           node-role.kubernetes.io/master=true   129m
+</code></pre>
+<p>Three nodes rancher+k8s cluster are avalibale now.</p>
+<h1><a class="header" href="#appendix-2" id="appendix-2">Appendix</a></h1>
+<h2><a class="header" href="#use-ceph-rbd-device-in-k8s" id="use-ceph-rbd-device-in-k8s">Use Ceph RBD device in k8s</a></h2>
+<blockquote>
+<p>Refer to <a href="https://docs.ceph.com/en/latest/rbd/rbd-kubernetes/">https://docs.ceph.com/en/latest/rbd/rbd-kubernetes/</a>.</p>
+</blockquote>
+<p>Create pool for k8s and initialize it.</p>
+<pre><code class="language-sh">ceph osd pool create kubernetes
+rbd pool init kubernetes
+</code></pre>
+<p>Create a new user for Kubernetes and ceph-csi. Execute the following and record the generated key:</p>
+<pre><code class="language-sh">ceph auth get-or-create client.kubernetes \
+  mon 'profile rbd' \
+  osd 'profile rbd pool=kubernetes' \
+  mgr 'profile rbd pool=kubernetes'
+</code></pre>
+<p>Get the following token:</p>
+<pre><code class="language-ini">[client.kubernetes]
+        key = AQC1Oq5gnLcWGhAACiFyohnB6n6Fovd/vNbqhw==
+</code></pre>
+<p>Use <code>ceph mon dump</code> to get ceph cluster fsid and monitor endpoint:</p>
+<pre><code class="language-text">fsid 6177c398-f449-4d66-a00b-27cad7cd076f
+last_changed 2020-09-09T22:06:52.339219+0800
+created 2018-11-15T12:12:01.363568+0800
+min_mon_release 15 (octopus)
+0: [v2:192.168.60.90:3300/0,v1:192.168.60.90:6789/0] mon.dn0
+1: [v2:192.168.60.206:3300/0,v1:192.168.60.206:6789/0] mon.mds2
+2: [v2:192.168.60.207:3300/0,v1:192.168.60.207:6789/0] mon.mds1
+3: [v2:192.168.60.208:3300/0,v1:192.168.60.208:6789/0] mon.admin
+4: [v2:192.168.60.209:3300/0,v1:192.168.60.209:6789/0] mon.mon2
+5: [v2:192.168.60.210:3300/0,v1:192.168.60.210:6789/0] mon.mon1
+</code></pre>
+<p>Generate a <code>csi-config-map.yaml</code>.</p>
+<pre><code class="language-yaml">---
+apiVersion: v1
+kind: ConfigMap
+data:
+  config.json: |-
+    [{
+      &quot;clusterID&quot;: &quot;6177c398-f449-4d66-a00b-27cad7cd076f&quot;,
+      &quot;monitors&quot;:[
+        &quot;192.168.60.90:6789&quot;,
+        &quot;192.168.60.206:6789&quot;,
+        &quot;192.168.60.207:6789&quot;,
+        &quot;192.168.60.208:6789&quot;,
+        &quot;192.168.60.209:6789&quot;,
+        &quot;192.168.60.210:6789&quot;
+    }]
+metadata:
+  name: ceph-csi-config
+</code></pre>
+<p>Add to k8s.</p>
+<pre><code class="language-sh">kubectl apply -f csi-config-map.yaml
+</code></pre>
+<p>Generate cephx <code>csi-rbd-secret.yaml</code>:</p>
+<pre><code class="language-yaml">---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: csi-rbd-secret
+  namespace: default
+stringData:
+  userID: kubernetes
+  userKey: AQC1Oq5gnLcWGhAACiFyohnB6n6Fovd/vNbqhw==
+</code></pre>
+<p>Once generated, store the new Secret object in Kubernetes:</p>
+<pre><code class="language-sh">kubectl apply -f csi-rbd-secret.yaml
+</code></pre>
+<p>Add CSI RBAC roles.</p>
+<pre><code class="language-sh">kubectl apply -f https://raw.githubusercontent.com/ceph/ceph-csi/master/deploy/rbd/kubernetes/csi-provisioner-rbac.yaml
+</code></pre>
+<p>You'll see like this:</p>
+<pre><code class="language-text">serviceaccount/rbd-csi-provisioner created
+clusterrole.rbac.authorization.k8s.io/rbd-external-provisioner-runner created
+clusterrolebinding.rbac.authorization.k8s.io/rbd-csi-provisioner-role created
+role.rbac.authorization.k8s.io/rbd-external-provisioner-cfg created
+rolebinding.rbac.authorization.k8s.io/rbd-csi-provisioner-role-cfg created
+</code></pre>
+<p>Create nodeplugin for Ceph CSI.</p>
+<pre><code class="language-sh">kubectl apply -f https://raw.githubusercontent.com/ceph/ceph-csi/master/deploy/rbd/kubernetes/csi-nodeplugin-rbac.yaml
+</code></pre>
+<pre><code class="language-text">serviceaccount/rbd-csi-nodeplugin created
+clusterrole.rbac.authorization.k8s.io/rbd-csi-nodeplugin created
+clusterrolebinding.rbac.authorization.k8s.io/rbd-csi-nodeplugin created
+</code></pre>
+<p>Add Ceph RBD provisioner for k8s.</p>
+<pre><code class="language-sh">wget https://raw.githubusercontent.com/ceph/ceph-csi/master/deploy/rbd/kubernetes/csi-rbdplugin-provisioner.yaml
+wget https://raw.githubusercontent.com/ceph/ceph-csi/master/deploy/rbd/kubernetes/csi-rbdplugin.yaml
+# I'm changing this for network problem.
+sed -i 's#k8s.gcr.io/sig-storage#lvcisco#' csi-rbdplugin*.yaml
+kubectl apply -f csi-rbdplugin-provisioner.yaml
+kubectl apply -f csi-rbdplugin.yaml
+</code></pre>
+<p>Result:</p>
+<pre><code class="language-text">service/csi-rbdplugin-provisioner created
+deployment.apps/csi-rbdplugin-provisioner created
+
+daemonset.apps/csi-rbdplugin unchanged
+service/csi-metrics-rbdplugin unchanged
+</code></pre>
+<p>Add <code>ceph-csi-encryption-kms-config</code> config map, or it will cause error(See <a href="https://blog.csdn.net/DANTE54/article/details/106471848">here</a>).</p>
+<pre><code class="language-yaml">---
+apiVersion: v1
+kind: ConfigMap
+data:
+  config.json: |-
+    {
+      &quot;vault-test&quot;: {
+        &quot;encryptionKMSType&quot;: &quot;vault&quot;,
+        &quot;vaultAddress&quot;: &quot;http://vault.default.svc.cluster.local:8200&quot;,
+        &quot;vaultAuthPath&quot;: &quot;/v1/auth/kubernetes/login&quot;,
+        &quot;vaultRole&quot;: &quot;csi-kubernetes&quot;,
+        &quot;vaultPassphraseRoot&quot;: &quot;/v1/secret&quot;,
+        &quot;vaultPassphrasePath&quot;: &quot;ceph-csi/&quot;,
+        &quot;vaultCAVerify&quot;: &quot;false&quot;
+      },
+      &quot;vault-tokens-test&quot;: {
+          &quot;encryptionKMSType&quot;: &quot;vaulttokens&quot;,
+          &quot;vaultAddress&quot;: &quot;http://vault.default.svc.cluster.local:8200&quot;,
+          &quot;vaultBackendPath&quot;: &quot;secret/&quot;,
+          &quot;vaultTLSServerName&quot;: &quot;vault.default.svc.cluster.local&quot;,
+          &quot;vaultCAVerify&quot;: &quot;false&quot;,
+          &quot;tenantConfigName&quot;: &quot;ceph-csi-kms-config&quot;,
+          &quot;tenantTokenName&quot;: &quot;ceph-csi-kms-token&quot;,
+          &quot;tenants&quot;: {
+              &quot;my-app&quot;: {
+                  &quot;vaultAddress&quot;: &quot;https://vault.example.com&quot;,
+                  &quot;vaultCAVerify&quot;: &quot;true&quot;
+              },
+              &quot;an-other-app&quot;: {
+                  &quot;tenantTokenName&quot;: &quot;storage-encryption-token&quot;
+              }
+          }
+       }
+    }
+metadata:
+  name: ceph-csi-encryption-kms-config
+</code></pre>
+<p>Apply it:</p>
+<pre><code class="language-sh">kubectl apply -f kms-config.yaml
+</code></pre>
+<h2><a class="header" href="#create-k8s-storageclass" id="create-k8s-storageclass">Create K8s StorageClass</a></h2>
+<pre><code class="language-sh">cat &lt;&lt;EOF &gt; csi-rbd-sc.yaml
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+   name: csi-rbd-sc
+provisioner: rbd.csi.ceph.com
+parameters:
+   clusterID: 6177c398-f449-4d66-a00b-27cad7cd076f
+   pool: kubernetes
+   imageFeatures: layering
+   csi.storage.k8s.io/provisioner-secret-name: csi-rbd-secret
+   csi.storage.k8s.io/provisioner-secret-namespace: default
+   csi.storage.k8s.io/controller-expand-secret-name: csi-rbd-secret
+   csi.storage.k8s.io/controller-expand-secret-namespace: default
+   csi.storage.k8s.io/node-stage-secret-name: csi-rbd-secret
+   csi.storage.k8s.io/node-stage-secret-namespace: default
+reclaimPolicy: Delete
+allowVolumeExpansion: true
+mountOptions:
+   - discard
+EOF
+kubectl apply -f csi-rbd-sc.yaml
+</code></pre>
+<h2><a class="header" href="#create-a-persistentvolumeclaimpvc" id="create-a-persistentvolumeclaimpvc">Create A PersistentVolumeClaim(PVC)</a></h2>
+<p>There's two kind of PVC volume mode: raw block or filesystem.</p>
+<h3><a class="header" href="#raw-rbd-block-device-pvc" id="raw-rbd-block-device-pvc">Raw RBD block device PVC</a></h3>
+<pre><code class="language-sh">cat &lt;&lt;EOF &gt; raw-block-pvc.yaml
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: raw-block-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Block
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: csi-rbd-sc
+EOF
+kubectl apply -f raw-block-pvc.yaml
+</code></pre>
+<pre><code class="language-sh">cat &lt;&lt;EOF &gt; raw-block-pod.yaml
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-with-raw-block-volume
+spec:
+  containers:
+    - name: fc-container
+      image: fedora:26
+      command: [&quot;/bin/sh&quot;, &quot;-c&quot;]
+      args: [&quot;tail -f /dev/null&quot;]
+      volumeDevices:
+        - name: data
+          devicePath: /dev/xvda
+  volumes:
+    - name: data
+      persistentVolumeClaim:
+        claimName: raw-block-pvc
+EOF
+kubectl apply -f raw-block-pod.yaml
+</code></pre>
+<p>If k8s.gcr.io is not reachable, you should use another image provider for csi-* images.</p>
+<pre><code class="language-sh">pull-and-tag() {
+    docker pull $1
+    docker tag $1 $2
+}
+pull-and-tag lvcisco/csi-provisioner:v2.0.4 k8s.gcr.io/sig-storage/csi-provisioner:v2.0.4
+pull-and-tag lvcisco/csi-attacher:v3.0.2 k8s.gcr.io/sig-storage/csi-attacher:v3.0.2
+pull-and-tag lvcisco/csi-snapshotter:v4.0.0 k8s.gcr.io/sig-storage/csi-snapshotter:v4.0.0
+pull-and-tag lvcisco/csi-node-driver-registrar:v2.0.1 k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.0.1
+pull-and-tag lvcisco/csi-resizer:v1.0.1 k8s.gcr.io/sig-storage/csi-resizer:v1.0.1
+</code></pre>
+<h3><a class="header" href="#filesystem-pvc" id="filesystem-pvc">Filesystem PVC</a></h3>
+<p>This's the more common use case.</p>
+<pre><code class="language-sh">cat &lt;&lt;EOF &gt; pvc.yaml
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rbd-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: csi-rbd-sc
+EOF
+kubectl apply -f pvc.yaml
+</code></pre>
+<pre><code class="language-sh">cat &lt;&lt;EOF &gt; pod.yaml
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: csi-rbd-demo-pod
+spec:
+  containers:
+    - name: web-server
+      image: nginx
+      volumeMounts:
+        - name: nginx-test
+          mountPath: /usr/share/nginx/html
+  volumes:
+    - name: nginx-test
+      persistentVolumeClaim:
+        claimName: rbd-pvc
+        readOnly: false
+EOF
+kubectl apply -f pod.yaml
+</code></pre>
 
                     </main>
 

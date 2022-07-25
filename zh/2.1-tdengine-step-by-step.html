@@ -267,7 +267,7 @@ spec:
     spec:
       containers:
       - name: &quot;tdengine&quot;
-        image: &quot;zitsen/taosd:develop&quot;
+        image: &quot;tdengine/tdengine:latest&quot;
         imagePullPolicy: &quot;Always&quot;
         envFrom:
         - configMapRef:
@@ -364,7 +364,7 @@ spec:
     spec:
       accessModes:
         - &quot;ReadWriteOnce&quot;
-      storageClassName: &quot;csi-rbd-sc&quot;
+      storageClassName: &quot;standard&quot;
       resources:
         requests:
           storage: &quot;10Gi&quot;
