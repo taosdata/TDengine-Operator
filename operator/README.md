@@ -16,11 +16,11 @@ kubectl apply -f config/samples/
 ```
 
 2. Build and push your image to the location specified by `IMG`:
-	
+
 ```sh
 make docker-build docker-push IMG=<some-registry>/tdoperator:tag
 ```
-	
+
 3. Deploy the controller to the cluster with the image specified by `IMG`:
 
 ```sh
@@ -35,7 +35,7 @@ make uninstall
 ```
 
 ### Undeploy controller
-UnDeploy the controller to the cluster:
+Undeploy the controller to the cluster:
 
 ```sh
 make undeploy
@@ -47,8 +47,8 @@ make undeploy
 ### How it works
 This project aims to follow the Kubernetes [Operator pattern](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/)
 
-It uses [Controllers](https://kubernetes.io/docs/concepts/architecture/controller/) 
-which provides a reconcile function responsible for synchronizing resources untile the desired state is reached on the cluster 
+It uses [Controllers](https://kubernetes.io/docs/concepts/architecture/controller/)
+which provides a reconcile function responsible for synchronizing resources until the desired state is reached on the cluster
 
 ### Test It Out
 1. Install the CRDs into the cluster:
