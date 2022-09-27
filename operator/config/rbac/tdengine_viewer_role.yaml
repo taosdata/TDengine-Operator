@@ -1,0 +1,20 @@
+# permissions for end users to view tdengines.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: tdengine-viewer-role
+rules:
+- apiGroups:
+  - tdengine.operator.taosdata.com
+  resources:
+  - tdengines
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - tdengine.operator.taosdata.com
+  resources:
+  - tdengines/status
+  verbs:
+  - get

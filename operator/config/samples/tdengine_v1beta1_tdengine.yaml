@@ -1,0 +1,27 @@
+apiVersion: tdengine.operator.taosdata.com/v1beta1
+kind: TDengine
+metadata:
+  name: "tdengine-sample"
+  labels:
+    app: "tdengine-sample"
+
+spec:
+  replicas: 3
+  image: "tdengine/tdengine:3.0.0.0"
+  imagePullPolicy: "IfNotPresent"
+  env:
+    - name: TZ
+      value: "Asia/Shanghai"
+#  podResources:
+#    requests:
+#        memory: 1Gi
+
+  volumeClaimTemplates:
+    - metadata:
+        name: taosdata
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 5Gi

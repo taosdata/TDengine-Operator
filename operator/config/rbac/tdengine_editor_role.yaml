@@ -1,0 +1,24 @@
+# permissions for end users to edit tdengines.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: tdengine-editor-role
+rules:
+- apiGroups:
+  - tdengine.operator.taosdata.com
+  resources:
+  - tdengines
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - tdengine.operator.taosdata.com
+  resources:
+  - tdengines/status
+  verbs:
+  - get
