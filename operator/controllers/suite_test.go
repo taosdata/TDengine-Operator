@@ -60,7 +60,9 @@ func TestAPIs(t *testing.T) {
 	RunSpecsWithDefaultAndCustomReporters(t,
 		"Controller Suite",
 		[]Reporter{printer.NewlineReporter{}})
-	Describe("TDengine controller", testTDengineController)
+	Describe("TDengine controller", func() {
+		testTDengineController(t)
+	})
 	after()
 }
 

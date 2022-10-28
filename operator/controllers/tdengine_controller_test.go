@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"context"
+	"testing"
 	"time"
 
 	. "github.com/onsi/ginkgo"
@@ -16,7 +17,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func testTDengineController() {
+func testTDengineController(t *testing.T) {
 	const (
 		TDName      = "test-tdengine"
 		TDNameSpace = "default"
@@ -44,7 +45,7 @@ func testTDengineController() {
 			Spec: tdenginev1beta1.TDengineSpec{
 				Replicas:        &replica,
 				Image:           "tdengine/tdengine:latest",
-				ImagePullPolicy: "Always",
+				ImagePullPolicy: "IfNotPresent",
 				Env: []corev1.EnvVar{
 					{
 						Name:  "TZ",
@@ -154,6 +155,7 @@ func testTDengineController() {
 			if err != nil {
 				return false
 			}
+			t.Log("read sst.Status.AvailableReplicas after reduce the replicas", sst.Status.AvailableReplicas)
 			return sst.Status.AvailableReplicas == 2
 		}, timeout, interval).Should(BeTrue())
 		Eventually(func() bool {
