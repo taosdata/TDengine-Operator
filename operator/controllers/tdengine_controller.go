@@ -33,6 +33,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 
+var isTest bool
+
 // TDengineReconciler reconciles a TDengine object
 type TDengineReconciler struct {
 	client.Client
@@ -159,7 +161,9 @@ func (r *TDengineReconciler) UpdateStatefulSet(ctx context.Context, want, curren
 			}
 		}
 		url := fmt.Sprintf("http://%s-0.%s.%s.svc.cluster.local:6041/rest/sql", current.Name, current.Spec.ServiceName, current.Namespace)
-		//url := "http://127.0.0.1:31399/rest/sql"
+		if isTest {
+			url = "http://127.0.0.1:31399/rest/sql"
+		}
 		user := "root"
 		password := "taosdata"
 		dnodeMap, err := util.GetDnodeMap(url, user, password)

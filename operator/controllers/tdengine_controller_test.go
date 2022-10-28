@@ -25,7 +25,7 @@ func testTDengineController() {
 		interval = time.Millisecond * 250
 	)
 	Context("Should create 3 pods and 3 pvcs.", func() {
-		//defer GinkgoRecover()
+		isTest = true
 		By("By creating a new TDengine cluster")
 		ctx := context.Background()
 		replica := int32(3)
@@ -43,8 +43,8 @@ func testTDengineController() {
 			},
 			Spec: tdenginev1beta1.TDengineSpec{
 				Replicas:        &replica,
-				Image:           "tdengine/tdengine:3.0.0.0",
-				ImagePullPolicy: "IfNotPresent",
+				Image:           "tdengine/tdengine:latest",
+				ImagePullPolicy: "Always",
 				Env: []corev1.EnvVar{
 					{
 						Name:  "TZ",
@@ -79,6 +79,48 @@ func testTDengineController() {
 		if err != nil {
 			for _, pvc := range pvcs.Items {
 				k8sClient.Delete(ctx, &pvc)
+			}
+		}
+		testNodePortService := &corev1.Service{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "test-td-node-port",
+				Namespace: TDNameSpace,
+				Labels: map[string]string{
+					"app": TDName,
+				},
+			},
+			Spec: corev1.ServiceSpec{
+				Ports: []corev1.ServicePort{
+					{
+						Name:     "tcp-6041",
+						Protocol: "TCP",
+						Port:     6041,
+						NodePort: 31399,
+					},
+				},
+				Selector: map[string]string{
+					"app": TDName,
+				},
+				Type: corev1.ServiceTypeNodePort,
+			},
+		}
+		testNodePortKey := types.NamespacedName{Name: "test-td-node-port", Namespace: TDNameSpace}
+		existTestNodePortService := &corev1.Service{}
+		err = k8sClient.Get(ctx, testNodePortKey, existTestNodePortService)
+		if err != nil {
+			if errors.IsNotFound(err) {
+				err = k8sClient.Create(ctx, testNodePortService)
+				if err != nil {
+					panic(err)
+				}
+				//Expect().Should(Succeed())
+				Eventually(func() bool {
+					err := k8sClient.Get(ctx, testNodePortKey, existTestNodePortService)
+					if err != nil {
+						return false
+					}
+					return true
+				}, timeout, interval).Should(BeTrue())
 			}
 		}
 		Expect(k8sClient.Create(ctx, td)).Should(Succeed())

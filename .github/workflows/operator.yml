@@ -1,0 +1,24 @@
+name: Go
+
+on: [ push ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go: [ '1.19']
+    name: Operator-Go ${{ matrix.go }}
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: start minikube
+        run: minikube start
+      - name: get sc
+        run: kubectl get sc
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go }}
+      - name: Test
+        run: cd operator && make test
