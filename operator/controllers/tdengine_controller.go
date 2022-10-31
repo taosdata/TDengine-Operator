@@ -34,6 +34,7 @@ import (
 )
 
 var isTest bool
+var testIP string
 
 // TDengineReconciler reconciles a TDengine object
 type TDengineReconciler struct {
@@ -162,7 +163,7 @@ func (r *TDengineReconciler) UpdateStatefulSet(ctx context.Context, want, curren
 		}
 		url := fmt.Sprintf("http://%s-0.%s.%s.svc.cluster.local:6041/rest/sql", current.Name, current.Spec.ServiceName, current.Namespace)
 		if isTest {
-			url = "http://127.0.0.1:31399/rest/sql"
+			url = fmt.Sprintf("http://%s:31399/rest/sql", testIP)
 		}
 		user := "root"
 		password := "taosdata"

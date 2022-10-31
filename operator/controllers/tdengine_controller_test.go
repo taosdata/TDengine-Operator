@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 	"testing"
 	"time"
 
@@ -14,6 +15,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/utils/env"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -26,6 +28,8 @@ func testTDengineController(t *testing.T) {
 		interval = time.Millisecond * 250
 	)
 	Context("Should create 3 pods and 3 pvcs.", func() {
+		testIP = env.GetString("TEST_SERVICE_IP", "127.0.0.1")
+		fmt.Println("testIP", testIP)
 		isTest = true
 		By("By creating a new TDengine cluster")
 		ctx := context.Background()

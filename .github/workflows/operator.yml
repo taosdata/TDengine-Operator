@@ -1,6 +1,6 @@
 name: Go
 
-on: [ push ]
+on: [ push , pull_request ]
 
 jobs:
   build:
@@ -20,5 +20,7 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: ${{ matrix.go }}
+      - name: minikube ip
+        run: minikube ip
       - name: Test
-        run: cd operator && make test
+        run: cd operator && TEST_SERVICE_IP=`minikube ip` make test
