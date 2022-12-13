@@ -7,5 +7,7 @@ This document is for [TDengine] deployment on [Kubernetes(k8s)][K8s]. All the th
 
 If you encounter problems following the operations, you can always add our official WeChat "tdengine" to join our chat group to get help from us and other TDengine users.
 
+Note: Please switch 2.0 branch if you want to run Kubernetes with TDengine 2.x.
+
 [TDengine]: https://github.com/taosdata/TDengine
 [K8s]: https://kubernetes.io/
