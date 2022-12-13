@@ -7,5 +7,7 @@ This document is for [TDengine] database deployment on [Kubernetes(k8s)][K8s]. A
 
 If you encounter problems following the operations, you can always add our official WeChat "tdengine" to join our chat group to get help from us and other TDengine database users.
 
+Note: Please switch to 3.0 branch if you want to run Kubernetes with TDengine 3.0
+
 [TDengine]: https://github.com/taosdata/TDengine
 [K8s]: https://kubernetes.io/
