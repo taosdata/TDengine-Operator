@@ -95,7 +95,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="index.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="1.0-kubernetes.html"><strong aria-hidden="true">2.</strong> Start with Kubernetes</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="1.1-install-kubernetes-with-minikube.html"><strong aria-hidden="true">2.1.</strong> Try Kubernetes with Minikube</a></li><li class="chapter-item expanded "><a href="1.2-k8s-starter.html"><strong aria-hidden="true">2.2.</strong> Start Using Kubernetes</a></li></ol></li><li class="chapter-item expanded "><a href="2.0-tdengine-on-kubernetes.html"><strong aria-hidden="true">3.</strong> Setup TDengine Cluster on Kubernetes</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="2.1-tdengine-step-by-step.html"><strong aria-hidden="true">3.1.</strong> Setup TDengine Cluster Step by Step</a></li><li class="chapter-item expanded "><a href="2.2-tdengine-with-helm.html"><strong aria-hidden="true">3.2.</strong> Setup TDengine Cluster with Helm</a></li></ol></li><li class="chapter-item expanded "><a href="3.0-appendix.html"><strong aria-hidden="true">4.</strong> Appendix</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="3.1-install-kubernetes-with-rancher.html"><strong aria-hidden="true">4.1.</strong> Install Kubernetes with Rancher</a></li><li class="chapter-item expanded "><a href="3.2-storage-class.html"><strong aria-hidden="true">4.2.</strong> Storage Class with Ceph RBD</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="index.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="1.0-kubernetes.html"><strong aria-hidden="true">2.</strong> Start with Kubernetes</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="1.1-install-kubernetes-with-minikube.html"><strong aria-hidden="true">2.1.</strong> Try Kubernetes with Minikube</a></li><li class="chapter-item expanded "><a href="1.2-install-kubernetes-with-rancher.html"><strong aria-hidden="true">2.2.</strong> Install Kubernetes with Rancher</a></li><li class="chapter-item expanded "><a href="1.4-k8s-starter.html"><strong aria-hidden="true">2.3.</strong> Start Using Kubernetes</a></li></ol></li><li class="chapter-item expanded "><a href="2.0-tdengine-on-kubernetes.html"><strong aria-hidden="true">3.</strong> Setup TDengine Cluster on Kubernetes</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="2.1-tdengine-step-by-step.html"><strong aria-hidden="true">3.1.</strong> Setup TDengine Cluster Step by Step</a></li><li class="chapter-item expanded "><a href="2.2-tdengine-with-helm.html"><strong aria-hidden="true">3.2.</strong> Setup TDengine Cluster with Helm</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -176,12 +176,13 @@
                         <h1><a class="header" href="#tdengine-on-kubernetes" id="tdengine-on-kubernetes">TDengine on Kubernetes</a></h1>
 <ul>
 <li>Author: Huo Linhe <a href="mailto:lhhuo@taosdata.com">lhhuo@taosdata.com</a></li>
-<li>Updated：2022-07-21 12:00:00</li>
+<li>Updated：2021-06-09 16:24:00</li>
 </ul>
-<p>This document is for <a href="https://github.com/taosdata/TDengine">TDengine</a> database deployment on <a href="https://kubernetes.io/">Kubernetes(k8s)</a>. All the things we do is for who love <a href="https://github.com/taosdata/TDengine">TDengine</a> and want to take it to k8s. We are hosting the documentation on <a href="https://github.com/taosdata/TDengine-Operator">taosdata/TDengine-Operator</a>. Anyone want to help improve the documentations could edit the markdown files.</p>
-<p>If you encounter problems following the operations, you can always add our official WeChat &quot;tdengine&quot; to join our chat group to get help from us and other TDengine database users.</p>
+<p>This document is for <a href="https://github.com/taosdata/TDengine">TDengine</a> deployment on <a href="https://kubernetes.io/">Kubernetes(k8s)</a>. All the things we do is for who love <a href="https://github.com/taosdata/TDengine">TDengine</a> and want to take it to k8s. We are hosting the ducumentation on <a href="https://github.com/taosdata/TDengine-Operator">taosdata/TDengine-Operator</a>. Anyone want to help improve the ducumentations could edit the markdown files.</p>
+<p>If you encounter problems following the operations, you can always add our official WeChat &quot;tdengine&quot; to join our chat group to get help from us and other TDengine users.</p>
+<p>Note: Please switch 2.0 branch if you want to run Kubernetes with TDengine 2.x.</p>
 <h1><a class="header" href="#start-with-kubernetes" id="start-with-kubernetes">Start with Kubernetes</a></h1>
-<p>We suppose you have know how kubernetes(<code>kubectl</code>) work and a kubernetes environment in use.</p>
+<p>We suppose you have known how kubernetes(<code>kubectl</code>) work and a kubernetes environment in use.</p>
 <p>If you start from scratch, you can try kubernetes with minikube or install with rancher by following the steps in next chapter.</p>
 <h1><a class="header" href="#try-kubernetes-with-minikube" id="try-kubernetes-with-minikube">Try kubernetes with Minikube</a></h1>
 <blockquote>
@@ -213,797 +214,13 @@ sudo install kubectl /usr/local/bin/kubectl
 </code></pre>
 <p>Note that minikube will enable default storage class <code>standard</code>, which you should keep in mind.</p>
 <h2><a class="header" href="#dashboard" id="dashboard">Dashboard</a></h2>
-<p>Minikube provde dashboard as an extension, start it with:</p>
+<p>Minikube provide dashboard as an extension, start it with:</p>
 <pre><code class="language-sh">minikube dashboard
 </code></pre>
-<p>It will open in webbrowser:</p>
+<p>It will open in web browser:</p>
 <p><img src="../en/assets/minikube-dashboard.png" alt="minikube-dashboard" /></p>
-<h1><a class="header" href="#start-to-use-kubernetes" id="start-to-use-kubernetes">Start to use Kubernetes</a></h1>
-<p>Let's start using kubernetes from some starter project. If you are familiar enough with k8s, just ignore the chapter and go on.</p>
-<h2><a class="header" href="#statefulsets" id="statefulsets">StatefulSets</a></h2>
-<p>In <code>starter/stateful-nginx.yaml</code>:</p>
-<pre><code class="language-yaml">apiVersion: v1
-kind: Service
-metadata:
-  name: nginx
-  labels:
-    app: nginx
-spec:
-  ports:
-  - port: 80
-    name: web
-  clusterIP: None
-  selector:
-    app: nginx
----
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: web
-spec:
-  selector:
-    matchLabels:
-      app: nginx # has to match .spec.template.metadata.labels
-  serviceName: &quot;nginx&quot;
-  replicas: 3 # by default is 1
-  template:
-    metadata:
-      labels:
-        app: nginx # has to match .spec.selector.matchLabels
-    spec:
-      terminationGracePeriodSeconds: 10
-      containers:
-      - name: nginx
-        image: nginx
-        ports:
-        - containerPort: 80
-          name: web
-        volumeMounts:
-        - name: www
-          mountPath: /usr/share/nginx/html
-  volumeClaimTemplates:
-  - metadata:
-      name: www
-    spec:
-      accessModes: [ &quot;ReadWriteOnce&quot; ]
-      storageClassName: &quot;standard&quot;
-      resources:
-        requests:
-          storage: 1Gi
-</code></pre>
-<pre><code class="language-sh">kubectl apply -f starter/stateful-nginx.yaml
-</code></pre>
-<h2><a class="header" href="#configmap-mount-as-volume" id="configmap-mount-as-volume">ConfigMap Mount as Volume</a></h2>
-<p>A config map:</p>
-<pre><code class="language-yaml">---
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: starter-config-map
-data:
-  debugFlag: 135
-  keep: 3650
----
-apiVersion: v1
-kind: Pod
-metadata:
-  name: starter-config-map-as-volume
-spec:
-  containers:
-    - name: test-container
-      image: busybox
-      command: [ &quot;/bin/sh&quot;, &quot;-c&quot;, &quot;ls /etc/config/&quot; ]
-      volumeMounts:
-      - name: starter-config-map-vol
-        mountPath: /etc/config
-  volumes:
-    - name: starter-config-map-vol
-      configMap:
-        # Provide the name of the ConfigMap containing the files you want
-        # to add to the container
-        name: starter-config-map
-  restartPolicy: Never
-</code></pre>
-<h1><a class="header" href="#setup-tdengine-cluster-on-kubernetes" id="setup-tdengine-cluster-on-kubernetes">Setup TDengine Cluster on Kubernetes</a></h1>
-<h1><a class="header" href="#setup-tdengine-cluster-on-kubernetes-1" id="setup-tdengine-cluster-on-kubernetes-1">Setup TDengine Cluster on Kubernetes</a></h1>
-<p>Create a config map for TDengine: <code>taoscfg.yaml</code>.</p>
-<pre><code class="language-yaml">---
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: taoscfg
-  labels:
-    app: tdengine
-data:
-  CLUSTER: &quot;1&quot;
-  TAOS_KEEP: &quot;3650&quot;
-  TAOS_DEBUG_FLAG: &quot;135&quot;
-</code></pre>
-<p>Service config <code>taosd-service.yaml</code> for each port we will use, here note that the <code>metadata.name</code> (setted as <code>&quot;taosd&quot;</code>) will be used in next step:</p>
-<pre><code class="language-yaml">---
-apiVersion: v1
-kind: Service
-metadata:
-  name: &quot;taosd&quot;
-  labels:
-    app: &quot;tdengine&quot;
-spec:
-  ports:
-  - name: tcp6030
-    protocol: &quot;TCP&quot;
-    port: 6030
-  - name: tcp6035
-    protocol: &quot;TCP&quot;
-    port: 6035
-  - name: tcp6041
-    protocol: &quot;TCP&quot;
-    port: 6041
-  - name: udp6030
-    protocol: &quot;UDP&quot;
-    port: 6030
-  - name: udp6031
-    protocol: &quot;UDP&quot;
-    port: 6031
-  - name: udp6032
-    protocol: &quot;UDP&quot;
-    port: 6032
-  - name: udp6033
-    protocol: &quot;UDP&quot;
-    port: 6033
-  - name: udp6034
-    protocol: &quot;UDP&quot;
-    port: 6034
-  - name: udp6035
-    protocol: &quot;UDP&quot;
-    port: 6035
-  - name: udp6036
-    protocol: &quot;UDP&quot;
-    port: 6036
-  - name: udp6037
-    protocol: &quot;UDP&quot;
-    port: 6037
-  - name: udp6038
-    protocol: &quot;UDP&quot;
-    port: 6038
-  - name: udp6039
-    protocol: &quot;UDP&quot;
-    port: 6039
-  - name: udp6040
-    protocol: &quot;UDP&quot;
-    port: 6040
-  selector:
-    app: &quot;tdengine&quot;
-</code></pre>
-<p>We use StatefulSet config <code>tdengine.yaml</code> for TDengine.</p>
-<pre><code class="language-yaml">---
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: &quot;tdengine&quot;
-  labels:
-    app: &quot;tdengine&quot;
-spec:
-  serviceName: &quot;taosd&quot;
-  replicas: 2
-  updateStrategy:
-    type: RollingUpdate
-  selector:
-    matchLabels:
-      app: &quot;tdengine&quot;
-  template:
-    metadata:
-      name: &quot;tdengine&quot;
-      labels:
-        app: &quot;tdengine&quot;
-    spec:
-      containers:
-      - name: &quot;tdengine&quot;
-        image: &quot;tdengine/tdengine:latest&quot;
-        imagePullPolicy: &quot;Always&quot;
-        envFrom:
-        - configMapRef:
-            name: taoscfg
-        ports:
-        - name: tcp6030
-          protocol: &quot;TCP&quot;
-          containerPort: 6030
-        - name: tcp6035
-          protocol: &quot;TCP&quot;
-          containerPort: 6035
-        - name: tcp6041
-          protocol: &quot;TCP&quot;
-          containerPort: 6041
-        - name: udp6030
-          protocol: &quot;UDP&quot;
-          containerPort: 6030
-        - name: udp6031
-          protocol: &quot;UDP&quot;
-          containerPort: 6031
-        - name: udp6032
-          protocol: &quot;UDP&quot;
-          containerPort: 6032
-        - name: udp6033
-          protocol: &quot;UDP&quot;
-          containerPort: 6033
-        - name: udp6034
-          protocol: &quot;UDP&quot;
-          containerPort: 6034
-        - name: udp6035
-          protocol: &quot;UDP&quot;
-          containerPort: 6035
-        - name: udp6036
-          protocol: &quot;UDP&quot;
-          containerPort: 6036
-        - name: udp6037
-          protocol: &quot;UDP&quot;
-          containerPort: 6037
-        - name: udp6038
-          protocol: &quot;UDP&quot;
-          containerPort: 6038
-        - name: udp6039
-          protocol: &quot;UDP&quot;
-          containerPort: 6039
-        - name: udp6040
-          protocol: &quot;UDP&quot;
-          containerPort: 6040
-        env:
-        # POD_NAME for FQDN config
-        - name: POD_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.name
-        # SERVICE_NAME and NAMESPACE for fqdn resolve
-        - name: SERVICE_NAME
-          value: &quot;taosd&quot;
-        - name: STS_NAME
-          value: &quot;tdengine&quot;
-        - name: STS_NAMESPACE
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.namespace
-        # TZ for timezone settings, we recommend to always set it.
-        - name: TZ
-          value: &quot;Asia/Shanghai&quot;
-        # TAOS_ prefix will configured in taos.cfg, strip prefix and camelCase.
-        - name: TAOS_SERVER_PORT
-          value: &quot;6030&quot;
-        # Must set if you want a cluster.
-        - name: TAOS_FIRST_EP
-          value: &quot;$(STS_NAME)-0.$(SERVICE_NAME).$(STS_NAMESPACE).svc.cluster.local:$(TAOS_SERVER_PORT)&quot;
-        # TAOS_FQND should always be setted in k8s env.
-        - name: TAOS_FQDN
-          value: &quot;$(POD_NAME).$(SERVICE_NAME).$(STS_NAMESPACE).svc.cluster.local&quot;
-        volumeMounts:
-        - name: taosdata
-          mountPath: /var/lib/taos
-        readinessProbe:
-          exec:
-            command:
-            - taos
-            - -s
-            - &quot;show mnodes&quot;
-          initialDelaySeconds: 5
-          timeoutSeconds: 5000
-        livenessProbe:
-          tcpSocket:
-            port: 6030
-          initialDelaySeconds: 15
-          periodSeconds: 20
-  volumeClaimTemplates:
-  - metadata:
-      name: taosdata
-    spec:
-      accessModes:
-        - &quot;ReadWriteOnce&quot;
-      storageClassName: &quot;standard&quot;
-      resources:
-        requests:
-          storage: &quot;10Gi&quot;
-</code></pre>
-<p>Add them to kubernetes.</p>
-<pre><code class="language-sh">kubectl apply -f taoscfg.yaml
-kubectl apply -f taosd-service.yaml
-kubectl apply -f tdengine.yaml
-</code></pre>
-<p>The script will create a two node TDengine cluster on k8s.</p>
-<p>Execute show dnodes in taos shell:</p>
-<pre><code class="language-sh">kubectl exec -i -t tdengine-0 -- taos -s &quot;show dnodes&quot;
-kubectl exec -i -t tdengine-1 -- taos -s &quot;show dnodes&quot;
-</code></pre>
-<p>Well, the current dnodes list shows:</p>
-<pre><code class="language-sql">Welcome to the TDengine shell from Linux, Client Version:2.1.1.0
-Copyright (c) 2020 by TAOS Data, Inc. All rights reserved.
-
-taos&gt; show dnodes
-   id   |           end_point            | vnodes | cores  |   status   | role  |       create_time       |      offline reason      |
-======================================================================================================================================
-      1 | tdengine-0.taosd.default.sv... |      1 |     40 | ready      | any   | 2021-06-01 17:13:24.181 |                          |
-      2 | tdengine-1.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 17:14:09.257 |                          |
-Query OK, 2 row(s) in set (0.000997s)
-</code></pre>
-<h2><a class="header" href="#scale-up" id="scale-up">Scale Up</a></h2>
-<p>TDengine on Kubernetes could automatically scale up with:</p>
-<pre><code class="language-sh">kubectl scale statefulsets tdengine --replicas=4
-</code></pre>
-<p>Check if scale-up works:</p>
-<pre><code class="language-sh">kubectl get pods -l app=tdengine 
-</code></pre>
-<p>Results:</p>
-<pre><code class="language-text">NAME         READY   STATUS    RESTARTS   AGE
-tdengine-0   1/1     Running   0          161m
-tdengine-1   1/1     Running   0          161m
-tdengine-2   1/1     Running   0          32m
-tdengine-3   1/1     Running   0          32m
-</code></pre>
-<p>Check TDengine dnodes:</p>
-<pre><code class="language-sh">kubectl exec -i -t tdengine-0 -- taos -s &quot;show dnodes&quot;
-</code></pre>
-<p>Results:</p>
-<pre><code class="language-sql">Welcome to the TDengine shell from Linux, Client Version:2.1.1.0
-Copyright (c) 2020 by TAOS Data, Inc. All rights reserved.
-
-taos&gt; show dnodes
-   id   |           end_point            | vnodes | cores  |   status   | role  |       create_time       |      offline reason      |
-======================================================================================================================================
-      1 | tdengine-0.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 11:58:12.915 |                          |
-      2 | tdengine-1.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 11:58:33.127 |                          |
-      3 | tdengine-2.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 14:07:27.078 |                          |
-      4 | tdengine-3.taosd.default.sv... |      1 |     40 | ready      | any   | 2021-06-01 14:07:48.362 |                          |
-Query OK, 4 row(s) in set (0.001293s)
-</code></pre>
-<h2><a class="header" href="#scale-down" id="scale-down">Scale Down</a></h2>
-<p>Let's try scale down from 3 to 2.</p>
-<p>First, we scale up the TDengine cluster to 3 nodes:</p>
-<pre><code class="language-sh">kubectl scale statefulsets tdengine --replicas=3
-</code></pre>
-<p><code>show dnodes</code> in taos shell:</p>
-<pre><code class="language-sql">taos&gt; show dnodes
-   id   |           end_point            | vnodes | cores  |   status   | role  |       create_time       |      offline reason      |
-======================================================================================================================================
-      1 | tdengine-0.taosd.default.sv... |      1 |     40 | ready      | any   | 2021-06-01 16:27:24.852 |                          |
-      2 | tdengine-1.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 16:27:53.339 |                          |
-      3 | tdengine-2.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 16:28:49.787 |                          |
-Query OK, 3 row(s) in set (0.001101s)
-</code></pre>
-<p>To perform a right scale-down, we should drop the last dnode in taos shell first:</p>
-<pre><code class="language-sh">kubectl exec -i -t tdengine-0 -- taos -s &quot;drop dnode 'tdengine-2.taosd.default.svc.cluster.local:6030'&quot;
-</code></pre>
-<p>Then scale down to 2.</p>
-<pre><code class="language-sh">kubectl scale statefulsets tdengine --replicas=2
-</code></pre>
-<p>Extra relicas pods will be teminated, and retain 2 pods.</p>
-<p>Type <code>kubectl get pods -l app=tdengine</code> to check pods.</p>
-<pre><code class="language-text">NAME         READY   STATUS    RESTARTS   AGE
-tdengine-0   1/1     Running   0          3h40m
-tdengine-1   1/1     Running   0          3h40m
-</code></pre>
-<p>Also need to remove the pvc(if no, scale-up will be failed next):</p>
-<pre><code class="language-sh">kubectl delete pvc taosdata-tdengine-2
-</code></pre>
-<p>Now your TDengine cluster is safe.</p>
-<p>Scale up again will be ok:</p>
-<pre><code class="language-sh">kubectl scale statefulsets tdengine --replicas=3
-</code></pre>
-<p><code>show dnodes</code> results:</p>
-<pre><code class="language-sql">taos&gt; show dnodes
-   id   |           end_point            | vnodes | cores  |   status   | role  |       create_time       |      offline reason      |
-======================================================================================================================================
-      1 | tdengine-0.taosd.default.sv... |      1 |     40 | ready      | any   | 2021-06-01 16:27:24.852 |                          |
-      2 | tdengine-1.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 16:27:53.339 |                          |
-      4 | tdengine-2.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 16:40:49.177 |                          |
-</code></pre>
-<h3><a class="header" href="#lets-do-something-bad-case-1" id="lets-do-something-bad-case-1">Let's do something BAD Case 1</a></h3>
-<p>Scale it up to 4 and then scale down to 2 directly. Deleted pods are <code>offline</code> now:</p>
-<pre><code class="language-text">Welcome to the TDengine shell from Linux, Client Version:2.1.1.0
-Copyright (c) 2020 by TAOS Data, Inc. All rights reserved.
-
-taos&gt; show dnodes
-   id   |           end_point            | vnodes | cores  |   status   | role  |       create_time       |      offline reason      |
-======================================================================================================================================
-      1 | tdengine-0.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 11:58:12.915 |                          |
-      2 | tdengine-1.taosd.default.sv... |      0 |     40 | ready      | any   | 2021-06-01 11:58:33.127 |                          |
-      3 | tdengine-2.taosd.default.sv... |      0 |     40 | offline    | any   | 2021-06-01 14:07:27.078 | status msg timeout       |
-      4 | tdengine-3.taosd.default.sv... |      1 |     40 | offline    | any   | 2021-06-01 14:07:48.362 | status msg timeout       |
-Query OK, 4 row(s) in set (0.001236s)
-</code></pre>
-<p>But we can't drop the offline dnodes, the dnode will stuck in <code>dropping</code> mode (if you call <code>drop dnode 'fqdn:6030'</code>).</p>
-<h3><a class="header" href="#lets-do-something-bad-case-2" id="lets-do-something-bad-case-2">Let's do something BAD Case 2</a></h3>
-<p>Note that if the remaining dnodes is less than the database <code>replica</code>, it will cause error untill you scale it up again.</p>
-<p>Create database with <code>replica</code> 2, and insert data to an table:</p>
-<pre><code class="language-sh">kubectl exec -i -t tdengine-0 -- \
-  taos -s \
-  &quot;create database if not exists test replica 2;
-   use test; 
-   create table if not exists t1(ts timestamp, n int);
-   insert into t1 values(now, 1)(now+1s, 2);&quot;
-</code></pre>
-<p>Scale down to replica 1 (bad behavior):</p>
-<pre><code class="language-sh">kubectl scale statefulsets tdengine --replicas=1
-</code></pre>
-<p>Now in taos shell, all operations with database <code>test</code> are not valid even if you call <code>drop dnode</code> after scale down.</p>
-<pre><code class="language-sql">taos&gt; show dnodes;
-   id   |           end_point            | vnodes | cores  |   status   | role  |       create_time       |      offline reason      |
-======================================================================================================================================
-      1 | tdengine-0.taosd.default.sv... |      2 |     40 | ready      | any   | 2021-06-01 15:55:52.562 |                          |
-      2 | tdengine-1.taosd.default.sv... |      1 |     40 | offline    | any   | 2021-06-01 15:56:07.212 | status msg timeout       |
-Query OK, 2 row(s) in set (0.000845s)
-
-taos&gt; show dnodes;
-   id   |           end_point            | vnodes | cores  |   status   | role  |       create_time       |      offline reason      |
-======================================================================================================================================
-      1 | tdengine-0.taosd.default.sv... |      2 |     40 | ready      | any   | 2021-06-01 15:55:52.562 |                          |
-      2 | tdengine-1.taosd.default.sv... |      1 |     40 | offline    | any   | 2021-06-01 15:56:07.212 | status msg timeout       |
-Query OK, 2 row(s) in set (0.000837s)
-
-taos&gt; use test;
-Database changed.
-
-taos&gt; insert into t1 values(now, 3);
-
-DB error: Unable to resolve FQDN (0.013874s)
-</code></pre>
-<p>So, before scale-down, please check the max value of <code>replica</code> among all databases, and be sure to do <code>drop dnode</code> step.</p>
-<h2><a class="header" href="#clean-up-tdengine-statefulset" id="clean-up-tdengine-statefulset">Clean Up TDengine StatefulSet</a></h2>
-<p>To complete remove tdengine statefulset, type:</p>
-<pre><code class="language-sh">kubectl delete statefulset -l app=tdengine
-kubectl delete svc -l app=tdengine
-kubectl delete pvc -l app=tdengine
-kubectl delete configmap taoscfg
-</code></pre>
-<h1><a class="header" href="#setup-tdengine-cluster-with-helm" id="setup-tdengine-cluster-with-helm">Setup TDengine Cluster with helm</a></h1>
-<p>Is it simple enough? Let's do something more.</p>
-<h2><a class="header" href="#install-helm" id="install-helm">Install Helm</a></h2>
-<pre><code class="language-sh">curl -fsSL -o get_helm.sh \
-  https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
-chmod +x get_helm.sh
-./get_helm.sh
-</code></pre>
-<p>Helm will use kubectl and the kubeconfig setted in chapter 1.</p>
-<h2><a class="header" href="#install-tdengine-chart" id="install-tdengine-chart">Install TDengine Chart</a></h2>
-<p>Download TDengine chart.</p>
-<pre><code class="language-sh">wget https://github.com/taosdata/TDengine-Operator/raw/main/helm/tdengine-0.3.0.tgz
-</code></pre>
-<p>First, check your sotrage class name:</p>
-<pre><code class="language-sh">kubectl get storageclass
-</code></pre>
-<p>In minikube, the default storageclass name is <code>standard</code>.</p>
-<p>And then deploy TDengine in one line:</p>
-<pre><code class="language-sh">helm install tdengine tdengine-0.3.0.tgz \
-  --set storage.className=&lt;your storage class name&gt;
-</code></pre>
-<p>If you are using minikube, you may want a smaller storage size for TDengine:</p>
-<pre><code class="language-sh">helm install tdengine tdengine-0.3.0.tgz \
-  --set storage.className=standard \
-  --set storage.dataSize=2Gi \
-  --set storage.logSize=10Mi
-</code></pre>
-<p>If success, it will show an minimal usage of TDengine.</p>
-<pre><code class="language-sh">export POD_NAME=$(kubectl get pods --namespace default \
-  -l &quot;app.kubernetes.io/name=tdengine,app.kubernetes.io/instance=tdengine&quot; \
-  -o jsonpath=&quot;{.items[0].metadata.name}&quot;)
-kubectl --namespace default exec $POD_NAME -- taos -s &quot;show dnodes; show mnodes&quot;
-kubectl --namespace default exec -it $POD_NAME -- taos
-</code></pre>
-<p><img src="./assets/helm-install-with-sc.png" alt="helm-install-with-sc" /></p>
-<p>You can try it by yourself:</p>
-<p><img src="./assets/helm-install-post-script.png" alt="helm-install-post-script" /></p>
-<p>For a small sql test:</p>
-<pre><code class="language-sh">kubectl --namespace default exec $POD_NAME -- \
-  taos -s &quot;create database test;
-    use test;
-    create table t1 (ts timestamp, n int);
-    insert into t1 values(now, 1)(now + 1s, 2);
-    select * from t1;&quot;
-</code></pre>
-<p><img src="assets/kubectl-taos-sql.png" alt="taos-sql" /></p>
-<h2><a class="header" href="#values" id="values">Values</a></h2>
-<p>TDengine support <code>values.yaml</code> append.</p>
-<p>To see a full list of values, use <code>helm show values</code>:</p>
-<pre><code class="language-sh">helm show values tdengine-0.3.0.tgz
-</code></pre>
-<p>You cound save it to <code>values.yaml</code>, and do some changs on it, like replica count, storage class name, and so on. Then type:</p>
-<pre><code class="language-sh">helm install tdengine tdengine-0.3.0.tgz -f values.yaml
-</code></pre>
-<p>The full list of values:</p>
-<pre><code class="language-yaml"># Default values for tdengine.
-# This is a YAML-formatted file.
-# Declare variables to be passed into helm templates.
-
-replicaCount: 1
-
-image:
-  prefix: tdengine/tdengine
-  #pullPolicy: Always
-  # Overrides the image tag whose default is the chart appVersion.
-  #tag: &quot;2.4.0.5&quot;
-
-service:
-  # ClusterIP is the default service type, use NodeIP only if you know what you are doing.
-  type: ClusterIP
-  ports:
-    # TCP range required
-    tcp: [6030,6031,6032,6033,6034, 6035,6036,6037,6038, 6039, 6040, 6041, 6042, 6043, 6044, 6045, 6060]
-    # UDP range 6030-6039
-    udp: [6030, 6031, 6032, 6033, 6034, 6035, 6036, 6037, 6038, 6039]
-
-arbitrator: true
-
-# Set timezone here, not in taoscfg
-timezone: &quot;Asia/Shanghai&quot;
-
-resources:
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
-
-storage:
-  # Set storageClassName for pvc. K8s use default storage class if not set.
-  #
-  className: &quot;&quot;
-  dataSize: &quot;100Gi&quot;
-  logSize: &quot;10Gi&quot;
-
-nodeSelectors:
-  taosd:
-    # node selectors
-
-clusterDomainSuffix: &quot;&quot;
-# Config settings in taos.cfg file.
-#
-# The helm/k8s support will use environment variables for taos.cfg,
-# converting an upper-snake-cased variable like `TAOS_DEBUG_FLAG`,
-# to a camelCase taos config variable `debugFlag`.
-#
-# See the variable list at https://www.taosdata.com/cn/documentation/administrator .
-#
-# Note:
-# 1. firstEp/secondEp: should not be setted here, it's auto generated at scale-up.
-# 2. serverPort: should not be setted, we'll use the default 6030 in many places.
-# 3. fqdn: will be auto generated in kubenetes, user should not care about it.
-# 4. role: currently role is not supported - every node is able to be mnode and vnode.
-#
-# Btw, keep quotes &quot;&quot; around the value like below, even the value will be number or not.
-taoscfg:
-
-  # number of replications, for cluster only
-  TAOS_REPLICA: &quot;1&quot;
-
-  # number of management nodes in the system
-  TAOS_NUM_OF_MNODES: &quot;1&quot;
-
-  # number of days per DB file
-  # TAOS_DAYS: &quot;10&quot;
-
-  # number of days to keep DB file, default is 10 years.
-  #TAOS_KEEP: &quot;3650&quot;
-
-  # cache block size (Mbyte)
-  #TAOS_CACHE: &quot;16&quot;
-
-  # number of cache blocks per vnode
-  #TAOS_BLOCKS: &quot;6&quot;
-
-  # minimum rows of records in file block
-  #TAOS_MIN_ROWS: &quot;100&quot;
-
-  # maximum rows of records in file block
-  #TAOS_MAX_ROWS: &quot;4096&quot;
-
-  #
-  # TAOS_NUM_OF_THREADS_PER_CORE: number of threads per CPU core
-  #TAOS_NUM_OF_THREADS_PER_CORE: &quot;1.0&quot;
-
-  #
-  # TAOS_NUM_OF_COMMIT_THREADS: number of threads to commit cache data
-  #TAOS_NUM_OF_COMMIT_THREADS: &quot;4&quot;
-
-  #
-  # TAOS_RATIO_OF_QUERY_CORES:
-  # the proportion of total CPU cores available for query processing
-  # 2.0: the query threads will be set to double of the CPU cores.
-  # 1.0: all CPU cores are available for query processing [default].
-  # 0.5: only half of the CPU cores are available for query.
-  # 0.0: only one core available.
-  #TAOS_RATIO_OF_QUERY_CORES: &quot;1.0&quot;
-
-  #
-  # TAOS_KEEP_COLUMN_NAME:
-  # the last_row/first/last aggregator will not change the original column name in the result fields
-  #TAOS_KEEP_COLUMN_NAME: &quot;0&quot;
-
-  # enable/disable backuping vnode directory when removing vnode
-  #TAOS_VNODE_BAK: &quot;1&quot;
-
-  # enable/disable installation / usage report
-  #TAOS_TELEMETRY_REPORTING: &quot;1&quot;
-
-  # enable/disable load balancing
-  #TAOS_BALANCE: &quot;1&quot;
-
-  # max timer control blocks
-  #TAOS_MAX_TMR_CTRL: &quot;512&quot;
-
-  # time interval of system monitor, seconds
-  #TAOS_MONITOR_INTERVAL: &quot;30&quot;
-
-  # number of seconds allowed for a dnode to be offline, for cluster only
-  #TAOS_OFFLINE_THRESHOLD: &quot;8640000&quot;
-
-  # RPC re-try timer, millisecond
-  #TAOS_RPC_TIMER: &quot;1000&quot;
-
-  # RPC maximum time for ack, seconds.
-  #TAOS_RPC_MAX_TIME: &quot;600&quot;
-
-  # time interval of dnode status reporting to mnode, seconds, for cluster only
-  #TAOS_STATUS_INTERVAL: &quot;1&quot;
-
-  # time interval of heart beat from shell to dnode, seconds
-  #TAOS_SHELL_ACTIVITY_TIMER: &quot;3&quot;
-
-  # minimum sliding window time, milli-second
-  #TAOS_MIN_SLIDING_TIME: &quot;10&quot;
-
-  # minimum time window, milli-second
-  #TAOS_MIN_INTERVAL_TIME: &quot;10&quot;
-
-  # maximum delay before launching a stream computation, milli-second
-  #TAOS_MAX_STREAM_COMP_DELAY: &quot;20000&quot;
-
-  # maximum delay before launching a stream computation for the first time, milli-second
-  #TAOS_MAX_FIRST_STREAM_COMP_DELAY: &quot;10000&quot;
-
-  # retry delay when a stream computation fails, milli-second
-  #TAOS_RETRY_STREAM_COMP_DELAY: &quot;10&quot;
-
-  # the delayed time for launching a stream computation, from 0.1(default, 10% of whole computing time window) to 0.9
-  #TAOS_STREAM_COMP_DELAY_RATIO: &quot;0.1&quot;
-
-  # max number of vgroups per db, 0 means configured automatically
-  #TAOS_MAX_VGROUPS_PER_DB: &quot;0&quot;
-
-  # max number of tables per vnode
-  #TAOS_MAX_TABLES_PER_VNODE: &quot;1000000&quot;
-
-  # the number of acknowledgments required for successful data writing
-  #TAOS_QUORUM: &quot;1&quot;
-
-  # enable/disable compression
-  #TAOS_COMP: &quot;2&quot;
-
-  # write ahead log (WAL) level, 0: no wal; 1: write wal, but no fysnc; 2: write wal, and call fsync
-  #TAOS_WAL_LEVEL: &quot;1&quot;
-
-  # if walLevel is set to 2, the cycle of fsync being executed, if set to 0, fsync is called right away
-  #TAOS_FSYNC: &quot;3000&quot;
-
-  # the compressed rpc message, option:
-  #  -1 (no compression)
-  #   0 (all message compressed),
-  # &gt; 0 (rpc message body which larger than this value will be compressed)
-  #TAOS_COMPRESS_MSG_SIZE: &quot;-1&quot;
-
-  # max length of an SQL
-  #TAOS_MAX_SQL_LENGTH: &quot;1048576&quot;
-
-  # the maximum number of records allowed for super table time sorting
-  #TAOS_MAX_NUM_OF_ORDERED_RES: &quot;100000&quot;
-
-  # max number of connections allowed in dnode
-  #TAOS_MAX_SHELL_CONNS: &quot;5000&quot;
-
-  # max number of connections allowed in client
-  #TAOS_MAX_CONNECTIONS: &quot;5000&quot;
-
-  # stop writing logs when the disk size of the log folder is less than this value
-  #TAOS_MINIMAL_LOG_DIR_G_B: &quot;0.1&quot;
-
-  # stop writing temporary files when the disk size of the tmp folder is less than this value
-  #TAOS_MINIMAL_TMP_DIR_G_B: &quot;0.1&quot;
-
-  # if disk free space is less than this value, taosd service exit directly within startup process
-  #TAOS_MINIMAL_DATA_DIR_G_B: &quot;0.1&quot;
-
-  # One mnode is equal to the number of vnode consumed
-  #TAOS_MNODE_EQUAL_VNODE_NUM: &quot;4&quot;
-
-  # enbale/disable http service
-  #TAOS_HTTP: &quot;1&quot;
-
-  # enable/disable system monitor
-  #TAOS_MONITOR: &quot;1&quot;
-
-  # enable/disable recording the SQL statements via restful interface
-  #TAOS_HTTP_ENABLE_RECORD_SQL: &quot;0&quot;
-
-  # number of threads used to process http requests
-  #TAOS_HTTP_MAX_THREADS: &quot;2&quot;
-
-  # maximum number of rows returned by the restful interface
-  #TAOS_RESTFUL_ROW_LIMIT: &quot;10240&quot;
-
-  # The following parameter is used to limit the maximum number of lines in log files.
-  # max number of lines per log filters
-  # numOfLogLines         10000000
-
-  # enable/disable async log
-  #TAOS_ASYNC_LOG: &quot;0&quot;
-
-  #
-  # time of keeping log files, days
-  #TAOS_LOG_KEEP_DAYS: &quot;0&quot;
-
-  # The following parameters are used for debug purpose only.
-  # debugFlag 8 bits mask: FILE-SCREEN-UNUSED-HeartBeat-DUMP-TRACE_WARN-ERROR
-  # 131: output warning and error
-  # 135: output debug, warning and error
-  # 143: output trace, debug, warning and error to log
-  # 199: output debug, warning and error to both screen and file
-  # 207: output trace, debug, warning and error to both screen and file
-  #
-  # debug flag for all log type, take effect when non-zero value\
-  #TAOS_DEBUG_FLAG: &quot;143&quot;
-
-  # enable/disable recording the SQL in taos client
-  #TAOS_ENABLE_RECORD_SQL: &quot;0&quot;
-
-  # generate core file when service crash
-  #TAOS_ENABLE_CORE_FILE: &quot;1&quot;
-
-  # maximum display width of binary and nchar fields in the shell. The parts exceeding this limit will be hidden
-  #TAOS_MAX_BINARY_DISPLAY_WIDTH: &quot;30&quot;
-
-  # enable/disable stream (continuous query)
-  #TAOS_STREAM: &quot;1&quot;
-
-  # in retrieve blocking model, only in 50% query threads will be used in query processing in dnode
-  #TAOS_RETRIEVE_BLOCKING_MODEL: &quot;0&quot;
-
-  # the maximum allowed query buffer size in MB during query processing for each data node
-  # -1 no limit (default)
-  # 0  no query allowed, queries are disabled
-  #TAOS_QUERY_BUFFER_SIZE: &quot;-1&quot;
-</code></pre>
-<h2><a class="header" href="#scale-up-1" id="scale-up-1">Scale Up</a></h2>
-<p>You could see the details in chapter 4.</p>
-<p>First, we should get the statefulset name in your deploy:</p>
-<pre><code class="language-sh">export STS_NAME=$(kubectl get statefulset \
-  -l &quot;app.kubernetes.io/name=tdengine&quot; \
-  -o jsonpath=&quot;{.items[0].metadata.name}&quot;)
-</code></pre>
-<p>Scale up is very simple, the next line scale up the TDengine dnodes to 3, no other commands required.</p>
-<pre><code class="language-sh">kubectl scale --replicas 3 statefulset/$STS_NAME
-</code></pre>
-<p>Re-call <code>show dnodes</code> <code>show mnodes</code> to check:</p>
-<p><img src="assets/helm-scale-up.png" alt="helm-scale-up" /></p>
-<h2><a class="header" href="#scale-down-1" id="scale-down-1">Scale Down</a></h2>
-<blockquote>
-<p>NOTE: scale-down is not completely work as expected, use it with caution.</p>
-</blockquote>
-<p>Also, scale down requires some extra step:</p>
-<p>Get the dnode endpoint and drop it iteratively:</p>
-<pre><code class="language-sh">kubectl --namespace default exec $POD_NAME -- \
-  cat /var/lib/taos/dnode/dnodeEps.json \
-  | jq '.dnodeInfos[1:] |map(.dnodeFqdn + &quot;:&quot; + (.dnodePort|tostring)) | .[]' -r
-kubectl --namespace default exec $POD_NAME -- taos -s &quot;show dnodes&quot;
-kubectl --namespace default exec $POD_NAME -- taos -s 'drop dnode &quot;&lt;you dnode in list&gt;&quot;'
-</code></pre>
-<p>Drop one dnode may cause several seconds or minutes.</p>
-<p><img src="assets/helm-drop-dnode.png" alt="helm-drop-dnode" /></p>
-<h2><a class="header" href="#uninstall" id="uninstall">Uninstall</a></h2>
-<pre><code class="language-sh">helm uninstall tdengine
-</code></pre>
-<p>Helm doest not automatically drop pvc by now, you can drop it manually.</p>
-<h1><a class="header" href="#appendix" id="appendix">Appendix</a></h1>
-<h1><a class="header" href="#appendix-1" id="appendix-1">Appendix</a></h1>
-<p>We suppose you have know how kubernetes work and a kubernetes environment in use.</p>
+<h1><a class="header" href="#introduction-to-kubernetes" id="introduction-to-kubernetes">Introduction to Kubernetes</a></h1>
+<p>We suppose you have known how kubernetes work and a kubernetes environment in use.</p>
 <p>Setup K8s Cluster with Rancher</p>
 <blockquote>
 <p>Claim: I've built this at May 26 2021 in Beijing, China(UTC+8), China. Please refer to fitted documentations if any step changed.</p>
@@ -1091,264 +308,552 @@ journalctl -fu rancherd-server
 rancher   3         3         3       3            3           node-role.kubernetes.io/master=true   129m
 </code></pre>
 <p>Three nodes rancher+k8s cluster are avalibale now.</p>
-<h1><a class="header" href="#appendix-2" id="appendix-2">Appendix</a></h1>
-<h2><a class="header" href="#use-ceph-rbd-device-in-k8s" id="use-ceph-rbd-device-in-k8s">Use Ceph RBD device in k8s</a></h2>
-<blockquote>
-<p>Refer to <a href="https://docs.ceph.com/en/latest/rbd/rbd-kubernetes/">https://docs.ceph.com/en/latest/rbd/rbd-kubernetes/</a>.</p>
-</blockquote>
-<p>Create pool for k8s and initialize it.</p>
-<pre><code class="language-sh">ceph osd pool create kubernetes
-rbd pool init kubernetes
-</code></pre>
-<p>Create a new user for Kubernetes and ceph-csi. Execute the following and record the generated key:</p>
-<pre><code class="language-sh">ceph auth get-or-create client.kubernetes \
-  mon 'profile rbd' \
-  osd 'profile rbd pool=kubernetes' \
-  mgr 'profile rbd pool=kubernetes'
-</code></pre>
-<p>Get the following token:</p>
-<pre><code class="language-ini">[client.kubernetes]
-        key = AQC1Oq5gnLcWGhAACiFyohnB6n6Fovd/vNbqhw==
-</code></pre>
-<p>Use <code>ceph mon dump</code> to get ceph cluster fsid and monitor endpoint:</p>
-<pre><code class="language-text">fsid 6177c398-f449-4d66-a00b-27cad7cd076f
-last_changed 2020-09-09T22:06:52.339219+0800
-created 2018-11-15T12:12:01.363568+0800
-min_mon_release 15 (octopus)
-0: [v2:192.168.60.90:3300/0,v1:192.168.60.90:6789/0] mon.dn0
-1: [v2:192.168.60.206:3300/0,v1:192.168.60.206:6789/0] mon.mds2
-2: [v2:192.168.60.207:3300/0,v1:192.168.60.207:6789/0] mon.mds1
-3: [v2:192.168.60.208:3300/0,v1:192.168.60.208:6789/0] mon.admin
-4: [v2:192.168.60.209:3300/0,v1:192.168.60.209:6789/0] mon.mon2
-5: [v2:192.168.60.210:3300/0,v1:192.168.60.210:6789/0] mon.mon1
-</code></pre>
-<p>Generate a <code>csi-config-map.yaml</code>.</p>
-<pre><code class="language-yaml">---
-apiVersion: v1
-kind: ConfigMap
-data:
-  config.json: |-
-    [{
-      &quot;clusterID&quot;: &quot;6177c398-f449-4d66-a00b-27cad7cd076f&quot;,
-      &quot;monitors&quot;:[
-        &quot;192.168.60.90:6789&quot;,
-        &quot;192.168.60.206:6789&quot;,
-        &quot;192.168.60.207:6789&quot;,
-        &quot;192.168.60.208:6789&quot;,
-        &quot;192.168.60.209:6789&quot;,
-        &quot;192.168.60.210:6789&quot;
-    }]
+<h1><a class="header" href="#k8s-starter" id="k8s-starter">K8s Starter</a></h1>
+<p>Let's start using kubernetes from some starter project. If you are familiar enough with k8s, just ignore the chapter and go on.</p>
+<h2><a class="header" href="#statefulsets" id="statefulsets">StatefulSets</a></h2>
+<p>In <code>starter/stateful-nginx.yaml</code>:</p>
+<pre><code class="language-yaml">apiVersion: v1
+kind: Service
 metadata:
-  name: ceph-csi-config
-</code></pre>
-<p>Add to k8s.</p>
-<pre><code class="language-sh">kubectl apply -f csi-config-map.yaml
-</code></pre>
-<p>Generate cephx <code>csi-rbd-secret.yaml</code>:</p>
-<pre><code class="language-yaml">---
-apiVersion: v1
-kind: Secret
-metadata:
-  name: csi-rbd-secret
-  namespace: default
-stringData:
-  userID: kubernetes
-  userKey: AQC1Oq5gnLcWGhAACiFyohnB6n6Fovd/vNbqhw==
-</code></pre>
-<p>Once generated, store the new Secret object in Kubernetes:</p>
-<pre><code class="language-sh">kubectl apply -f csi-rbd-secret.yaml
-</code></pre>
-<p>Add CSI RBAC roles.</p>
-<pre><code class="language-sh">kubectl apply -f https://raw.githubusercontent.com/ceph/ceph-csi/master/deploy/rbd/kubernetes/csi-provisioner-rbac.yaml
-</code></pre>
-<p>You'll see like this:</p>
-<pre><code class="language-text">serviceaccount/rbd-csi-provisioner created
-clusterrole.rbac.authorization.k8s.io/rbd-external-provisioner-runner created
-clusterrolebinding.rbac.authorization.k8s.io/rbd-csi-provisioner-role created
-role.rbac.authorization.k8s.io/rbd-external-provisioner-cfg created
-rolebinding.rbac.authorization.k8s.io/rbd-csi-provisioner-role-cfg created
-</code></pre>
-<p>Create nodeplugin for Ceph CSI.</p>
-<pre><code class="language-sh">kubectl apply -f https://raw.githubusercontent.com/ceph/ceph-csi/master/deploy/rbd/kubernetes/csi-nodeplugin-rbac.yaml
-</code></pre>
-<pre><code class="language-text">serviceaccount/rbd-csi-nodeplugin created
-clusterrole.rbac.authorization.k8s.io/rbd-csi-nodeplugin created
-clusterrolebinding.rbac.authorization.k8s.io/rbd-csi-nodeplugin created
-</code></pre>
-<p>Add Ceph RBD provisioner for k8s.</p>
-<pre><code class="language-sh">wget https://raw.githubusercontent.com/ceph/ceph-csi/master/deploy/rbd/kubernetes/csi-rbdplugin-provisioner.yaml
-wget https://raw.githubusercontent.com/ceph/ceph-csi/master/deploy/rbd/kubernetes/csi-rbdplugin.yaml
-# I'm changing this for network problem.
-sed -i 's#k8s.gcr.io/sig-storage#lvcisco#' csi-rbdplugin*.yaml
-kubectl apply -f csi-rbdplugin-provisioner.yaml
-kubectl apply -f csi-rbdplugin.yaml
-</code></pre>
-<p>Result:</p>
-<pre><code class="language-text">service/csi-rbdplugin-provisioner created
-deployment.apps/csi-rbdplugin-provisioner created
-
-daemonset.apps/csi-rbdplugin unchanged
-service/csi-metrics-rbdplugin unchanged
-</code></pre>
-<p>Add <code>ceph-csi-encryption-kms-config</code> config map, or it will cause error(See <a href="https://blog.csdn.net/DANTE54/article/details/106471848">here</a>).</p>
-<pre><code class="language-yaml">---
-apiVersion: v1
-kind: ConfigMap
-data:
-  config.json: |-
-    {
-      &quot;vault-test&quot;: {
-        &quot;encryptionKMSType&quot;: &quot;vault&quot;,
-        &quot;vaultAddress&quot;: &quot;http://vault.default.svc.cluster.local:8200&quot;,
-        &quot;vaultAuthPath&quot;: &quot;/v1/auth/kubernetes/login&quot;,
-        &quot;vaultRole&quot;: &quot;csi-kubernetes&quot;,
-        &quot;vaultPassphraseRoot&quot;: &quot;/v1/secret&quot;,
-        &quot;vaultPassphrasePath&quot;: &quot;ceph-csi/&quot;,
-        &quot;vaultCAVerify&quot;: &quot;false&quot;
-      },
-      &quot;vault-tokens-test&quot;: {
-          &quot;encryptionKMSType&quot;: &quot;vaulttokens&quot;,
-          &quot;vaultAddress&quot;: &quot;http://vault.default.svc.cluster.local:8200&quot;,
-          &quot;vaultBackendPath&quot;: &quot;secret/&quot;,
-          &quot;vaultTLSServerName&quot;: &quot;vault.default.svc.cluster.local&quot;,
-          &quot;vaultCAVerify&quot;: &quot;false&quot;,
-          &quot;tenantConfigName&quot;: &quot;ceph-csi-kms-config&quot;,
-          &quot;tenantTokenName&quot;: &quot;ceph-csi-kms-token&quot;,
-          &quot;tenants&quot;: {
-              &quot;my-app&quot;: {
-                  &quot;vaultAddress&quot;: &quot;https://vault.example.com&quot;,
-                  &quot;vaultCAVerify&quot;: &quot;true&quot;
-              },
-              &quot;an-other-app&quot;: {
-                  &quot;tenantTokenName&quot;: &quot;storage-encryption-token&quot;
-              }
-          }
-       }
-    }
-metadata:
-  name: ceph-csi-encryption-kms-config
-</code></pre>
-<p>Apply it:</p>
-<pre><code class="language-sh">kubectl apply -f kms-config.yaml
-</code></pre>
-<h2><a class="header" href="#create-k8s-storageclass" id="create-k8s-storageclass">Create K8s StorageClass</a></h2>
-<pre><code class="language-sh">cat &lt;&lt;EOF &gt; csi-rbd-sc.yaml
----
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-   name: csi-rbd-sc
-provisioner: rbd.csi.ceph.com
-parameters:
-   clusterID: 6177c398-f449-4d66-a00b-27cad7cd076f
-   pool: kubernetes
-   imageFeatures: layering
-   csi.storage.k8s.io/provisioner-secret-name: csi-rbd-secret
-   csi.storage.k8s.io/provisioner-secret-namespace: default
-   csi.storage.k8s.io/controller-expand-secret-name: csi-rbd-secret
-   csi.storage.k8s.io/controller-expand-secret-namespace: default
-   csi.storage.k8s.io/node-stage-secret-name: csi-rbd-secret
-   csi.storage.k8s.io/node-stage-secret-namespace: default
-reclaimPolicy: Delete
-allowVolumeExpansion: true
-mountOptions:
-   - discard
-EOF
-kubectl apply -f csi-rbd-sc.yaml
-</code></pre>
-<h2><a class="header" href="#create-a-persistentvolumeclaimpvc" id="create-a-persistentvolumeclaimpvc">Create A PersistentVolumeClaim(PVC)</a></h2>
-<p>There's two kind of PVC volume mode: raw block or filesystem.</p>
-<h3><a class="header" href="#raw-rbd-block-device-pvc" id="raw-rbd-block-device-pvc">Raw RBD block device PVC</a></h3>
-<pre><code class="language-sh">cat &lt;&lt;EOF &gt; raw-block-pvc.yaml
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: raw-block-pvc
+  name: nginx
+  labels:
+    app: nginx
 spec:
-  accessModes:
-    - ReadWriteOnce
-  volumeMode: Block
-  resources:
-    requests:
-      storage: 1Gi
-  storageClassName: csi-rbd-sc
-EOF
-kubectl apply -f raw-block-pvc.yaml
-</code></pre>
-<pre><code class="language-sh">cat &lt;&lt;EOF &gt; raw-block-pod.yaml
+  ports:
+  - port: 80
+    name: web
+  clusterIP: None
+  selector:
+    app: nginx
 ---
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: StatefulSet
 metadata:
-  name: pod-with-raw-block-volume
+  name: web
 spec:
-  containers:
-    - name: fc-container
-      image: fedora:26
-      command: [&quot;/bin/sh&quot;, &quot;-c&quot;]
-      args: [&quot;tail -f /dev/null&quot;]
-      volumeDevices:
-        - name: data
-          devicePath: /dev/xvda
-  volumes:
-    - name: data
-      persistentVolumeClaim:
-        claimName: raw-block-pvc
-EOF
-kubectl apply -f raw-block-pod.yaml
-</code></pre>
-<p>If k8s.gcr.io is not reachable, you should use another image provider for csi-* images.</p>
-<pre><code class="language-sh">pull-and-tag() {
-    docker pull $1
-    docker tag $1 $2
-}
-pull-and-tag lvcisco/csi-provisioner:v2.0.4 k8s.gcr.io/sig-storage/csi-provisioner:v2.0.4
-pull-and-tag lvcisco/csi-attacher:v3.0.2 k8s.gcr.io/sig-storage/csi-attacher:v3.0.2
-pull-and-tag lvcisco/csi-snapshotter:v4.0.0 k8s.gcr.io/sig-storage/csi-snapshotter:v4.0.0
-pull-and-tag lvcisco/csi-node-driver-registrar:v2.0.1 k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.0.1
-pull-and-tag lvcisco/csi-resizer:v1.0.1 k8s.gcr.io/sig-storage/csi-resizer:v1.0.1
-</code></pre>
-<h3><a class="header" href="#filesystem-pvc" id="filesystem-pvc">Filesystem PVC</a></h3>
-<p>This's the more common use case.</p>
-<pre><code class="language-sh">cat &lt;&lt;EOF &gt; pvc.yaml
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: rbd-pvc
-spec:
-  accessModes:
-    - ReadWriteOnce
-  volumeMode: Filesystem
-  resources:
-    requests:
-      storage: 1Gi
-  storageClassName: csi-rbd-sc
-EOF
-kubectl apply -f pvc.yaml
-</code></pre>
-<pre><code class="language-sh">cat &lt;&lt;EOF &gt; pod.yaml
----
-apiVersion: v1
-kind: Pod
-metadata:
-  name: csi-rbd-demo-pod
-spec:
-  containers:
-    - name: web-server
-      image: nginx
-      volumeMounts:
-        - name: nginx-test
+  selector:
+    matchLabels:
+      app: nginx # has to match .spec.template.metadata.labels
+  serviceName: &quot;nginx&quot;
+  replicas: 3 # by default is 1
+  template:
+    metadata:
+      labels:
+        app: nginx # has to match .spec.selector.matchLabels
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+          name: web
+        volumeMounts:
+        - name: www
           mountPath: /usr/share/nginx/html
-  volumes:
-    - name: nginx-test
-      persistentVolumeClaim:
-        claimName: rbd-pvc
-        readOnly: false
-EOF
-kubectl apply -f pod.yaml
+  volumeClaimTemplates:
+  - metadata:
+      name: www
+    spec:
+      accessModes: [ &quot;ReadWriteOnce&quot; ]
+      storageClassName: &quot;csi-rbd-sc&quot;
+      resources:
+        requests:
+          storage: 1Gi
 </code></pre>
+<pre><code class="language-sh">kubectl apply -f starter/stateful-nginx.yaml
+</code></pre>
+<h2><a class="header" href="#configmap-mount-as-volume" id="configmap-mount-as-volume">ConfigMap Mount as Volume</a></h2>
+<p>A config map:</p>
+<pre><code class="language-yaml">---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: starter-config-map
+data:
+  debugFlag: 135
+  keep: 3650
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: starter-config-map-as-volume
+spec:
+  containers:
+    - name: test-container
+      image: busybox
+      command: [ &quot;/bin/sh&quot;, &quot;-c&quot;, &quot;ls /etc/config/&quot; ]
+      volumeMounts:
+      - name: starter-config-map-vol
+        mountPath: /etc/config
+  volumes:
+    - name: starter-config-map-vol
+      configMap:
+        # Provide the name of the ConfigMap containing the files you want
+        # to add to the container
+        name: starter-config-map
+  restartPolicy: Never
+</code></pre>
+<h1><a class="header" href="#setup-tdengine-cluster-on-kubernetes" id="setup-tdengine-cluster-on-kubernetes">Setup TDengine Cluster on Kubernetes</a></h1>
+<p>In this chapter, we hope to introduce how to use YAML files to create a TDengine cluster from scratch step by step in the first subsection, and focus on the common operations of TDengine in the Kubernetes environment. You can learn about the deployment mechanism of TDengine in the Kubernetes cluster. The second section introduces how to use Helm to deploy TDengine. It is recommended to use the Helm Chart deployment method in the production environment. We will continue to update the TDengine Chart, so stay tuned.</p>
+<h1><a class="header" href="#setup-tdengine-cluster-on-kubernetes-1" id="setup-tdengine-cluster-on-kubernetes-1">Setup TDengine Cluster on Kubernetes</a></h1>
+<h2><a class="header" href="#service" id="service">Service</a></h2>
+<p>Service config <code>taosd-service.yaml</code> for each port we will use, here note that the <code>metadata.name</code> (setted as <code>&quot;taosd&quot;</code>) will be used in next step:</p>
+<pre><code class="language-yaml">---
+apiVersion: v1
+kind: Service
+metadata:
+  name: &quot;taosd&quot;
+  labels:
+    app: &quot;tdengine&quot;
+spec:
+  ports:
+  - name: tcp6030
+    protocol: &quot;TCP&quot;
+    port: 6030
+  - name: tcp6041
+    protocol: &quot;TCP&quot;
+    port: 6041
+  selector:
+    app: &quot;tdengine&quot;
+</code></pre>
+<h2><a class="header" href="#statefulset" id="statefulset">StatefulSet</a></h2>
+<p>We use StatefulSet config <code>tdengine.yaml</code> for TDengine.</p>
+<pre><code class="language-yaml">---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: &quot;tdengine&quot;
+  labels:
+    app: &quot;tdengine&quot;
+spec:
+  serviceName: &quot;taosd&quot;
+  replicas: 3
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: &quot;tdengine&quot;
+  template:
+    metadata:
+      name: &quot;tdengine&quot;
+      labels:
+        app: &quot;tdengine&quot;
+    spec:
+      containers:
+      - name: &quot;tdengine&quot;
+        image: &quot;tdengine/tdengine:3.0.0.0&quot;
+        imagePullPolicy: &quot;IfNotPresent&quot;
+        ports:
+        - name: tcp6030
+          protocol: &quot;TCP&quot;
+          containerPort: 6030
+        - name: tcp6041
+          protocol: &quot;TCP&quot;
+          containerPort: 6041
+        env:
+        # POD_NAME for FQDN config
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        # SERVICE_NAME and NAMESPACE for fqdn resolve
+        - name: SERVICE_NAME
+          value: &quot;taosd&quot;
+        - name: STS_NAME
+          value: &quot;tdengine&quot;
+        - name: STS_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        # TZ for timezone settings, we recommend to always set it.
+        - name: TZ
+          value: &quot;Asia/Shanghai&quot;
+        # TAOS_ prefix will configured in taos.cfg, strip prefix and camelCase.
+        - name: TAOS_SERVER_PORT
+          value: &quot;6030&quot;
+        # Must set if you want a cluster.
+        - name: TAOS_FIRST_EP
+          value: &quot;$(STS_NAME)-0.$(SERVICE_NAME).$(STS_NAMESPACE).svc.cluster.local:$(TAOS_SERVER_PORT)&quot;
+        # TAOS_FQND should always be setted in k8s env.
+        - name: TAOS_FQDN
+          value: &quot;$(POD_NAME).$(SERVICE_NAME).$(STS_NAMESPACE).svc.cluster.local&quot;
+        volumeMounts:
+        - name: taosdata
+          mountPath: /var/lib/taos
+        readinessProbe:
+          exec:
+            command:
+            - taos-check
+          initialDelaySeconds: 5
+          timeoutSeconds: 5000
+        livenessProbe:
+          exec:
+            command:
+            - taos-check
+          initialDelaySeconds: 15
+          periodSeconds: 20
+  volumeClaimTemplates:
+  - metadata:
+      name: taosdata
+    spec:
+      accessModes:
+        - &quot;ReadWriteOnce&quot;
+      resources:
+        requests:
+          storage: &quot;10Gi&quot;
+</code></pre>
+<h2><a class="header" href="#start-the-cluster" id="start-the-cluster">Start the cluster</a></h2>
+<pre><code class="language-sh">kubectl apply -f taosd-service.yaml
+kubectl apply -f tdengine.yaml
+</code></pre>
+<p>The script will create a three node TDengine cluster on k8s.</p>
+<p>Execute <code>show dnodes</code> in taos shell:</p>
+<pre><code class="language-sh">kubectl exec -i -t tdengine-0 -- taos -s &quot;show dnodes&quot;
+kubectl exec -i -t tdengine-1 -- taos -s &quot;show dnodes&quot;
+kubectl exec -i -t tdengine-2 -- taos -s &quot;show dnodes&quot;
+</code></pre>
+<p>Well, the current dnodes list shows:</p>
+<pre><code class="language-sql">Welcome to the TDengine shell from Linux, Client Version:3.0.0.0
+Copyright (c) 2022 by TAOS Data, Inc. All rights reserved.
+
+taos&gt; show dnodes
+   id   |            endpoint            | vnodes | support_vnodes |   status   |       create_time       |              note              |
+============================================================================================================================================
+      1 | tdengine-0.taosd.default.sv... |      0 |            256 | ready      | 2022-06-22 15:29:49.049 |                                |
+      2 | tdengine-1.taosd.default.sv... |      0 |            256 | ready      | 2022-06-22 15:30:11.895 |                                |
+      3 | tdengine-2.taosd.default.sv... |      0 |            256 | ready      | 2022-06-22 15:30:33.007 |                                |
+Query OK, 3 rows affected (0.004610s)
+</code></pre>
+<h2><a class="header" href="#scale-up" id="scale-up">Scale Up</a></h2>
+<p>TDengine on Kubernetes could automatically scale up with:</p>
+<pre><code class="language-sh">kubectl scale statefulsets tdengine --replicas=4
+</code></pre>
+<p>Check if scale-up works:</p>
+<pre><code class="language-sh">kubectl get pods -l app=tdengine 
+</code></pre>
+<p>Results:</p>
+<pre><code class="language-text">NAME         READY   STATUS    RESTARTS   AGE
+tdengine-0   1/1     Running   0          2m9s
+tdengine-1   1/1     Running   0          108s
+tdengine-2   1/1     Running   0          86s
+tdengine-3   1/1     Running   0          22s
+</code></pre>
+<p>Check TDengine dnodes:</p>
+<pre><code class="language-sh">kubectl exec -i -t tdengine-0 -- taos -s &quot;show dnodes&quot;
+</code></pre>
+<p>Results:</p>
+<pre><code class="language-sql">Welcome to the TDengine shell from Linux, Client Version:3.0.0.0
+Copyright (c) 2022 by TAOS Data, Inc. All rights reserved.
+
+taos&gt; show dnodes
+   id   |            endpoint            | vnodes | support_vnodes |   status   |       create_time       |              note              |
+============================================================================================================================================
+      1 | tdengine-0.taosd.default.sv... |      0 |            256 | ready      | 2022-06-22 15:29:49.049 |                                |
+      2 | tdengine-1.taosd.default.sv... |      0 |            256 | ready      | 2022-06-22 15:30:11.895 |                                |
+      3 | tdengine-2.taosd.default.sv... |      0 |            256 | ready      | 2022-06-22 15:30:33.007 |                                |
+      4 | tdengine-3.taosd.default.sv... |      0 |            256 | ready      | 2022-06-22 15:31:36.204 |                                |
+Query OK, 4 rows affected (0.009594s)
+</code></pre>
+<h2><a class="header" href="#scale-down" id="scale-down">Scale Down</a></h2>
+<p>Let's try scale down from 4 to 3.</p>
+<p>To perform a right scale-down, we should drop the last dnode in taos shell first:</p>
+<pre><code class="language-sh">kubectl exec -i -t tdengine-0 -- taos -s &quot;drop dnode 4&quot;
+</code></pre>
+<p>Then scale down to 3.</p>
+<pre><code class="language-sh">kubectl scale statefulsets tdengine --replicas=3
+</code></pre>
+<p>Extra replicas pods will be terminated, and retain 3 pods.</p>
+<p>Type <code>kubectl get pods -l app=tdengine</code> to check pods.</p>
+<pre><code class="language-text">NAME         READY   STATUS    RESTARTS   AGE
+tdengine-0   1/1     Running   0          4m17s
+tdengine-1   1/1     Running   0          3m56s
+tdengine-2   1/1     Running   0          3m34s
+</code></pre>
+<p>Also need to remove the pvc(if no, scale-up will be failed next):</p>
+<pre><code class="language-sh">kubectl delete pvc taosdata-tdengine-3
+</code></pre>
+<p>Now your TDengine cluster is safe.</p>
+<p>Scale up again will be ok:</p>
+<pre><code class="language-sh">kubectl scale statefulsets tdengine --replicas=3
+</code></pre>
+<p><code>show dnodes</code> results:</p>
+<pre><code class="language-sql">   id   |            endpoint            | vnodes | support_vnodes |   status   |       create_time       |              note              |
+============================================================================================================================================
+      1 | tdengine-0.taosd.default.sv... |      0 |            256 | ready      | 2022-06-22 15:29:49.049 |                                |
+      2 | tdengine-1.taosd.default.sv... |      0 |            256 | ready      | 2022-06-22 15:30:11.895 |                                |
+      3 | tdengine-2.taosd.default.sv... |      0 |            256 | ready      | 2022-06-22 15:30:33.007 |                                |
+      5 | tdengine-3.taosd.default.sv... |      0 |            256 | ready      | 2022-06-22 15:34:35.520 |                                |
+</code></pre>
+<h3><a class="header" href="#lets-do-something-bad-case-1" id="lets-do-something-bad-case-1">Let's do something BAD Case 1</a></h3>
+<p>Scale it up to 4 and then scale down to 2 directly. Deleted pods are <code>offline</code> now:</p>
+<pre><code class="language-text">Welcome to the TDengine shell from Linux, Client Version:2.1.1.0
+Copyright (c) 2020 by TAOS Data, Inc. All rights reserved.
+
+taos&gt; show dnodes
+   id   |            endpoint            | vnodes | support_vnodes |   status   |       create_time       |              note              |
+============================================================================================================================================
+      1 | tdengine-0.taosd.default.sv... |      0 |            256 | ready      | 2022-06-22 15:29:49.049 |                                |
+      2 | tdengine-1.taosd.default.sv... |      0 |            256 | ready      | 2022-06-22 15:30:11.895 |                                |
+      3 | tdengine-2.taosd.default.sv... |      0 |            256 | offline    | 2022-06-22 15:30:33.007 | status msg timeout             |
+      5 | tdengine-3.taosd.default.sv... |      0 |            256 | offline    | 2022-06-22 15:34:35.520 | status msg timeout             ||
+Query OK, 4 row(s) in set (0.004293s)
+</code></pre>
+<p>But we can't drop tje offline dnodes, the dnode will stuck in <code>dropping</code> mode (if you call <code>drop dnode 'fqdn:6030'</code>).</p>
+<h3><a class="header" href="#lets-do-something-bad-case-2" id="lets-do-something-bad-case-2">Let's do something BAD Case 2</a></h3>
+<p>Note that if the remaining dnodes is less than the database <code>replica</code>, it will cause error until you scale it up again.</p>
+<p>Create database with <code>replica</code> 3, and insert data to a table:</p>
+<pre><code class="language-sh">kubectl exec -i -t tdengine-0 -- \
+  taos -s \
+  &quot;create database if not exists test replica 2;
+   use test; 
+   create table if not exists t1(ts timestamp, n int);
+   insert into t1 values(now, 1)(now+1s, 2);&quot;
+</code></pre>
+<p>Scale down to replica 1 (bad behavior):</p>
+<pre><code class="language-sh">kubectl scale statefulsets tdengine --replicas=1
+</code></pre>
+<p>Now in taos shell, all operations with database <code>test</code> are not valid.</p>
+<p>So, before scale-down, please check the max value of <code>replica</code> among all databases, and be sure to do <code>drop dnode</code> step.</p>
+<h2><a class="header" href="#clean-up-tdengine-statefulset" id="clean-up-tdengine-statefulset">Clean Up TDengine StatefulSet</a></h2>
+<p>To complete remove tdengine statefulset, type:</p>
+<pre><code class="language-sh">kubectl delete statefulset -l app=tdengine
+kubectl delete svc -l app=tdengine
+kubectl delete pvc -l app=tdengine
+</code></pre>
+<h1><a class="header" href="#setup-tdengine-cluster-with-helm" id="setup-tdengine-cluster-with-helm">Setup TDengine Cluster with helm</a></h1>
+<p>Is it simple enough? Let's do something more.</p>
+<h2><a class="header" href="#install-helm" id="install-helm">Install Helm</a></h2>
+<pre><code class="language-sh">curl -fsSL -o get_helm.sh \
+  https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+chmod +x get_helm.sh
+./get_helm.sh
+</code></pre>
+<p>Helm will use kubectl and the kubeconfig setted in chapter 1.</p>
+<h2><a class="header" href="#install-tdengine-chart" id="install-tdengine-chart">Install TDengine Chart</a></h2>
+<p>Download TDengine chart.</p>
+<pre><code class="language-sh">wget https://github.com/taosdata/TDengine-Operator/raw/main/helm/tdengine-3.0.2.tgz
+</code></pre>
+<p>First, check your sotrage class name:</p>
+<pre><code class="language-sh">helm get storageclass
+</code></pre>
+<p>In minikube, the default storageclass name is <code>standard</code>.</p>
+<p>And then deploy TDengine in one line:</p>
+<pre><code class="language-sh">helm install tdengine tdengine-3.0.2.tgz \
+  --set storage.className=&lt;your storage class name&gt;
+</code></pre>
+<p>If you are using minikube, you may want a smaller storage size for TDengine:</p>
+<pre><code class="language-sh">helm install tdengine tdengine-3.0.2.tgz \
+  --set storage.className=standard \
+  --set storage.dataSize=2Gi \
+  --set storage.logSize=10Mi
+</code></pre>
+<p>If success, it will show an minimal usage of TDengine.</p>
+<pre><code class="language-sh">export POD_NAME=$(kubectl get pods --namespace default \
+  -l &quot;app.kubernetes.io/name=tdengine,app.kubernetes.io/instance=tdengine&quot; \
+  -o jsonpath=&quot;{.items[0].metadata.name}&quot;)
+kubectl --namespace default exec $POD_NAME -- taos -s &quot;show dnodes; show mnodes&quot;
+kubectl --namespace default exec -it $POD_NAME -- taos
+</code></pre>
+<p><img src="./assets/helm-install-with-sc.png" alt="helm-install-with-sc" /></p>
+<p>You can try it by yourself:</p>
+<p><img src="./assets/helm-install-post-script.png" alt="helm-install-post-script" /></p>
+<p>For a small sql test:</p>
+<pre><code class="language-sh">kubectl --namespace default exec $POD_NAME -- \
+  taos -s &quot;create database test;
+    use test;
+    create table t1 (ts timestamp, n int);
+    insert into t1 values(now, 1)(now + 1s, 2);
+    select * from t1;&quot;
+</code></pre>
+<p><img src="assets/kubectl-taos-sql.png" alt="taos-sql" /></p>
+<h2><a class="header" href="#values" id="values">Values</a></h2>
+<p>TDengine support <code>values.yaml</code> append.</p>
+<p>To see a full list of values, use <code>helm show values</code>:</p>
+<pre><code class="language-sh">helm show values tdengine-3.0.2.tgz
+</code></pre>
+<p>You cound save it to <code>values.yaml</code>, and do some changs on it, like replica count, storage class name, and so on. Then type:</p>
+<pre><code class="language-sh">helm install tdengine tdengine-3.0.2.tgz -f values.yaml
+</code></pre>
+<p>The full list of values:</p>
+<pre><code class="language-yaml"># Default values for tdengine.
+# This is a YAML-formatted file.
+# Declare variables to be passed into helm templates.
+
+replicaCount: 1
+
+image:
+  prefix: tdengine/tdengine
+  #pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+#  tag: &quot;3.0.0.0&quot;
+
+service:
+  # ClusterIP is the default service type, use NodeIP only if you know what you are doing.
+  type: ClusterIP
+  ports:
+    # TCP range required
+    tcp: [6030, 6041, 6042, 6043, 6044, 6046, 6047, 6048, 6049, 6060]
+    # UDP range
+    udp: [6044, 6045]
+
+
+# Set timezone here, not in taoscfg
+timezone: &quot;Asia/Shanghai&quot;
+
+resources:
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+storage:
+  # Set storageClassName for pvc. K8s use default storage class if not set.
+  #
+  className: &quot;&quot;
+  dataSize: &quot;100Gi&quot;
+  logSize: &quot;10Gi&quot;
+
+nodeSelectors:
+  taosd:
+    # node selectors
+
+clusterDomainSuffix: &quot;&quot;
+# Config settings in taos.cfg file.
+#
+# The helm/k8s support will use environment variables for taos.cfg,
+# converting an upper-snake-cased variable like `TAOS_DEBUG_FLAG`,
+# to a camelCase taos config variable `debugFlag`.
+#
+# See the variable list at https://www.taosdata.com/cn/documentation/administrator .
+#
+# Note:
+# 1. firstEp/secondEp: should not be setted here, it's auto generated at scale-up.
+# 2. serverPort: should not be setted, we'll use the default 6030 in many places.
+# 3. fqdn: will be auto generated in kubenetes, user should not care about it.
+# 4. role: currently role is not supported - every node is able to be mnode and vnode.
+#
+# Btw, keep quotes &quot;&quot; around the value like below, even the value will be number or not.
+taoscfg:
+  # Starts as cluster or not, must be 0 or 1.
+  #   0: all pods will start as a seperate TDengine server
+  #   1: pods will start as TDengine server cluster. [default]
+  CLUSTER: &quot;1&quot;
+
+  # number of replications, for cluster only
+  TAOS_REPLICA: &quot;1&quot;
+
+
+  #
+  # TAOS_NUM_OF_RPC_THREADS: number of threads for RPC
+  #TAOS_NUM_OF_RPC_THREADS: &quot;2&quot;
+
+  #
+  # TAOS_NUM_OF_COMMIT_THREADS: number of threads to commit cache data
+  #TAOS_NUM_OF_COMMIT_THREADS: &quot;4&quot;
+
+  # enable/disable installation / usage report
+  #TAOS_TELEMETRY_REPORTING: &quot;1&quot;
+
+  # time interval of system monitor, seconds
+  #TAOS_MONITOR_INTERVAL: &quot;30&quot;
+
+  # time interval of dnode status reporting to mnode, seconds, for cluster only
+  #TAOS_STATUS_INTERVAL: &quot;1&quot;
+
+  # time interval of heart beat from shell to dnode, seconds
+  #TAOS_SHELL_ACTIVITY_TIMER: &quot;3&quot;
+
+  # minimum sliding window time, milli-second
+  #TAOS_MIN_SLIDING_TIME: &quot;10&quot;
+
+  # minimum time window, milli-second
+  #TAOS_MIN_INTERVAL_TIME: &quot;1&quot;
+
+  # the compressed rpc message, option:
+  #  -1 (no compression)
+  #   0 (all message compressed),
+  # &gt; 0 (rpc message body which larger than this value will be compressed)
+  #TAOS_COMPRESS_MSG_SIZE: &quot;-1&quot;
+
+  # max number of connections allowed in dnode
+  #TAOS_MAX_SHELL_CONNS: &quot;50000&quot;
+
+  # stop writing logs when the disk size of the log folder is less than this value
+  #TAOS_MINIMAL_LOG_DIR_G_B: &quot;0.1&quot;
+
+  # stop writing temporary files when the disk size of the tmp folder is less than this value
+  #TAOS_MINIMAL_TMP_DIR_G_B: &quot;0.1&quot;
+
+  # if disk free space is less than this value, taosd service exit directly within startup process
+  #TAOS_MINIMAL_DATA_DIR_G_B: &quot;0.1&quot;
+
+  # One mnode is equal to the number of vnode consumed
+  #TAOS_MNODE_EQUAL_VNODE_NUM: &quot;4&quot;
+
+  # enbale/disable http service
+  #TAOS_HTTP: &quot;1&quot;
+
+  # enable/disable system monitor
+  #TAOS_MONITOR: &quot;1&quot;
+
+  # enable/disable async log
+  #TAOS_ASYNC_LOG: &quot;1&quot;
+
+  #
+  # time of keeping log files, days
+  #TAOS_LOG_KEEP_DAYS: &quot;0&quot;
+
+  # The following parameters are used for debug purpose only.
+  # debugFlag 8 bits mask: FILE-SCREEN-UNUSED-HeartBeat-DUMP-TRACE_WARN-ERROR
+  # 131: output warning and error
+  # 135: output debug, warning and error
+  # 143: output trace, debug, warning and error to log
+  # 199: output debug, warning and error to both screen and file
+  # 207: output trace, debug, warning and error to both screen and file
+  #
+  # debug flag for all log type, take effect when non-zero value\
+  #TAOS_DEBUG_FLAG: &quot;143&quot;
+
+  # generate core file when service crash
+  #TAOS_ENABLE_CORE_FILE: &quot;1&quot;
+</code></pre>
+<h2><a class="header" href="#scale-up-1" id="scale-up-1">Scale Up</a></h2>
+<p>You could see the details in chapter 4.</p>
+<p>First, we should get the statefulset name in your deploy:</p>
+<pre><code class="language-sh">export STS_NAME=$(kubectl get statefulset \
+  -l &quot;app.kubernetes.io/name=tdengine&quot; \
+  -o jsonpath=&quot;{.items[0].metadata.name}&quot;)
+</code></pre>
+<p>Scale up is very simple, the next line scale up the TDengine dnodes to 3, no other commands required.</p>
+<pre><code class="language-sh">kubectl scale --replicas 3 statefulset/$STS_NAME
+</code></pre>
+<p>Re-call <code>show dnodes</code> <code>show mnodes</code> to check:</p>
+<p><img src="assets/helm-scale-up.png" alt="helm-scale-up" /></p>
+<h2><a class="header" href="#scale-down-1" id="scale-down-1">Scale Down</a></h2>
+<blockquote>
+<p>NOTE: scale-down is not completely work as expected, use it with caution.</p>
+</blockquote>
+<p>Also, scale down requires some extra step:</p>
+<p>Get the dnode endpoint and drop it iteratively:</p>
+<pre><code class="language-sh">kubectl --namespace default exec $POD_NAME -- \
+  cat /var/lib/taos/dnode/dnodeEps.json \
+  | jq '.dnodeInfos[1:] |map(.dnodeFqdn + &quot;:&quot; + (.dnodePort|tostring)) | .[]' -r
+kubectl --namespace default exec $POD_NAME -- taos -s &quot;show dnodes&quot;
+kubectl --namespace default exec $POD_NAME -- taos -s 'drop dnode &quot;&lt;you dnode in list&gt;&quot;'
+</code></pre>
+<p>Drop one dnode may cause several seconds or minutes.</p>
+<p><img src="assets/helm-drop-dnode.png" alt="helm-drop-dnode" /></p>
+<h2><a class="header" href="#uninstall" id="uninstall">Uninstall</a></h2>
+<pre><code class="language-sh">helm uninstall tdengine
+</code></pre>
+<p>Helm doest not automatically drop pvc by now, you can drop it manually.</p>
 
                     </main>
 

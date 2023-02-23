@@ -93,7 +93,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="index.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="1.0-kubernetes.html"><strong aria-hidden="true">2.</strong> 从Kubernetes开始</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="1.1-install-kubernetes-with-minikube.html"><strong aria-hidden="true">2.1.</strong> 使用Minikube尝鲜Kubernetes</a></li><li class="chapter-item expanded "><a href="1.2-k8s-starter.html"><strong aria-hidden="true">2.2.</strong> 开始使用Kubernetes</a></li></ol></li><li class="chapter-item expanded "><a href="2.0-tdengine-on-kubernetes.html"><strong aria-hidden="true">3.</strong> 在Kubernetes上部署TDengine集群</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="2.1-tdengine-step-by-step.html"><strong aria-hidden="true">3.1.</strong> 一步一步创建TDengine集群</a></li><li class="chapter-item expanded "><a href="2.2-tdengine-with-helm.html" class="active"><strong aria-hidden="true">3.2.</strong> 使用Helm部署TDengine集群</a></li></ol></li><li class="chapter-item expanded "><a href="3.0-appendix.html"><strong aria-hidden="true">4.</strong> 附录</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="3.1-install-kubernetes-with-rancher.html"><strong aria-hidden="true">4.1.</strong> 使用Rancher安装Kubernetes</a></li><li class="chapter-item expanded "><a href="3.2-storage-class.html"><strong aria-hidden="true">4.2.</strong> Kubernetes中的存储类</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="index.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="1.0-kubernetes.html"><strong aria-hidden="true">2.</strong> 从Kubernetes开始</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="1.1-install-kubernetes-with-minikube.html"><strong aria-hidden="true">2.1.</strong> 使用Minikube尝鲜Kubernetes</a></li><li class="chapter-item expanded "><a href="1.2-install-kubernetes-with-rancher.html"><strong aria-hidden="true">2.2.</strong> 使用Rancher安装Kubernetes</a></li><li class="chapter-item expanded "><a href="1.4-k8s-starter.html"><strong aria-hidden="true">2.3.</strong> 开始使用Kubernetes</a></li></ol></li><li class="chapter-item expanded "><a href="2.0-tdengine-on-kubernetes.html"><strong aria-hidden="true">3.</strong> 在Kubernetes上部署TDengine集群</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="2.1-tdengine-step-by-step.html"><strong aria-hidden="true">3.1.</strong> 一步一步创建TDengine集群</a></li><li class="chapter-item expanded "><a href="2.2-tdengine-with-helm.html" class="active"><strong aria-hidden="true">3.2.</strong> 使用Helm部署TDengine集群</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -179,21 +179,21 @@
 chmod +x get_helm.sh
 ./get_helm.sh
 </code></pre>
-<p>Helm会使用<code>kubectl</code>和kubeconfig的配置来操作Kubernetes，可以参考Rancher安装Kubernetes的配置来进行设置。</p>
+<p>Helm 会使用 <code>kubectl</code> 和 kubeconfig 的配置来操作 Kubernetes，可以参考 Rancher 安装 Kubernetes 的配置来进行设置。</p>
 <h2><a class="header" href="#安装-tdengine-chart" id="安装-tdengine-chart">安装 TDengine Chart</a></h2>
 <p>TDengine Chart 尚未发布到 Helm 仓库，当前可以从GitHub直接下载：</p>
-<pre><code class="language-sh">wget https://github.com/taosdata/TDengine-Operator/raw/main/helm/tdengine-0.3.0.tgz
+<pre><code class="language-sh">wget https://github.com/taosdata/TDengine-Operator/raw/3.0/helm/tdengine-3.0.2.tgz
 </code></pre>
-<p>获取当前Kubernetes的存储类：</p>
+<p>获取当前 Kubernetes 的存储类：</p>
 <pre><code class="language-sh">kubectl get storageclass
 </code></pre>
 <p>在 minikube 默认为 <code>standard</code>.</p>
 <p>之后，使用<code>helm</code>命令安装：</p>
-<pre><code class="language-sh">helm install tdengine tdengine-0.3.0.tgz \
+<pre><code class="language-sh">helm install tdengine tdengine-3.0.2.tgz \
   --set storage.className=&lt;your storage class name&gt;
 </code></pre>
 <p>在 minikube 环境下，可以设置一个较小的容量避免超出磁盘可用空间：</p>
-<pre><code class="language-sh">helm install tdengine tdengine-0.3.0.tgz \
+<pre><code class="language-sh">helm install tdengine tdengine-3.0.2.tgz \
   --set storage.className=standard \
   --set storage.dataSize=2Gi \
   --set storage.logSize=10Mi
@@ -219,11 +219,11 @@ kubectl --namespace default exec -it $POD_NAME -- taos
 <p><img src="../en/assets/kubectl-taos-sql.png" alt="taos-sql" /></p>
 <h2><a class="header" href="#values-配置" id="values-配置">Values 配置</a></h2>
 <p>TDengine 支持 <code>values.yaml</code> 自定义。</p>
-<p>通过 <code>helm show values</code>可以获取TDengine Chart支持的全部values列表：</p>
-<pre><code class="language-sh">helm show values tdengine-0.3.0.tgz
+<p>通过 <code>helm show values</code> 可以获取TDengine Chart支持的全部values列表：</p>
+<pre><code class="language-sh">helm show values tdengine-3.0.2.tgz
 </code></pre>
-<p>你可以将结果保存为 <code>values.yaml</code>，之后可以修改其中的各项参数，如 replica 数量，存储类名称，容量大小，TDengine 配置等，然后使用如下命令安装TDengine集群：</p>
-<pre><code class="language-sh">helm install tdengine tdengine-0.3.0.tgz -f values.yaml
+<p>你可以将结果保存为 <code>values.yaml</code>，之后可以修改其中的各项参数，如 replica 数量，存储类名称，容量大小，TDengine 配置等，然后使用如下命令安装 TDengine 集群：</p>
+<pre><code class="language-sh">helm install tdengine tdengine-3.0.2.tgz -f values.yaml
 </code></pre>
 <p>全部参数如下：</p>
 <pre><code class="language-yaml"># Default values for tdengine.
@@ -236,18 +236,17 @@ image:
   prefix: tdengine/tdengine
   #pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  #tag: &quot;2.4.0.5&quot;
+#  tag: &quot;3.0.0.0&quot;
 
 service:
   # ClusterIP is the default service type, use NodeIP only if you know what you are doing.
   type: ClusterIP
   ports:
     # TCP range required
-    tcp: [6030,6031,6032,6033,6034, 6035,6036,6037,6038, 6039, 6040, 6041, 6042, 6043, 6044, 6045, 6060]
-    # UDP range 6030-6039
-    udp: [6030, 6031, 6032, 6033, 6034, 6035, 6036, 6037, 6038, 6039]
+    tcp: [6030, 6041, 6042, 6043, 6044, 6046, 6047, 6048, 6049, 6060]
+    # UDP range
+    udp: [6044, 6045]
 
-arbitrator: true
 
 # Set timezone here, not in taoscfg
 timezone: &quot;Asia/Shanghai&quot;
@@ -292,76 +291,28 @@ clusterDomainSuffix: &quot;&quot;
 #
 # Btw, keep quotes &quot;&quot; around the value like below, even the value will be number or not.
 taoscfg:
+  # Starts as cluster or not, must be 0 or 1.
+  #   0: all pods will start as a seperate TDengine server
+  #   1: pods will start as TDengine server cluster. [default]
+  CLUSTER: &quot;1&quot;
 
   # number of replications, for cluster only
   TAOS_REPLICA: &quot;1&quot;
 
-  # number of management nodes in the system
-  TAOS_NUM_OF_MNODES: &quot;1&quot;
-
-  # number of days per DB file
-  # TAOS_DAYS: &quot;10&quot;
-
-  # number of days to keep DB file, default is 10 years.
-  #TAOS_KEEP: &quot;3650&quot;
-
-  # cache block size (Mbyte)
-  #TAOS_CACHE: &quot;16&quot;
-
-  # number of cache blocks per vnode
-  #TAOS_BLOCKS: &quot;6&quot;
-
-  # minimum rows of records in file block
-  #TAOS_MIN_ROWS: &quot;100&quot;
-
-  # maximum rows of records in file block
-  #TAOS_MAX_ROWS: &quot;4096&quot;
 
   #
-  # TAOS_NUM_OF_THREADS_PER_CORE: number of threads per CPU core
-  #TAOS_NUM_OF_THREADS_PER_CORE: &quot;1.0&quot;
+  # TAOS_NUM_OF_RPC_THREADS: number of threads for RPC
+  #TAOS_NUM_OF_RPC_THREADS: &quot;2&quot;
 
   #
   # TAOS_NUM_OF_COMMIT_THREADS: number of threads to commit cache data
   #TAOS_NUM_OF_COMMIT_THREADS: &quot;4&quot;
 
-  #
-  # TAOS_RATIO_OF_QUERY_CORES:
-  # the proportion of total CPU cores available for query processing
-  # 2.0: the query threads will be set to double of the CPU cores.
-  # 1.0: all CPU cores are available for query processing [default].
-  # 0.5: only half of the CPU cores are available for query.
-  # 0.0: only one core available.
-  #TAOS_RATIO_OF_QUERY_CORES: &quot;1.0&quot;
-
-  #
-  # TAOS_KEEP_COLUMN_NAME:
-  # the last_row/first/last aggregator will not change the original column name in the result fields
-  #TAOS_KEEP_COLUMN_NAME: &quot;0&quot;
-
-  # enable/disable backuping vnode directory when removing vnode
-  #TAOS_VNODE_BAK: &quot;1&quot;
-
   # enable/disable installation / usage report
   #TAOS_TELEMETRY_REPORTING: &quot;1&quot;
 
-  # enable/disable load balancing
-  #TAOS_BALANCE: &quot;1&quot;
-
-  # max timer control blocks
-  #TAOS_MAX_TMR_CTRL: &quot;512&quot;
-
   # time interval of system monitor, seconds
   #TAOS_MONITOR_INTERVAL: &quot;30&quot;
-
-  # number of seconds allowed for a dnode to be offline, for cluster only
-  #TAOS_OFFLINE_THRESHOLD: &quot;8640000&quot;
-
-  # RPC re-try timer, millisecond
-  #TAOS_RPC_TIMER: &quot;1000&quot;
-
-  # RPC maximum time for ack, seconds.
-  #TAOS_RPC_MAX_TIME: &quot;600&quot;
 
   # time interval of dnode status reporting to mnode, seconds, for cluster only
   #TAOS_STATUS_INTERVAL: &quot;1&quot;
@@ -373,37 +324,7 @@ taoscfg:
   #TAOS_MIN_SLIDING_TIME: &quot;10&quot;
 
   # minimum time window, milli-second
-  #TAOS_MIN_INTERVAL_TIME: &quot;10&quot;
-
-  # maximum delay before launching a stream computation, milli-second
-  #TAOS_MAX_STREAM_COMP_DELAY: &quot;20000&quot;
-
-  # maximum delay before launching a stream computation for the first time, milli-second
-  #TAOS_MAX_FIRST_STREAM_COMP_DELAY: &quot;10000&quot;
-
-  # retry delay when a stream computation fails, milli-second
-  #TAOS_RETRY_STREAM_COMP_DELAY: &quot;10&quot;
-
-  # the delayed time for launching a stream computation, from 0.1(default, 10% of whole computing time window) to 0.9
-  #TAOS_STREAM_COMP_DELAY_RATIO: &quot;0.1&quot;
-
-  # max number of vgroups per db, 0 means configured automatically
-  #TAOS_MAX_VGROUPS_PER_DB: &quot;0&quot;
-
-  # max number of tables per vnode
-  #TAOS_MAX_TABLES_PER_VNODE: &quot;1000000&quot;
-
-  # the number of acknowledgments required for successful data writing
-  #TAOS_QUORUM: &quot;1&quot;
-
-  # enable/disable compression
-  #TAOS_COMP: &quot;2&quot;
-
-  # write ahead log (WAL) level, 0: no wal; 1: write wal, but no fysnc; 2: write wal, and call fsync
-  #TAOS_WAL_LEVEL: &quot;1&quot;
-
-  # if walLevel is set to 2, the cycle of fsync being executed, if set to 0, fsync is called right away
-  #TAOS_FSYNC: &quot;3000&quot;
+  #TAOS_MIN_INTERVAL_TIME: &quot;1&quot;
 
   # the compressed rpc message, option:
   #  -1 (no compression)
@@ -411,17 +332,8 @@ taoscfg:
   # &gt; 0 (rpc message body which larger than this value will be compressed)
   #TAOS_COMPRESS_MSG_SIZE: &quot;-1&quot;
 
-  # max length of an SQL
-  #TAOS_MAX_SQL_LENGTH: &quot;1048576&quot;
-
-  # the maximum number of records allowed for super table time sorting
-  #TAOS_MAX_NUM_OF_ORDERED_RES: &quot;100000&quot;
-
   # max number of connections allowed in dnode
-  #TAOS_MAX_SHELL_CONNS: &quot;5000&quot;
-
-  # max number of connections allowed in client
-  #TAOS_MAX_CONNECTIONS: &quot;5000&quot;
+  #TAOS_MAX_SHELL_CONNS: &quot;50000&quot;
 
   # stop writing logs when the disk size of the log folder is less than this value
   #TAOS_MINIMAL_LOG_DIR_G_B: &quot;0.1&quot;
@@ -441,21 +353,8 @@ taoscfg:
   # enable/disable system monitor
   #TAOS_MONITOR: &quot;1&quot;
 
-  # enable/disable recording the SQL statements via restful interface
-  #TAOS_HTTP_ENABLE_RECORD_SQL: &quot;0&quot;
-
-  # number of threads used to process http requests
-  #TAOS_HTTP_MAX_THREADS: &quot;2&quot;
-
-  # maximum number of rows returned by the restful interface
-  #TAOS_RESTFUL_ROW_LIMIT: &quot;10240&quot;
-
-  # The following parameter is used to limit the maximum number of lines in log files.
-  # max number of lines per log filters
-  # numOfLogLines         10000000
-
   # enable/disable async log
-  #TAOS_ASYNC_LOG: &quot;0&quot;
+  #TAOS_ASYNC_LOG: &quot;1&quot;
 
   #
   # time of keeping log files, days
@@ -472,29 +371,12 @@ taoscfg:
   # debug flag for all log type, take effect when non-zero value\
   #TAOS_DEBUG_FLAG: &quot;143&quot;
 
-  # enable/disable recording the SQL in taos client
-  #TAOS_ENABLE_RECORD_SQL: &quot;0&quot;
-
   # generate core file when service crash
   #TAOS_ENABLE_CORE_FILE: &quot;1&quot;
-
-  # maximum display width of binary and nchar fields in the shell. The parts exceeding this limit will be hidden
-  #TAOS_MAX_BINARY_DISPLAY_WIDTH: &quot;30&quot;
-
-  # enable/disable stream (continuous query)
-  #TAOS_STREAM: &quot;1&quot;
-
-  # in retrieve blocking model, only in 50% query threads will be used in query processing in dnode
-  #TAOS_RETRIEVE_BLOCKING_MODEL: &quot;0&quot;
-
-  # the maximum allowed query buffer size in MB during query processing for each data node
-  # -1 no limit (default)
-  # 0  no query allowed, queries are disabled
-  #TAOS_QUERY_BUFFER_SIZE: &quot;-1&quot;
 </code></pre>
 <h2><a class="header" href="#扩容" id="扩容">扩容</a></h2>
-<p>关于扩容可参考上一小节的说明，有一些额外的操作需要从helm的部署中获取。</p>
-<p>首先，从部署中获取StatefulSet的名称。</p>
+<p>关于扩容可参考上一小节的说明，有一些额外的操作需要从 helm 的部署中获取。</p>
+<p>首先，从部署中获取 StatefulSet 的名称。</p>
 <pre><code class="language-sh">export STS_NAME=$(kubectl get statefulset \
   -l &quot;app.kubernetes.io/name=tdengine&quot; \
   -o jsonpath=&quot;{.items[0].metadata.name}&quot;)
@@ -534,10 +416,6 @@ kubectl --namespace default exec $POD_NAME -- taos -s 'drop dnode &quot;&lt;you 
                         
 
                         
-                            <a rel="next" href="3.0-appendix.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                                <i class="fa fa-angle-right"></i>
-                            </a>
-                        
 
                         <div style="clear: both"></div>
                     </nav>
@@ -551,10 +429,6 @@ kubectl --namespace default exec $POD_NAME -- taos -s 'drop dnode &quot;&lt;you 
                     </a>
                 
 
-                
-                    <a rel="next" href="3.0-appendix.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                        <i class="fa fa-angle-right"></i>
-                    </a>
                 
             </nav>
 

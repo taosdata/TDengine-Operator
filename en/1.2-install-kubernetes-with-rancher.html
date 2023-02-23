@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Start Using Kubernetes - Setup TDengine on Kubenetes from Scratch</title>
+        <title>Install Kubernetes with Rancher - Setup TDengine on Kubenetes from Scratch</title>
         
         
 
@@ -93,7 +93,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="index.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="1.0-kubernetes.html"><strong aria-hidden="true">2.</strong> Start with Kubernetes</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="1.1-install-kubernetes-with-minikube.html"><strong aria-hidden="true">2.1.</strong> Try Kubernetes with Minikube</a></li><li class="chapter-item expanded "><a href="1.2-k8s-starter.html" class="active"><strong aria-hidden="true">2.2.</strong> Start Using Kubernetes</a></li></ol></li><li class="chapter-item expanded "><a href="2.0-tdengine-on-kubernetes.html"><strong aria-hidden="true">3.</strong> Setup TDengine Cluster on Kubernetes</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="2.1-tdengine-step-by-step.html"><strong aria-hidden="true">3.1.</strong> Setup TDengine Cluster Step by Step</a></li><li class="chapter-item expanded "><a href="2.2-tdengine-with-helm.html"><strong aria-hidden="true">3.2.</strong> Setup TDengine Cluster with Helm</a></li></ol></li><li class="chapter-item expanded "><a href="3.0-appendix.html"><strong aria-hidden="true">4.</strong> Appendix</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="3.1-install-kubernetes-with-rancher.html"><strong aria-hidden="true">4.1.</strong> Install Kubernetes with Rancher</a></li><li class="chapter-item expanded "><a href="3.2-storage-class.html"><strong aria-hidden="true">4.2.</strong> Storage Class with Ceph RBD</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="index.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="1.0-kubernetes.html"><strong aria-hidden="true">2.</strong> Start with Kubernetes</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="1.1-install-kubernetes-with-minikube.html"><strong aria-hidden="true">2.1.</strong> Try Kubernetes with Minikube</a></li><li class="chapter-item expanded "><a href="1.2-install-kubernetes-with-rancher.html" class="active"><strong aria-hidden="true">2.2.</strong> Install Kubernetes with Rancher</a></li><li class="chapter-item expanded "><a href="1.4-k8s-starter.html"><strong aria-hidden="true">2.3.</strong> Start Using Kubernetes</a></li></ol></li><li class="chapter-item expanded "><a href="2.0-tdengine-on-kubernetes.html"><strong aria-hidden="true">3.</strong> Setup TDengine Cluster on Kubernetes</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="2.1-tdengine-step-by-step.html"><strong aria-hidden="true">3.1.</strong> Setup TDengine Cluster Step by Step</a></li><li class="chapter-item expanded "><a href="2.2-tdengine-with-helm.html"><strong aria-hidden="true">3.2.</strong> Setup TDengine Cluster with Helm</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -129,9 +129,9 @@
                         </button>
                         <ul id="language-list" class="language-popup" aria-label="Languages" role="menu">
                           
-                            <li role="none"><a href="../en/1.2-k8s-starter.html"><button role="menuitem" class="language" id="light">English</button></a></li>
+                            <li role="none"><a href="../en/1.2-install-kubernetes-with-rancher.html"><button role="menuitem" class="language" id="light">English</button></a></li>
                           
-                            <li role="none"><a href="../zh/1.2-k8s-starter.html"><button role="menuitem" class="language" id="light">简体中文</button></a></li>
+                            <li role="none"><a href="../zh/1.2-install-kubernetes-with-rancher.html"><button role="menuitem" class="language" id="light">简体中文</button></a></li>
                           
                         </ul>
                         
@@ -171,92 +171,95 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1><a class="header" href="#start-to-use-kubernetes" id="start-to-use-kubernetes">Start to use Kubernetes</a></h1>
-<p>Let's start using kubernetes from some starter project. If you are familiar enough with k8s, just ignore the chapter and go on.</p>
-<h2><a class="header" href="#statefulsets" id="statefulsets">StatefulSets</a></h2>
-<p>In <code>starter/stateful-nginx.yaml</code>:</p>
-<pre><code class="language-yaml">apiVersion: v1
-kind: Service
-metadata:
-  name: nginx
-  labels:
-    app: nginx
-spec:
-  ports:
-  - port: 80
-    name: web
-  clusterIP: None
-  selector:
-    app: nginx
----
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: web
-spec:
-  selector:
-    matchLabels:
-      app: nginx # has to match .spec.template.metadata.labels
-  serviceName: &quot;nginx&quot;
-  replicas: 3 # by default is 1
-  template:
-    metadata:
-      labels:
-        app: nginx # has to match .spec.selector.matchLabels
-    spec:
-      terminationGracePeriodSeconds: 10
-      containers:
-      - name: nginx
-        image: nginx
-        ports:
-        - containerPort: 80
-          name: web
-        volumeMounts:
-        - name: www
-          mountPath: /usr/share/nginx/html
-  volumeClaimTemplates:
-  - metadata:
-      name: www
-    spec:
-      accessModes: [ &quot;ReadWriteOnce&quot; ]
-      storageClassName: &quot;standard&quot;
-      resources:
-        requests:
-          storage: 1Gi
+                        <h1><a class="header" href="#introduction-to-kubernetes" id="introduction-to-kubernetes">Introduction to Kubernetes</a></h1>
+<p>We suppose you have known how kubernetes work and a kubernetes environment in use.</p>
+<p>Setup K8s Cluster with Rancher</p>
+<blockquote>
+<p>Claim: I've built this at May 26 2021 in Beijing, China(UTC+8), China. Please refer to fitted documentations if any step changed.</p>
+</blockquote>
+<h2><a class="header" href="#install-rancherd-to-deploy-rancher" id="install-rancherd-to-deploy-rancher">Install RancherD to deploy Rancher</a></h2>
+<p>For most of the cases, just run the rancherd installer.</p>
+<pre><code class="language-sh">curl -sfL https://get.rancher.io | sh -
 </code></pre>
-<pre><code class="language-sh">kubectl apply -f starter/stateful-nginx.yaml
+<p>Alternatively, you can download the latest rancherd package from github releases assets.</p>
+<pre><code class="language-sh"># fill the proxy url if you use one
+export https_proxy=
+curl -s https://api.github.com/repos/rancher/rancher/releases/latest \
+  |jq '.assets[] |
+    select(.browser_download_url|contains(&quot;rancherd-amd64.tar.gz&quot;)) |
+    .browser_download_url' -r \
+  |wget -ci -
 </code></pre>
-<h2><a class="header" href="#configmap-mount-as-volume" id="configmap-mount-as-volume">ConfigMap Mount as Volume</a></h2>
-<p>A config map:</p>
-<pre><code class="language-yaml">---
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: starter-config-map
-data:
-  debugFlag: 135
-  keep: 3650
----
-apiVersion: v1
-kind: Pod
-metadata:
-  name: starter-config-map-as-volume
-spec:
-  containers:
-    - name: test-container
-      image: busybox
-      command: [ &quot;/bin/sh&quot;, &quot;-c&quot;, &quot;ls /etc/config/&quot; ]
-      volumeMounts:
-      - name: starter-config-map-vol
-        mountPath: /etc/config
-  volumes:
-    - name: starter-config-map-vol
-      configMap:
-        # Provide the name of the ConfigMap containing the files you want
-        # to add to the container
-        name: starter-config-map
-  restartPolicy: Never
+<p>And install it.</p>
+<pre><code class="language-sh">tar xzf rancherd-amd64.tar.gz -C /usr/local
 </code></pre>
+<p>Then start the rancherd service.</p>
+<pre><code class="language-sh">systemctl enable rancherd-server
+systemctl start rancherd-server
+</code></pre>
+<p>Keep tracking with the service.</p>
+<pre><code class="language-sh">journalctl -fu rancherd-server
+</code></pre>
+<p>End with log <strong>successfully</strong>:</p>
+<pre><code class="language-log">&quot;Event occurred&quot; object=&quot;cn120&quot; kind=&quot;Node&quot; apiVersion=&quot;v1&quot; \ 
+type=&quot;Normal&quot; reason=&quot;Synced&quot; message=&quot;Node synced successfully&quot;
+</code></pre>
+<h2><a class="header" href="#setup-kubeconfig-and-kubectl" id="setup-kubeconfig-and-kubectl">Setup kubeconfig and kubectl</a></h2>
+<p>Once the Kubernetes cluster is up, set up RancherD’s kubeconfig file and kubectl:</p>
+<pre><code class="language-sh">export KUBECONFIG=/etc/rancher/rke2/rke2.yaml
+export PATH=$PATH:/var/lib/rancher/rke2/bin
+</code></pre>
+<p>Check rancher status with kubectl:</p>
+<pre><code class="language-sh">kubectl get daemonset rancher -n cattle-system
+kubectl get pod -n cattle-system
+</code></pre>
+<p>Result:</p>
+<pre><code>NAME      DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR                         AGE
+rancher   1         1         1       1            1           node-role.kubernetes.io/master=true   36m
+NAME                               READY   STATUS      RESTARTS   AGE
+helm-operation-5c2wd               0/2     Completed   0          34m
+helm-operation-bdxlx               0/2     Completed   0          33m
+helm-operation-cgcvr               0/2     Completed   0          34m
+helm-operation-cj4g4               0/2     Completed   0          33m
+helm-operation-hq282               0/2     Completed   0          34m
+helm-operation-lp5nn               0/2     Completed   0          33m
+rancher-kf592                      1/1     Running     0          36m
+rancher-webhook-65f558c486-vrjz9   1/1     Running     0          33m
+</code></pre>
+<h2><a class="header" href="#set-rancher-password" id="set-rancher-password">Set Rancher Password</a></h2>
+<pre><code class="language-sh">rancherd reset-admin
+</code></pre>
+<p>You would see like this:</p>
+<pre><code class="language-text">INFO[0000] Server URL: https://*.*.*.*:8443      
+INFO[0000] Default admin and password created. Username: admin, Password: ****
+</code></pre>
+<p>Point to server url, you can see the login page.</p>
+<p><img src="assets/rancher-login-page.png" alt="rancher-login-page" /></p>
+<p>Type right username and password, then enjoy rancher powered cluster dashboard.</p>
+<p><img src="assets/rancher-dashboard.png" alt="rancher-dashboard" /></p>
+<h2><a class="header" href="#ha-settings" id="ha-settings">HA Settings</a></h2>
+<p>Check the token in <code>/var/lib/rancher/rke2/server/node-token</code>.</p>
+<p>Install rancherd-server in other nodes like first node:</p>
+<pre><code class="language-sh">tar xzf rancherd-amd64.tar.gz -C /usr/local
+systemctl enable rancherd-server
+</code></pre>
+<p>Prepare config dir:</p>
+<pre><code class="language-sh">mkdir -p /etc/rancher/rke2
+</code></pre>
+<p>Change the config file in <code>/etc/rancher/rke2/config.yaml</code>.</p>
+<pre><code class="language-yaml">server: https://192.168.60.120:9345
+token: &lt;the token in /var/lib/rancher/rke2/server/node-token&gt;
+</code></pre>
+<p>Start rancherd</p>
+<pre><code class="language-sh">systemctl start rancherd-server
+journalctl -fu rancherd-server
+</code></pre>
+<p>Other nodes just copy the config.yaml and start rancherd, and those will be joined to cluster automatically.</p>
+<p>Type <code>kubectl get daemonset rancher -n cattle-system</code>：</p>
+<pre><code class="language-text">NAME      DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR                         AGE
+rancher   3         3         3       3            3           node-role.kubernetes.io/master=true   129m
+</code></pre>
+<p>Three nodes rancher+k8s cluster are avalibale now.</p>
 
                     </main>
 
@@ -269,7 +272,7 @@ spec:
                         
 
                         
-                            <a rel="next" href="2.0-tdengine-on-kubernetes.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="1.4-k8s-starter.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
                         
@@ -287,7 +290,7 @@ spec:
                 
 
                 
-                    <a rel="next" href="2.0-tdengine-on-kubernetes.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="1.4-k8s-starter.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
                 
