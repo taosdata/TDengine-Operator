@@ -185,7 +185,7 @@ chmod +x get_helm.sh
 <pre><code class="language-sh">wget https://github.com/taosdata/TDengine-Operator/raw/main/helm/tdengine-3.0.2.tgz
 </code></pre>
 <p>First, check your sotrage class name:</p>
-<pre><code class="language-sh">helm get storageclass
+<pre><code class="language-sh">kubectl get storageclass
 </code></pre>
 <p>In minikube, the default storageclass name is <code>standard</code>.</p>
 <p>And then deploy TDengine in one line:</p>
