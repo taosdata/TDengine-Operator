@@ -205,9 +205,9 @@ chmod +x get_helm.sh
 kubectl --namespace default exec $POD_NAME -- taos -s &quot;show dnodes; show mnodes&quot;
 kubectl --namespace default exec -it $POD_NAME -- taos
 </code></pre>
-<p><img src="./en/./assets/helm-install-with-sc.png" alt="helm-install-with-sc" /></p>
+<p><img src="../../en/./assets/helm-install-with-sc.png" alt="helm-install-with-sc" /></p>
 <p>您可以自行尝试一下，就像这样：</p>
-<p><img src="./en/./assets/helm-install-post-script.png" alt="helm-install-post-script" /></p>
+<p><img src="../../en/./assets/helm-install-post-script.png" alt="helm-install-post-script" /></p>
 <p>可以创建一个表进行测试：</p>
 <pre><code class="language-sh">kubectl --namespace default exec $POD_NAME -- \
   taos -s &quot;create database test;
@@ -216,7 +216,7 @@ kubectl --namespace default exec -it $POD_NAME -- taos
     insert into t1 values(now, 1)(now + 1s, 2);
     select * from t1;&quot;
 </code></pre>
-<p><img src="./en/assets/kubectl-taos-sql.png" alt="taos-sql" /></p>
+<p><img src="../../en/assets/kubectl-taos-sql.png" alt="taos-sql" /></p>
 <h2><a class="header" href="#values-配置" id="values-配置">Values 配置</a></h2>
 <p>TDengine 支持 <code>values.yaml</code> 自定义。</p>
 <p>通过 <code>helm show values</code> 可以获取TDengine Chart支持的全部values列表：</p>
@@ -385,7 +385,7 @@ taoscfg:
 <pre><code class="language-sh">kubectl scale --replicas 3 statefulset/$STS_NAME
 </code></pre>
 <p>使用命令 <code>show dnodes</code> <code>show mnodes</code> 检查是否扩容成功：</p>
-<p><img src="./en/assets/helm-scale-up.png" alt="helm-scale-up" /></p>
+<p><img src="../../en/assets/helm-scale-up.png" alt="helm-scale-up" /></p>
 <h2><a class="header" href="#缩容" id="缩容">缩容</a></h2>
 <blockquote>
 <p>缩容操作并没有完整测试，可能造成数据风险，请谨慎使用。</p>
@@ -398,7 +398,7 @@ taoscfg:
 kubectl --namespace default exec $POD_NAME -- taos -s &quot;show dnodes&quot;
 kubectl --namespace default exec $POD_NAME -- taos -s 'drop dnode &quot;&lt;you dnode in list&gt;&quot;'
 </code></pre>
-<p><img src="./en/assets/helm-drop-dnode.png" alt="helm-drop-dnode" /></p>
+<p><img src="../../en/assets/helm-drop-dnode.png" alt="helm-drop-dnode" /></p>
 <h2><a class="header" href="#清理" id="清理">清理</a></h2>
 <p>Helm管理下，清理操作也变得简单：</p>
 <pre><code class="language-sh">helm uninstall tdengine
