@@ -203,7 +203,7 @@ sudo install minikube-linux-amd64 /usr/local/bin/minikube
 <pre><code class="language-sh">minikube start
 </code></pre>
 <p>Minikube 将使用 Docker（需要提前安装好，安装Docker请参考<a href="https://docs.docker.com/engine/install/">Docker 官方文档</a>）创建一个 Kubernetes 环境：</p>
-<p><img src="../../en/./assets/minikube-start.png" alt="minikube-start" /></p>
+<p><img src="../en/./assets/minikube-start.png" alt="minikube-start" /></p>
 <h2><a class="header" href="#kubectl-命令" id="kubectl-命令"><code>kubectl</code> 命令</a></h2>
 <p>在 minikube 中，可以使用 <code>minikube kubectl</code> 命令使用 <code>kubectl</code>，以下是获取所有 POD 资源的示例命令：</p>
 <pre><code class="language-sh">minikube kubectl -- get pods -A
@@ -224,7 +224,7 @@ sudo install kubectl /usr/local/bin/kubectl
 <pre><code class="language-sh">minikube dashboard
 </code></pre>
 <p>将会在浏览器打开仪表盘网址，用于查看资源：</p>
-<p><img src="../../en/assets/minikube-dashboard.png" alt="minikube-dashboard" /></p>
+<p><img src="../en/assets/minikube-dashboard.png" alt="minikube-dashboard" /></p>
 <h1><a class="header" href="#使用-rancher-安装-kubernetes" id="使用-rancher-安装-kubernetes">使用 Rancher 安装 Kubernetes</a></h1>
 <blockquote>
 <p>如果 Rancher 安装方式发生变化，请始终参考 Rancher 官方文档。</p>
@@ -284,9 +284,9 @@ rancher-webhook-65f558c486-vrjz9   1/1     Running     0          33m
 INFO[0000] Default admin and password created. Username: admin, Password: ****
 </code></pre>
 <p>打开 <code>:8443</code> 的网址，可以看到登录页面：</p>
-<p><img src="../../en/assets/rancher-login-page.png" alt="rancher-login-page" /></p>
+<p><img src="../en/assets/rancher-login-page.png" alt="rancher-login-page" /></p>
 <p>输入上面设置的用户名和密码，进入 Rancher 仪表盘。</p>
-<p><img src="../../en/assets/rancher-dashboard.png" alt="rancher-dashboard" /></p>
+<p><img src="../en/assets/rancher-dashboard.png" alt="rancher-dashboard" /></p>
 <h2><a class="header" href="#高可用设置" id="高可用设置">高可用设置</a></h2>
 <p>获取集群当前的token： <code>/var/lib/rancher/rke2/server/node-token</code>。</p>
 <p>在其他节点上安装 <code>rancherd-server</code> 。</p>
@@ -654,9 +654,9 @@ chmod +x get_helm.sh
 kubectl --namespace default exec $POD_NAME -- taos -s &quot;show dnodes; show mnodes&quot;
 kubectl --namespace default exec -it $POD_NAME -- taos
 </code></pre>
-<p><img src="../../en/./assets/helm-install-with-sc.png" alt="helm-install-with-sc" /></p>
+<p><img src="../en/./assets/helm-install-with-sc.png" alt="helm-install-with-sc" /></p>
 <p>您可以自行尝试一下，就像这样：</p>
-<p><img src="../../en/./assets/helm-install-post-script.png" alt="helm-install-post-script" /></p>
+<p><img src="../en/./assets/helm-install-post-script.png" alt="helm-install-post-script" /></p>
 <p>可以创建一个表进行测试：</p>
 <pre><code class="language-sh">kubectl --namespace default exec $POD_NAME -- \
   taos -s &quot;create database test;
@@ -665,7 +665,7 @@ kubectl --namespace default exec -it $POD_NAME -- taos
     insert into t1 values(now, 1)(now + 1s, 2);
     select * from t1;&quot;
 </code></pre>
-<p><img src="../../en/assets/kubectl-taos-sql.png" alt="taos-sql" /></p>
+<p><img src="../en/assets/kubectl-taos-sql.png" alt="taos-sql" /></p>
 <h2><a class="header" href="#values-配置" id="values-配置">Values 配置</a></h2>
 <p>TDengine 支持 <code>values.yaml</code> 自定义。</p>
 <p>通过 <code>helm show values</code> 可以获取TDengine Chart支持的全部values列表：</p>
@@ -834,7 +834,7 @@ taoscfg:
 <pre><code class="language-sh">kubectl scale --replicas 3 statefulset/$STS_NAME
 </code></pre>
 <p>使用命令 <code>show dnodes</code> <code>show mnodes</code> 检查是否扩容成功：</p>
-<p><img src="../../en/assets/helm-scale-up.png" alt="helm-scale-up" /></p>
+<p><img src="../en/assets/helm-scale-up.png" alt="helm-scale-up" /></p>
 <h2><a class="header" href="#缩容-1" id="缩容-1">缩容</a></h2>
 <blockquote>
 <p>缩容操作并没有完整测试，可能造成数据风险，请谨慎使用。</p>
@@ -847,7 +847,7 @@ taoscfg:
 kubectl --namespace default exec $POD_NAME -- taos -s &quot;show dnodes&quot;
 kubectl --namespace default exec $POD_NAME -- taos -s 'drop dnode &quot;&lt;you dnode in list&gt;&quot;'
 </code></pre>
-<p><img src="../../en/assets/helm-drop-dnode.png" alt="helm-drop-dnode" /></p>
+<p><img src="../en/assets/helm-drop-dnode.png" alt="helm-drop-dnode" /></p>
 <h2><a class="header" href="#清理" id="清理">清理</a></h2>
 <p>Helm管理下，清理操作也变得简单：</p>
 <pre><code class="language-sh">helm uninstall tdengine
