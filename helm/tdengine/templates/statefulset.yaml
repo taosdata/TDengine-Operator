@@ -75,6 +75,7 @@ spec:
             value: '$(POD_NAME).$(SERVICE_NAME).$(STS_NAMESPACE).svc.{{ .Values.clusterDomainSuffix | default "cluster.local" }}'
 
           volumeMounts:
+            # this is config dir
           - name: {{ include "tdengine.fullname" . }}-taoscfg
             mountPath: /etc/taos
           - name: {{ include "tdengine.fullname" . }}-taosdata

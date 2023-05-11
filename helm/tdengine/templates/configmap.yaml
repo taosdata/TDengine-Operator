@@ -1,5 +1,5 @@
 ---
-#taos配置文件
+#taos 配置文件
 apiVersion: v1
 kind: ConfigMap
 metadata:
