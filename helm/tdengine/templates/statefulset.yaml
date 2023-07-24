@@ -74,10 +74,10 @@ spec:
           - name: TAOS_FQDN
             value: '$(POD_NAME).$(SERVICE_NAME).$(STS_NAMESPACE).svc.{{ .Values.clusterDomainSuffix | default "cluster.local" }}'
 
-          envFrom:
-          - configMapRef:
-              name: {{ include "tdengine.fullname" . }}-taoscfg
           volumeMounts:
+            # this is config dir
+          - name: {{ include "tdengine.fullname" . }}-taoscfg
+            mountPath: /etc/taos
           - name: {{ include "tdengine.fullname" . }}-taosdata
             mountPath: /var/lib/taos
           - name: {{ include "tdengine.fullname" . }}-taoslog
@@ -114,6 +114,21 @@ spec:
             #   readOnly: true # 仅允许只读模式挂载
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+      - name: {{ include "tdengine.fullname" . }}-taoscfg
+        configMap:
+          name: {{ include "tdengine.fullname" . }}-taoscfg
+          items:
+            - key: taos.cfg
+              path: taos.cfg
+            - key: keeper.toml
+              path: keeper.toml
+            - key: taosadapter.toml
+              path: taosadapter.toml
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- with .Values.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
