@@ -20,64 +20,71 @@ spec:
         app: "tdengine"
     spec:
       containers:
-      - name: "tdengine"
-        image: "tdengine/tdengine:3.0.0.0"
-        imagePullPolicy: "IfNotPresent"
-        ports:
-        - name: tcp6030
-          protocol: "TCP"
-          containerPort: 6030
-        - name: tcp6041
-          protocol: "TCP"
-          containerPort: 6041
-        env:
-        # POD_NAME for FQDN config
-        - name: POD_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.name
-        # SERVICE_NAME and NAMESPACE for fqdn resolve
-        - name: SERVICE_NAME
-          value: "taosd"
-        - name: STS_NAME
-          value: "tdengine"
-        - name: STS_NAMESPACE
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.namespace
-        # TZ for timezone settings, we recommend to always set it.
-        - name: TZ
-          value: "Asia/Shanghai"
-        # TAOS_ prefix will configured in taos.cfg, strip prefix and camelCase.
-        - name: TAOS_SERVER_PORT
-          value: "6030"
-        # Must set if you want a cluster.
-        - name: TAOS_FIRST_EP
-          value: "$(STS_NAME)-0.$(SERVICE_NAME).$(STS_NAMESPACE).svc.cluster.local:$(TAOS_SERVER_PORT)"
-        # TAOS_FQND should always be setted in k8s env.
-        - name: TAOS_FQDN
-          value: "$(POD_NAME).$(SERVICE_NAME).$(STS_NAMESPACE).svc.cluster.local"
-        volumeMounts:
-        - name: taosdata
-          mountPath: /var/lib/taos
-        readinessProbe:
-          exec:
-            command:
-            - taos-check
-          initialDelaySeconds: 5
-          timeoutSeconds: 5000
-        livenessProbe:
-          exec:
-            command:
-            - taos-check
-          initialDelaySeconds: 15
-          periodSeconds: 20
+        - name: "tdengine"
+          image: "tdengine/tdengine:3.0.7.1"
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - name: tcp6030
+              protocol: "TCP"
+              containerPort: 6030
+            - name: tcp6041
+              protocol: "TCP"
+              containerPort: 6041
+          env:
+            # POD_NAME for FQDN config
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            # SERVICE_NAME and NAMESPACE for fqdn resolve
+            - name: SERVICE_NAME
+              value: "taosd"
+            - name: STS_NAME
+              value: "tdengine"
+            - name: STS_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            # TZ for timezone settings, we recommend to always set it.
+            - name: TZ
+              value: "Asia/Shanghai"
+            # TAOS_ prefix will configured in taos.cfg, strip prefix and camelCase.
+            - name: TAOS_SERVER_PORT
+              value: "6030"
+            # Must set if you want a cluster.
+            - name: TAOS_FIRST_EP
+              value: "$(STS_NAME)-0.$(SERVICE_NAME).$(STS_NAMESPACE).svc.cluster.local:$(TAOS_SERVER_PORT)"
+            # TAOS_FQND should always be set in k8s env.
+            - name: TAOS_FQDN
+              value: "$(POD_NAME).$(SERVICE_NAME).$(STS_NAMESPACE).svc.cluster.local"
+          volumeMounts:
+            - name: taosdata
+              mountPath: /var/lib/taos
+          startupProbe:
+            exec:
+              command:
+                - taos-check
+            failureThreshold: 360
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+                - taos-check
+            initialDelaySeconds: 5
+            timeoutSeconds: 5000
+          livenessProbe:
+            exec:
+              command:
+                - taos-check
+            initialDelaySeconds: 15
+            periodSeconds: 20
   volumeClaimTemplates:
-  - metadata:
-      name: taosdata
-    spec:
-      accessModes:
-        - "ReadWriteOnce"
-      resources:
-        requests:
-          storage: "10Gi"
+    - metadata:
+        name: taosdata
+      spec:
+        accessModes:
+          - "ReadWriteOnce"
+        storageClassName: "standard"
+        resources:
+          requests:
+            storage: "5Gi"
