@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   prefix: tdengine/tdengine
-  #pullPolicy: Always
+  # pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
 #  tag: "3.0.0.0"
 
@@ -18,7 +18,6 @@ service:
     tcp: [6030, 6041, 6042, 6043, 6044, 6046, 6047, 6048, 6049, 6060]
     # UDP range
     udp: [6044, 6045]
-
 
 # Set timezone here, not in taoscfg
 timezone: "Asia/Shanghai"
@@ -70,7 +69,6 @@ taoscfg:
 
   # number of replications, for cluster only
   TAOS_REPLICA: "1"
-
 
   #
   # TAOS_NUM_OF_RPC_THREADS: number of threads for RPC
@@ -145,3 +143,8 @@ taoscfg:
 
   # generate core file when service crash
   #TAOS_ENABLE_CORE_FILE: "1"
+
+hostAliases:
+  - ip: "127.0.0.1"
+    hostnames:
+      - "ecs-3e78"

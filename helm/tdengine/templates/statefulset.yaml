@@ -23,6 +23,8 @@ spec:
         {{- include "tdengine.selectorLabels" . | nindent 8 }}
         app: taosd
     spec:
+      hostAliases:
+        {{- toYaml .Values.hostAliases | nindent 8 }}
       {{- with .Values.nodeSelectors.taosd }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
